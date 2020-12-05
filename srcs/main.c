@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/29 11:21:04 by ezalos            #+#    #+#             */
-/*   Updated: 2020/12/05 14:36:41 by ezalos           ###   ########.fr       */
+/*   Updated: 2020/12/05 15:10:37 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int			main(int ac, char **av)
 
 	if (ac < 2)
 		return usage(av[0]);
-	test_cypher();
+	// test_cypher();
 	if (FAILURE == access_file(&packer, av[1]))
 		return (EXIT_FAILURE);
 	new_try((Elf64_Ehdr*)packer.content, packer.content, &packer);
