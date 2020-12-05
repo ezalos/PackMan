@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/29 13:17:41 by ezalos            #+#    #+#             */
-/*   Updated: 2020/12/05 12:57:20 by ezalos           ###   ########.fr       */
+/*   Updated: 2020/12/05 15:49:17 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,26 @@ void		*elf_access_section(void *data, char *section_name, int umpteenth)
 
 }
 
+uint8_t		crypt_condition(void *data, Elf64_Sym *sym)
+{
+	uint8_t		retval;
+	Elf64_Ehdr	*elf = data;
+	Elf64_Shdr  *section_header = (Elf64_Shdr *) (data + elf->e_shoff); //section names is after data
+	char        *section_names = (char *) (data + section_header[elf->e_shstrndx].sh_offset);
+	Elf64_Shdr  *strtab = elf_access_section(data, ".strtab", 0);
+	char		*symbol_names = (char*) (data + strtab->sh_offset);
+
+	retval = FALSE;
+	if (sym->st_info != STT_SECTION
+	&& sym->st_info != STT_FILE)
+	{
+		if (0 == strcmp(&section_names[section_header[sym->st_shndx].sh_name], ".text")
+		&& (symbol_names + sym->st_name)[0] != '_')
+			retval = TRUE;
+	}
+	return retval;
+}
+
 void		new_try(Elf64_Ehdr *elf, void *data, t_packer *packer)
 {
 	// Elf64_Shdr
@@ -88,7 +108,7 @@ void		new_try(Elf64_Ehdr *elf, void *data, t_packer *packer)
 	//	 e_shnum holds the number of entries the section header table contains. e_shentsize holds the size in bytes of each entry.
 	//	 A section header table index is a subscript into this array.
 	Elf64_Shdr      *symtab = elf_access_section(data, ".symtab", 0);
-	Elf64_Shdr      *shstrtab = elf_access_section(data, ".shstrtab", 0);
+	// Elf64_Shdr      *shstrtab = elf_access_section(data, ".shstrtab", 0);
 	Elf64_Shdr      *strtab = elf_access_section(data, ".strtab", 0);
 
 	int				i;
@@ -101,8 +121,8 @@ void		new_try(Elf64_Ehdr *elf, void *data, t_packer *packer)
 	// 	This member's value holds the byte offset from the beginning of the file to the first byte in the section.
 	// e_shstrndx
 	//	This member holds the section header table index of the entry associated with the section name string table.
-	char            *section_names = (char *) (data + section_header[elf->e_shstrndx].sh_offset);
-	(void)shstrtab;
+	// char            *section_names = (char *) (data + section_header[elf->e_shstrndx].sh_offset);
+	// (void)shstrtab;
 
 	// Elf64_Sym
 	// 	An object file's symbol table holds information needed to locate and relocate a program's symbolic definitions and references.
@@ -117,28 +137,17 @@ void		new_try(Elf64_Ehdr *elf, void *data, t_packer *packer)
 	i = -1;
 	while ((size_t)++i < symtab->sh_size / symtab->sh_entsize) /* was 'symtab->sh_size / sizeof(Elf64_Sym)' before */
 	{
-		if (sym[i].st_info != STT_SECTION
-		&& sym[i].st_info != STT_FILE)
+		if (TRUE == crypt_condition(data, &sym[i]))
 		{
-			if (0 == strcmp(&section_names[section_header[sym[i].st_shndx].sh_name], ".text")
-			&& (symbol_names + sym[i].st_name)[0] != '_')
-			{
 				symbol_data = (void*)(&section_header[sym[i].st_shndx] + sym[i].st_value);
 				if (sym[i].st_value)
 					printf("%016lx ", sym[i].st_value);// not good yet
 				else
 					printf("%16c ", ' ');// not good yet
-				// printf("%c ", print_type_stack(sym[i], &section_header[sym[i].st_shndx]));
-
-				// if (strcmp(symbol_names + sym[i].st_name, "data_start") == 0)
-				{
-					// print_st_info(sym[i]);
-					printf("%s ", &section_names[section_header[sym[i].st_shndx].sh_name]);
-				}
+				// printf("%s ", &section_names[section_header[sym[i].st_shndx].sh_name]);
 		 		printf("%s\n", symbol_names + sym[i].st_name);
-				if (1 && sym[i].st_value + sym[i].st_size < (unsigned int)packer->stat.st_size)
+				if (sym[i].st_value + sym[i].st_size < (unsigned int)packer->stat.st_size)
 					print_symbol_code(data, sym[i].st_value, sym[i].st_size);
-			}
 		}
 
 	}

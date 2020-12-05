@@ -6,7 +6,7 @@
 /*   By: ldevelle <ldevelle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2020/12/05 14:31:04 by ezalos           ###   ########.fr       */
+/*   Updated: 2020/12/05 15:42:09 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,9 @@
 # define DEBUG		1
 # define SUCCESS	0
 # define FAILURE	-1
+
+# define TRUE		1
+# define FALSE		0
 
 typedef struct stat t_stat;
 
