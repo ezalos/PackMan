@@ -3,14 +3,14 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
+#    By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/20 16:46:57 by ezalos            #+#    #+#              #
-#    Updated: 2020/12/05 14:30:20 by ezalos           ###   ########.fr        #
+#    Updated: 2021/02/16 11:34:10 by rkirszba         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME		= WoodyWoodPacker
+NAME		= woody_woodpacker
 # TESTOR		= lib_testor.out
 
 CC			= gcc

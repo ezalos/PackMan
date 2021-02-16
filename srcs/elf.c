@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   elf.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/29 13:17:41 by ezalos            #+#    #+#             */
-/*   Updated: 2020/12/05 15:49:17 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/02/16 14:55:57 by rkirszba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,9 @@ uint8_t		crypt_condition(void *data, Elf64_Sym *sym)
 	return retval;
 }
 
+// fonction qui iter sur tous les segement/programme header
+// fonction qui iter sur tous les section header
+
 void		new_try(Elf64_Ehdr *elf, void *data, t_packer *packer)
 {
 	// Elf64_Shdr
@@ -121,7 +124,7 @@ void		new_try(Elf64_Ehdr *elf, void *data, t_packer *packer)
 	// 	This member's value holds the byte offset from the beginning of the file to the first byte in the section.
 	// e_shstrndx
 	//	This member holds the section header table index of the entry associated with the section name string table.
-	// char            *section_names = (char *) (data + section_header[elf->e_shstrndx].sh_offset);
+	char            *section_names = (char *) (data + section_header[elf->e_shstrndx].sh_offset);
 	// (void)shstrtab;
 
 	// Elf64_Sym
@@ -140,15 +143,38 @@ void		new_try(Elf64_Ehdr *elf, void *data, t_packer *packer)
 		if (TRUE == crypt_condition(data, &sym[i]))
 		{
 				symbol_data = (void*)(&section_header[sym[i].st_shndx] + sym[i].st_value);
-				if (sym[i].st_value)
-					printf("%016lx ", sym[i].st_value);// not good yet
-				else
-					printf("%16c ", ' ');// not good yet
-				// printf("%s ", &section_names[section_header[sym[i].st_shndx].sh_name]);
-		 		printf("%s\n", symbol_names + sym[i].st_name);
-				if (sym[i].st_value + sym[i].st_size < (unsigned int)packer->stat.st_size)
+				// if (sym[i].st_value)
+				// 	printf("%016lx ", sym[i].st_value);// not good yet
+				// else
+				// 	printf("%16c ", ' ');// not good yet
+				printf("Section name should be: %s\n", &section_names[section_header[sym[i].st_shndx].sh_name]);
+				printf("Section size should be: %zu\n", section_header[sym[i].st_shndx].sh_size);
+				printf("Name of current symbol: %s\n", symbol_names + sym[i].st_name);
+				if (sym[i].st_value + sym[i].st_size < (unsigned int)packer->size)
+				{
+					printf("Code associated with current section: \n");
 					print_symbol_code(data, sym[i].st_value, sym[i].st_size);
+				}
+				printf("\n");
 		}
 
 	}
 }
+
+// My output du binaire HelloWord
+//         0x00001149      f3 0f 1e fa 55 48 89 e5 48 8d 3d ac 0e 00 00 e8 
+//         0x00001159      f3 fe ff ff b8 00 00 00 00 5d c3 
+
+// Celuio de objdump
+// 0000000000001149 <main>:
+//     1149:       f3 0f 1e fa             endbr64 
+//     114d:       55                      push   rbp
+//     114e:       48 89 e5                mov    rbp,rsp
+//     1151:       48 8d 3d ac 0e 00 00    lea    rdi,[rip+0xeac]        # 2004 <_IO_stdin_used+0x4>
+//     1158:       e8 f3 fe ff ff          call   1050 <puts@plt>
+//     115d:       b8 00 00 00 00          mov    eax,0x0
+//     1162:       5d                      pop    rbp
+//     1163:       c3                      ret    
+//     1164:       66 2e 0f 1f 84 00 00    nop    WORD PTR cs:[rax+rax*1+0x0]
+//     116b:       00 00 00 
+//     116e:       66 90                   xchg   ax,ax
