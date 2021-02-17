@@ -6,13 +6,13 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/16 15:07:58 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/02/17 09:26:51 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/02/17 15:44:331 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
 
-Elf64_Shdr *get_section_from_segement(t_packer *packer, Elf64_Phdr *phdr, uint32_t index)
+Elf64_Shdr	*get_section_from_segement(t_packer *packer, Elf64_Phdr *phdr, uint32_t index)
 {
     Elf64_Shdr *shdr;
     size_t min = phdr->p_offset + (size_t)packer->content;
@@ -48,7 +48,37 @@ Elf64_Shdr *get_section_from_segement(t_packer *packer, Elf64_Phdr *phdr, uint32
     return shdr;
 }
 
-void chirurgy(t_packer *packer, size_t offset, size_t size, Elf64_Phdr *phdr, Elf64_Shdr *shdr)
+void	change_endian(void *data, int size)
+{
+    int tmp;
+    int i;
+    int n;
+
+    i = 0;
+    n = size - 1;
+    while (i < n)
+    {
+		tmp = ((char *)data)[i];
+		((char *)data)[i] = ((char *)data)[n];
+		((char *)data)[n] = tmp;
+		i++;
+        n--;
+    }
+}
+
+size_t	construct_jump(size_t addr, size_t size)
+{
+	uint8_t	instruction = 0xea;
+	size_t	bytecode = 0;
+	uint8_t shift = sizeof(instruction) * 8;
+
+	// change_endian((void*)&addr, size);
+	(void)size;
+	bytecode = (addr << shift) | instruction;
+	return bytecode;
+}
+
+void	chirurgy(t_packer *packer, size_t offset, size_t size, Elf64_Phdr *phdr, Elf64_Shdr *shdr)
 {
     Elf64_Ehdr *elf = (Elf64_Ehdr *)packer->content;
     // 1151 : 48 8d 35 ac 0e 00 00     lea rsi, [rip + 0xeac]
@@ -57,27 +87,44 @@ void chirurgy(t_packer *packer, size_t offset, size_t size, Elf64_Phdr *phdr, El
     // size_t lea = 0;
     // size_t ptr = elf->e_entry;
     printf("Entry point is: %lx\n", elf->e_entry);
-    size_t code = ((size_t)(((size_t)0x488d35) << 5) | (size_t)elf->e_entry);
-    printf("Code is: %lx\n", (size_t)code);
+    printf("Vaddr phdr is: %lx\n", phdr->p_vaddr);
+    size_t code;
+	code = construct_jump(elf->e_entry, 4);
+	printf("Code is: %lx\n", (size_t)code);
 
-    code = (size_t)0x488d3510600000;
-    code = (size_t)0x6010358d48;
-
-    int i = -1;
+	int i = -1;
     while ((size_t)++i < sizeof(size_t))
         packer->content[offset + i] = ((uint8_t*)&code)[i];
     print_symbol_code(packer->content, offset, size); // n_phdr->p_offset - (phdr->p_offset + phdr->p_filesz));
-    elf->e_entry = offset;
-    phdr->p_filesz += size;
-    phdr->p_memsz += size;
-    shdr->sh_size += size;
+    elf->e_entry = offset + 3;
+	printf("New entry point is: %lx\n", elf->e_entry);
+
+	phdr->p_filesz += size + 3;
+    phdr->p_memsz += size + 3;
+    shdr->sh_size += size + 3;
+	// shdr->sh_len += size + 3;
 
     int fd;
     fd = open("woody.out", O_WRONLY | O_CREAT);
     write(fd, packer->content, packer->size);
 }
 
-void    browse_file(t_packer *packer)
+// 0x5555555551f8 : jmp 0x555555bbb861
+
+/*
+0000000000001060 <_start>:
+    1060:	f3 0f 1e fa          	endbr64 
+    1064:	31 ed                	xor    ebp,ebp
+    1066:	49 89 d1             	mov    r9,rdx
+    1069:	5e                   	pop    rsi
+    106a:	48 89 e2             	mov    rdx,rsp
+    106d:	48 83 e4 f0          	and    rsp,0xfffffffffffffff0
+    1071:	50                   	push   rax
+    1072:	54                   	push   rsp
+*/
+
+				 void
+				 browse_file(t_packer *packer)
 {
     Elf64_Ehdr *elf = (Elf64_Ehdr *)packer->content;
     Elf64_Phdr *phdr;
