@@ -66,42 +66,73 @@ void	change_endian(void *data, int size)
     }
 }
 
-size_t	construct_jump(size_t addr, size_t size)
+// 0x555555555060 real entry point
+// 48 b8 35 08 40 00 00 00 00 00   mov rax, 0x0000000000400835
+// ff e0                           jmp rax
+
+#define BYTECODE_LEN    0x8
+uint64_t construct_jump(int addr, size_t size)
 {
-	uint8_t	instruction = 0xea;
-	size_t	bytecode = 0;
-	uint8_t shift = sizeof(instruction) * 8;
+	uint8_t instruction = 0xe9;
+    // uint8_t bytecode[BYTECODE_LEN] = {0x48, 0xb8, 0x0, 0x0, 0x0,
+    //         0x0, 0x0, 0x0, 0x0, 0x0, 0xff, 0xe0}; // = {0};
+	// uint16_t 	instruction = 0x48b8;
+	size_t		bytecode = 0;
+	uint8_t 	shift = sizeof(instruction) * 8;
 
 	// change_endian((void*)&addr, size);
 	(void)size;
 	bytecode = (addr << shift) | instruction;
-	return bytecode;
+    // change_endian((void*)&addr, size);
+    // * (uint64_t *) (bytecode + 2) = addr;
+	return (bytecode);
 }
+
+// => 0x7ffff7fcf114:	jmp    r12
+//  | 0x7ffff7fcf117:	nop    WORD PTR [rax+rax*1+0x0]
+//  | 0x7ffff7fcf120:	endbr64
+//  | 0x7ffff7fcf124:	add    DWORD PTR [rdi+0x4],0x1
+//  | 0x7ffff7fcf128:	ret
+//  |->   0x555555555200:	movabs rax,0x555555555060
+//        0x55555555520a:	add    BYTE PTR [rax],al
+//        0x55555555520c:	add    BYTE PTR [rax],al
+//        0x55555555520e:	add    BYTE PTR [rax],al
 
 void	chirurgy(t_packer *packer, size_t offset, size_t size, Elf64_Phdr *phdr, Elf64_Shdr *shdr)
 {
     Elf64_Ehdr *elf = (Elf64_Ehdr *)packer->content;
     // 1151 : 48 8d 35 ac 0e 00 00     lea rsi, [rip + 0xeac]
 
-    (void)size;
+	size_t align = ((offset >> 4) << 4) + 16 - offset;
+
+	(void)size;
     // size_t lea = 0;
     // size_t ptr = elf->e_entry;
     printf("Entry point is: %lx\n", elf->e_entry);
     printf("Vaddr phdr is: %lx\n", phdr->p_vaddr);
-    size_t code;
-	code = construct_jump(elf->e_entry, 4);
+
+	int jump = elf->e_entry - (offset + align + 1);
+	printf("Jump: %d\n", jump);
+	uint64_t code = construct_jump(jump /*elf->e_entry*/, 4);
+	// uint8_t     code[BYTECODE_LEN] = {0x48, 0xb8, 0x0, 0x0, 0x0,
+    //         0x0, 0x0, 0x0, 0x0, 0x0, 0xff, 0xe0};
+    // uint64_t    addr;
+	// addr = 0x555555555060;
+	// addr = 0x1060;
+	// change_endian(&addr, 8);
+    // * (uint64_t *) (code + 2) = addr;
 	printf("Code is: %lx\n", (size_t)code);
 
 	int i = -1;
-    while ((size_t)++i < sizeof(size_t))
-        packer->content[offset + i] = ((uint8_t*)&code)[i];
-    print_symbol_code(packer->content, offset, size); // n_phdr->p_offset - (phdr->p_offset + phdr->p_filesz));
-    elf->e_entry = offset + 3;
-	printf("New entry point is: %lx\n", elf->e_entry);
+    while ((size_t)++i < 5)
+		packer->content[offset + align + i] = ((uint8_t *)&code)[i];
+	print_symbol_code(packer->content, offset + align, BYTECODE_LEN); // n_phdr->p_offset - (phdr->p_offset + phdr->p_filesz));
+	elf->e_entry = offset + align;
+	printf("New entry point is: %lx\n", elf->e_entry + align);
 
-	phdr->p_filesz += size + 3;
-    phdr->p_memsz += size + 3;
-    shdr->sh_size += size + 3;
+	phdr->p_filesz += size + align;
+	phdr->p_memsz += size + align;
+	shdr->sh_size += size + align;
 	// shdr->sh_len += size + 3;
 
     int fd;
@@ -123,8 +154,7 @@ void	chirurgy(t_packer *packer, size_t offset, size_t size, Elf64_Phdr *phdr, El
     1072:	54                   	push   rsp
 */
 
-				 void
-				 browse_file(t_packer *packer)
+void    browse_file(t_packer *packer)
 {
     Elf64_Ehdr *elf = (Elf64_Ehdr *)packer->content;
     Elf64_Phdr *phdr;

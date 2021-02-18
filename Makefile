@@ -3,14 +3,15 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+         #
+#    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/20 16:46:57 by ezalos            #+#    #+#              #
-#    Updated: 2021/02/16 11:34:10 by rkirszba         ###   ########.fr        #
+#    Updated: 2021/02/18 09:48:40 by ezalos           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= woody_woodpacker
+PACKED		= woody.out
 # TESTOR		= lib_testor.out
 
 CC			= gcc
@@ -76,7 +77,9 @@ ifneq "$(SUPPORTS_MAKE_ARGS)" ""
 endif
 
 run: $(NAME)
+	rm -f $(PACKED)
 	./$(NAME) $(COMMAND_ARGS)
+	chmod +x $(PACKED)
 
 prototypes:
 	python3 .tmp/prototype_catcher.py srcs includes/prototypes_$(NAME).h $(NAME)
