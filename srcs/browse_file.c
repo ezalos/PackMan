@@ -12,7 +12,7 @@
 
 #include "head.h"
 
-Elf64_Shdr	*get_section_from_segement(t_packer *packer, Elf64_Phdr *phdr, uint32_t index)
+Elf64_Shdr *get_section_from_segment(t_packer *packer, Elf64_Phdr *phdr, uint32_t index)
 {
     Elf64_Shdr *shdr;
     size_t min = phdr->p_offset + (size_t)packer->content;
@@ -48,45 +48,22 @@ Elf64_Shdr	*get_section_from_segement(t_packer *packer, Elf64_Phdr *phdr, uint32
     return shdr;
 }
 
-void	change_endian(void *data, int size)
-{
-    int tmp;
-    int i;
-    int n;
-
-    i = 0;
-    n = size - 1;
-    while (i < n)
-    {
-		tmp = ((char *)data)[i];
-		((char *)data)[i] = ((char *)data)[n];
-		((char *)data)[n] = tmp;
-		i++;
-        n--;
-    }
-}
 
 // 0x555555555060 real entry point
 // 48 b8 35 08 40 00 00 00 00 00   mov rax, 0x0000000000400835
 // ff e0                           jmp rax
 
-#define BYTECODE_LEN    0x8
-uint64_t construct_jump(int addr, size_t size)
-{
-	uint8_t instruction = 0xe9;
-    // uint8_t bytecode[BYTECODE_LEN] = {0x48, 0xb8, 0x0, 0x0, 0x0,
-    //         0x0, 0x0, 0x0, 0x0, 0x0, 0xff, 0xe0}; // = {0};
-	// uint16_t 	instruction = 0x48b8;
-	size_t		bytecode = 0;
-	uint8_t 	shift = sizeof(instruction) * 8;
+// uint64_t construct_jump(int addr_from, int addr_to)
+// {
+// 	uint8_t 	instruction = 0xe9;
+// 	int 		jump = addr_to - (addr_from + sizeof(instruction));
+// 	size_t		bytecode = 0;
+// 	uint8_t 	shift = sizeof(instruction) * 8;
 
-	// change_endian((void*)&addr, size);
-	(void)size;
-	bytecode = (addr << shift) | instruction;
-    // change_endian((void*)&addr, size);
-    // * (uint64_t *) (bytecode + 2) = addr;
-	return (bytecode);
-}
+// 	bytecode = (jump << shift) | instruction;
+	
+// 	return (bytecode);
+// }
 
 // => 0x7ffff7fcf114:	jmp    r12
 //  | 0x7ffff7fcf117:	nop    WORD PTR [rax+rax*1+0x0]
@@ -98,47 +75,67 @@ uint64_t construct_jump(int addr, size_t size)
 //        0x55555555520c:	add    BYTE PTR [rax],al
 //        0x55555555520e:	add    BYTE PTR [rax],al
 
-void	chirurgy(t_packer *packer, size_t offset, size_t size, Elf64_Phdr *phdr, Elf64_Shdr *shdr)
-{
-    Elf64_Ehdr *elf = (Elf64_Ehdr *)packer->content;
-    // 1151 : 48 8d 35 ac 0e 00 00     lea rsi, [rip + 0xeac]
+// write "Slt\n"
+//    0:   bf 01 00 00 00          mov    edi,0x1
+//    5:   68 53 6c 74 0a          push   0xa746c53
+//    a:   48 89 e6                mov    rsi,rsp
+//    d:   ba 04 00 00 00          mov    edx,0x4
+//   12:   b8 01 00 00 00          mov    eax,0x1
+//   17:   0f 05                   syscall 
 
-	size_t align = ((offset >> 4) << 4) + 16 - offset;
 
-	(void)size;
-    // size_t lea = 0;
-    // size_t ptr = elf->e_entry;
-    printf("Entry point is: %lx\n", elf->e_entry);
-    printf("Vaddr phdr is: %lx\n", phdr->p_vaddr);
+// #define BYTECODE_LEN    0x8
+// #define PAYLOAD_SIZE 	0x1e
 
-	int jump = elf->e_entry - (offset + align + 1);
-	printf("Jump: %d\n", jump);
-	uint64_t code = construct_jump(jump /*elf->e_entry*/, 4);
-	// uint8_t     code[BYTECODE_LEN] = {0x48, 0xb8, 0x0, 0x0, 0x0,
-    //         0x0, 0x0, 0x0, 0x0, 0x0, 0xff, 0xe0};
-    // uint64_t    addr;
-	// addr = 0x555555555060;
-	// addr = 0x1060;
-	// change_endian(&addr, 8);
-    // * (uint64_t *) (code + 2) = addr;
-	printf("Code is: %lx\n", (size_t)code);
+// void	chirurgy(t_packer *packer, size_t offset, size_t size, Elf64_Phdr *phdr, Elf64_Shdr *shdr)
+// {
+//     Elf64_Ehdr *elf = (Elf64_Ehdr *)packer->content;
+//     // 1151 : 48 8d 35 ac 0e 00 00     lea rsi, [rip + 0xeac]
 
-	int i = -1;
-    while ((size_t)++i < 5)
-		packer->content[offset + align + i] = ((uint8_t *)&code)[i];
-	print_symbol_code(packer->content, offset + align, BYTECODE_LEN); // n_phdr->p_offset - (phdr->p_offset + phdr->p_filesz));
-	elf->e_entry = offset + align;
-	printf("New entry point is: %lx\n", elf->e_entry + align);
+// 	size_t align = ((offset >> 4) << 4) + 16 - offset;
 
-	phdr->p_filesz += size + align;
-	phdr->p_memsz += size + align;
-	shdr->sh_size += size + align;
-	// shdr->sh_len += size + 3;
+// 	(void)size;
+//     // size_t lea = 0;
+//     // size_t ptr = elf->e_entry;
+//     printf("Entry point is: %lx\n", elf->e_entry);
+//     printf("Vaddr phdr is: %lx\n", phdr->p_vaddr);
 
-    int fd;
-    fd = open("woody.out", O_WRONLY | O_CREAT);
-    write(fd, packer->content, packer->size);
-}
+// 	uint64_t code = construct_jump(offset + align, elf->e_entry);
+// 	// uint8_t     code[BYTECODE_LEN] = {0x48, 0xb8, 0x0, 0x0, 0x0,
+//     //         0x0, 0x0, 0x0, 0x0, 0x0, 0xff, 0xe0};
+//     // uint64_t    addr;
+// 	// addr = 0x555555555060;
+// 	// addr = 0x1060;
+// 	// change_endian(&addr, 8);
+//     // * (uint64_t *) (code + 2) = addr;
+// 	printf("Code is: %lx\n", (size_t)code);
+
+//     uint8_t payload[PAYLOAD_SIZE] = {
+//         0xbf, 0x01, 0x00, 0x00, 0x00, // mov    edi,0x1
+//         0x68, 0x53, 0x6c, 0x74, 0x0a, // push   0xa746c53
+//         0x48, 0x89, 0xe6,             // mov    rsi,rsp
+//         0xba, 0x04, 0x00, 0x00, 0x00, // mov    edx,0x4
+//         0xb8, 0x01, 0x00, 0x00, 0x00, // mov    eax,0x1
+//         0x0f, 0x05,                   // syscall
+//         0xe9, 0x00, 0x00, 0x00, 0x00  // jmp to entrypoint
+//     };
+
+//     *(int32_t*)(payload + 26) = jump;
+// 	int i = -1;
+//     // while ((size_t)++i < 5)
+// 		// packer->content[offset + align + i] = ((uint8_t *)&code)[i];
+//     while ((size_t)++i < PAYLOAD_SIZE)
+// 		packer->content[offset + align + i] = ((uint8_t *)&payload)[i];
+// 	print_symbol_code(packer->content, offset + align, BYTECODE_LEN); // n_phdr->p_offset - (phdr->p_offset + phdr->p_filesz));
+// 	elf->e_entry = offset + align;
+// 	printf("New entry point is: %lx\n", elf->e_entry + align);
+
+// 	phdr->p_filesz += size + align;
+// 	phdr->p_memsz += size + align;
+// 	shdr->sh_size += size + align;
+// 	// shdr->sh_len += size + 3;
+
+// }
 
 // 0x5555555551f8 : jmp 0x555555bbb861
 
@@ -174,22 +171,23 @@ void    browse_file(t_packer *packer)
     while (++id_ph < elf->e_phnum)
     {
         phdr = get_program_header(packer, id_ph);
-        if (phdr && phdr->p_flags & PF_X && phdr->p_type == PT_LOAD)
-        {
+		// printf("Phdr %d-%p\n", id_ph, phdr);//, phdr->p_flags & PF_X, phdr->p_type == PT_LOAD);
+		if (phdr && phdr->p_flags & PF_X && phdr->p_type == PT_LOAD)
+		{
             total_size = 0;
             printf("Found section %d which is of great interest\n", id_ph);
             print_program_header(phdr);
 
             id_sh = 0;
             // printf("0\n");
-            shdr = get_section_from_segement(packer, phdr, id_sh);
+            shdr = get_section_from_segment(packer, phdr, id_sh);
             // printf("1\n");
             while (shdr)
             {
                 // printf("2\n");
                 print_section_header(packer, shdr);
 
-                if ((n_shdr = get_section_from_segement(packer, phdr, id_sh)))
+                if ((n_shdr = get_section_from_segment(packer, phdr, id_sh)))
                     available_size = (n_shdr->sh_offset) - (shdr->sh_size + shdr->sh_offset);
                 else
                     available_size = (phdr->p_filesz + phdr->p_offset) - (shdr->sh_size + shdr->sh_offset);

@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/16 17:12:56 by ezalos            #+#    #+#             */
-/*   Updated: 2021/02/16 18:51:17 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/02/18 16:03:44 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,9 @@ Elf64_Phdr *get_program_header(t_packer *packer, uint32_t index)
     Elf64_Phdr *phdr;
 
     elf = (Elf64_Ehdr *)packer->content;
-    phdr = (Elf64_Phdr *)(packer->content + elf->e_phoff + (index * elf->e_phentsize));
+	phdr = (Elf64_Phdr *)((size_t)packer->content + (size_t)elf->e_phoff + ((size_t)index * (size_t)elf->e_phentsize));
 
-    if (sizeof(Elf64_Phdr) + (size_t)phdr >= (size_t)packer->content + packer->size)
+	if (sizeof(Elf64_Phdr) + (size_t)phdr >= (size_t)packer->content + packer->size)
         phdr = NULL;
 
     return phdr;

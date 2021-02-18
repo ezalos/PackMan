@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/29 11:21:04 by ezalos            #+#    #+#             */
-/*   Updated: 2021/02/16 18:36:23 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/02/18 16:01:57 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,51 @@ int8_t		access_file(t_packer *packer, char *file)
 // modifier le entry point (plus complexe), et changer le jump final dans la zone que l'on insere
 // crypter
 
-int8_t		pack_file(t_packer *packer)
+int8_t		get_zones_to_crypt(t_packer *packer)
 {
+	// trouver section + taille de .text et de .rodata
 	(void)packer;
 	return (SUCCESS);
+}
+
+int8_t		get_payload_zones(t_packer *packer)
+{
+	// recuperer les zones espacees + adresse header des segments + sections auxquelles elles sont rattachees
+	// verification qu'il y a suffisamment d'espace
+	// si non, verifier qu'il y a de un .NOTE avec suffisamment d'espace
+
+	(void)packer;
+	return (SUCCESS);
+}
+
+int8_t save_woody(t_packer *packer)
+{
+	int fd;
+
+	fd = open(packer->out, O_WRONLY | O_CREAT);
+	if (fd != -1 && write(fd, packer->content, packer->size) == (ssize_t)packer->size)
+		return (SUCCESS);
+	return (FAILURE);
+}
+
+int8_t		pack_file(t_packer *packer)
+{
+	int8_t	ret;
+
+	ret = SUCCESS;
+	printf("Content: %p\tsize: %zu\n", packer->content, packer->size);
+	// ret = get_zones_to_crypt(packer);
+	// if (ret == SUCCESS)
+	// 	ret = get_payload_zones(packer);
+	// if (ret == SUCCESS)
+	// {
+	// 	write_payload(packer);
+	// 	crypt_file(packer);
+	// }
+	packer->out = NAME_OUT_PACKER;
+	browse_file(packer);
+	save_woody(packer); 
+	return (ret);
 }
 
 // memcpy ? c'est pas memcmp plutot ? ==> BIen vu ;)
@@ -100,7 +141,6 @@ int			main(int ac, char **av)
 	ret = check_elf_header(&packer);
 	if (ret == SUCCESS)
 		ret = pack_file(&packer);
-	browse_file(&packer);
 	if (munmap((void *)packer.content, (size_t)packer.size) == FAILURE)
 		return (print_error(packer.self_path, strerror(errno)));
 	//free function
