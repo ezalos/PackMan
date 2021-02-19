@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/02/19 12:34:40 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/02/19 16:02:59 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@
 # define FILE_FORMAT_ERROR			"The file is malformed or truncated"
 
 # define NAME_OUT_PACKER			"woody.out"
+
+# include "librbt.h"
 
 typedef struct	s_zone
 {
@@ -81,6 +83,5 @@ Elf64_Phdr 	*get_program_header(t_packer *packer, uint32_t index);
 void 		browse_file(t_packer *packer);
 int8_t		print_error(char *self_path, char *error);
 int8_t		print_usage(char *self_path);
-
 
 #endif

@@ -6,7 +6,7 @@
 #    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/20 16:46:57 by ezalos            #+#    #+#              #
-#    Updated: 2021/02/18 09:48:40 by ezalos           ###   ########.fr        #
+#    Updated: 2021/02/19 16:10:50 by ezalos           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,11 @@ CFLAGS		= -Wall -Werror -Wextra
 # CFLAGS 		+= -fsanitize=address,undefined -g3
 # CFLAGS 		+= -g
 
+LIB_DIR = librbt/
+LIB		= $(LIB_DIR)librbt.a
+LIB_INC	= $(LIB_DIR)includes/
+LIB_HEAD	= $(LIB_INC)librbt.h
+
 ASM_EXT		= .asm
 
 SRCS_DIR	= srcs/
@@ -36,6 +41,7 @@ SRCS_ASM	= $(wildcard $(SRCS_DIR)*$(ASM_EXT))
 OBJS		= $(SRCS:$(SRCS_DIR)%.c=$(OBJS_DIR)%.o)
 OBJS_ASM	= $(SRCS_ASM:$(SRCS_DIR)%$(ASM_EXT)=$(OBJS_DIR)%.o)
 
+
 ##########################
 ##						##
 ##		  BASIC			##
@@ -47,11 +53,14 @@ all: $(NAME)
 $(NAME): $(OBJS) $(OBJS_ASM)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(OBJS_ASM) -I$(HEAD_DIR)
 
-$(OBJS_DIR)%.o: $(SRCS_DIR)%.c Makefile
-	$(CC) $(CFLAGS) -c $< -o $@ -I$(HEAD_DIR)
+$(OBJS_DIR)%.o: $(SRCS_DIR)%.c Makefile $(LIB)
+	$(CC) $(CFLAGS) -c $< -o $@ -I$(HEAD_DIR) -I$(LIB_INC) -L$(LIB_DIR)
 
-$(OBJS_DIR)%.o: $(SRCS_DIR)%$(ASM_EXT) Makefile
-	$(NS) $< -o $@
+$(OBJS_DIR)%.o: $(SRCS_DIR)%$(ASM_EXT) Makefile $(LIB)
+	$(NS) $< -o $@ -I$(HEAD_DIR) -I$(LIB_INC) -L$(LIB_DIR)
+
+$(LIB): FORCE
+	make -C $(LIB_DIR)
 
 clean:
 	rm -rf $(OBJS)
@@ -94,3 +103,5 @@ git :
 		git push
 
 .PHONY: clean fclean
+
+FORCE:
