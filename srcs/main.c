@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/29 11:21:04 by ezalos            #+#    #+#             */
-/*   Updated: 2021/02/18 16:01:57 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/02/19 11:1:0128 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,9 @@ int8_t		get_payload_zones(t_packer *packer)
 int8_t save_woody(t_packer *packer)
 {
 	int fd;
+
+	// print_symbol_code(packer->content, packer->z_text.offset, packer->z_text.size);
+	// ft_cypher((void*)(((size_t)packer->content) + packer->z_text.offset), packer->z_text.size, 42);
 
 	fd = open(packer->out, O_WRONLY | O_CREAT);
 	if (fd != -1 && write(fd, packer->content, packer->size) == (ssize_t)packer->size)

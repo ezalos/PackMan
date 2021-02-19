@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/02/18 15:05:22 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/02/19 12:34:40 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,17 @@
 
 typedef struct	s_zone
 {
-	uint8_t 	*start;
+	size_t		offset;
 	size_t		size;
 }				t_zone;
+
+typedef struct	s_header
+{
+	uint8_t		h_type;
+	Elf64_Phdr *phdr;
+	Elf64_Shdr	*shdr;
+	size_t		available_size;
+}				t_header;
 
 typedef struct stat t_stat;
 
@@ -56,6 +64,7 @@ typedef struct	s_packer
 	char 			*self_path;
 	char 			*out;
 	uint8_t			*content;
+	t_zone			z_text;
 	// t_stat		stat;
 	uint64_t		size;
 }					t_packer;

@@ -151,63 +151,88 @@ Elf64_Shdr *get_section_from_segment(t_packer *packer, Elf64_Phdr *phdr, uint32_
     1072:	54                   	push   rsp
 */
 
+int     ft_strcmp(const char *s1, const char *s2)
+{
+    size_t  i;
+
+    if (!s1 || !s2)
+        return (0);
+    i = 0;
+    while (s1[i] && s2[i] && s1[i] == s2[i])
+        i++;
+    return (s1[i] - s2[i]);
+}
+
 void    browse_file(t_packer *packer)
 {
     Elf64_Ehdr *elf = (Elf64_Ehdr *)packer->content;
-    Elf64_Phdr *phdr;
-    Elf64_Phdr *n_phdr;
-    Elf64_Shdr *shdr;
-    Elf64_Shdr *n_shdr;
-    Elf64_Shdr *n_n_shdr;
-    size_t available_size;
-    size_t total_size;
-    size_t tmp;
+    // Elf64_Phdr *phdr;
+    // Elf64_Phdr *n_phdr;
+    // Elf64_Shdr *shdr;
+    // Elf64_Shdr *n_shdr;
+    // Elf64_Shdr *n_n_shdr;
+    // size_t available_size;
+    // size_t total_size;
+    // size_t tmp;
 
-    int id_ph = -1;
+    // int id_ph = -1;
     int id_sh;
 
     print_elf_header(elf);
+    id_sh = -1;
+    int n_shdr = elf->e_shnum;
+    // shdr = (Elf64_Shdr*)(packer->content + elf->e_shoff);
+    while (++id_sh < n_shdr)
+        print_section_header(packer, get_section_header(packer, id_sh));
 
-    while (++id_ph < elf->e_phnum)
-    {
-        phdr = get_program_header(packer, id_ph);
-		// printf("Phdr %d-%p\n", id_ph, phdr);//, phdr->p_flags & PF_X, phdr->p_type == PT_LOAD);
-		if (phdr && phdr->p_flags & PF_X && phdr->p_type == PT_LOAD)
-		{
-            total_size = 0;
-            printf("Found section %d which is of great interest\n", id_ph);
-            print_program_header(phdr);
+    // while (++id_ph < elf->e_phnum)
+    // {
+    //     phdr = get_program_header(packer, id_ph);
+	// 	printf("Phdr %d-%p\n", id_ph, phdr);//, phdr->p_flags & PF_X, phdr->p_type == PT_LOAD);
+	// 	if (phdr && phdr->p_flags & PF_X && phdr->p_type == PT_LOAD)
+	// 	{
+    //         total_size = 0;
+    //         printf("Found section %d which is of great interest\n", id_ph);
+    //         print_program_header(phdr);
 
-            id_sh = 0;
-            // printf("0\n");
-            shdr = get_section_from_segment(packer, phdr, id_sh);
-            // printf("1\n");
-            while (shdr)
-            {
-                // printf("2\n");
-                print_section_header(packer, shdr);
+    //         id_sh = 0;
+    //         // printf("0\n");
+    //         shdr = get_section_from_segment(packer, phdr, id_sh);
+    //         // printf("1\n");
+    //         while (shdr)
+    //         {
+	// 			// printf("Ya\n");
+	// 			if (shdr && !ft_strcmp(get_sec_name(packer, shdr), ".text"))
+	// 			{
+	// 				// printf("Yo\n");
+	// 				print_section_header(packer, shdr);
+	// 				packer->z_text.offset = shdr->sh_offset;
+	// 				packer->z_text.size = shdr->sh_size;
+	// 			}
+    //             // printf("2\n");
+    //             print_section_header(packer, shdr);
 
-                if ((n_shdr = get_section_from_segment(packer, phdr, id_sh)))
-                    available_size = (n_shdr->sh_offset) - (shdr->sh_size + shdr->sh_offset);
-                else
-                    available_size = (phdr->p_filesz + phdr->p_offset) - (shdr->sh_size + shdr->sh_offset);
-                print_symbol_code(packer->content, shdr->sh_offset, shdr->sh_size);
-                printf("Available_size: %ld\n\n", available_size);
-                total_size += available_size;
-                tmp = (shdr->sh_size + shdr->sh_offset);
-                (void)tmp;
-                // printf("3\n");
-                id_sh++;
-                // printf("4\n");
-                n_n_shdr = shdr;
-                shdr = n_shdr;
-            }
-            printf("Total available size = %ld\n", total_size);
-            if ((n_phdr = get_program_header(packer, id_ph + 1)))
-            {
-                printf("Size before next section: %ld\n", n_phdr->p_offset - (phdr->p_offset + phdr->p_filesz));
-                chirurgy(packer, (phdr->p_offset + phdr->p_filesz), 8, phdr, n_n_shdr);
-            }
-        }
-    }
+    //             if ((n_shdr = get_section_from_segment(packer, phdr, id_sh)))
+    //                 available_size = (n_shdr->sh_offset) - (shdr->sh_size + shdr->sh_offset);
+    //             else
+    //                 available_size = (phdr->p_filesz + phdr->p_offset) - (shdr->sh_size + shdr->sh_offset);
+    //             print_symbol_code(packer->content, shdr->sh_offset, shdr->sh_size);
+    //             printf("Available_size: %ld\n\n", available_size);
+    //             total_size += available_size;
+    //             tmp = (shdr->sh_size + shdr->sh_offset);
+    //             (void)tmp;
+    //             // printf("3\n");
+    //             id_sh++;
+    //             // printf("4\n");
+    //             n_n_shdr = shdr;
+    //             shdr = n_shdr;
+    //         }
+    //         printf("Total available size = %ld\n", total_size);
+    //         if ((n_phdr = get_program_header(packer, id_ph + 1)))
+    //         {
+    //             printf("Size before next section: %ld\n", n_phdr->p_offset - (phdr->p_offset + phdr->p_filesz));
+    //             chirurgy(packer, (phdr->p_offset + phdr->p_filesz), 8, phdr, n_n_shdr);
+    //         }
+    //     }
+    // }
 }

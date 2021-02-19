@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   bytecode.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/18 15:14:47 by ezalos            #+#    #+#             */
-/*   Updated: 2021/02/18 17:35:1 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/02/18 17:35:1 by erkirsabl        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ uint8_t		insert_write(t_packer *packer, int offset)
 		0xba, 0x04, 0x00, 0x00, 0x00, // mov    edx,0x4
 		0xb8, 0x01, 0x00, 0x00, 0x00, // mov    eax,0x1
 		0x0f, 0x05,					  // syscall
-		
+
 		0x68, 0x2e, 0x0a, 0x00, 0x00, // push   0xa2e
 		0x48, 0x89, 0xe6,			  // mov    rsi,rsp
 		0xbf, 0x01, 0x00, 0x00, 0x00, // mov    edi,0x1
@@ -167,6 +167,8 @@ uint8_t		insert_write(t_packer *packer, int offset)
 
 	return (PAYLOAD_SIZE);
 }
+
+
 
 #define BYTECODE_LEN 0x8
 
