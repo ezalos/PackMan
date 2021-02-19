@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/02/19 16:02:59 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/02/19 17:32:23 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,15 @@
 # define FILE_NOT_EXECUTABLE_ERROR	"The file is not executable"
 # define FILE_FORMAT_ERROR			"The file is malformed or truncated"
 
+# define MALLOC_ERROR				"Malloc returned NULL"
+
 # define NAME_OUT_PACKER			"woody.out"
 
 # include "librbt.h"
+
+# define HDR_TYPE_NONE		0
+# define HDR_TYPE_PHDR		1
+# define HDR_TYPE_SHDR		2
 
 typedef struct	s_zone
 {
@@ -52,9 +58,10 @@ typedef struct	s_zone
 
 typedef struct	s_header
 {
-	uint8_t		h_type;
-	Elf64_Phdr *phdr;
+	uint8_t		type;
+	Elf64_Phdr 	*phdr;
 	Elf64_Shdr	*shdr;
+	t_rbt 		*shdr_tree;
 	size_t		available_size;
 }				t_header;
 
@@ -67,6 +74,7 @@ typedef struct	s_packer
 	char 			*out;
 	uint8_t			*content;
 	t_zone			z_text;
+	t_rbt			*phdr_tree;
 	// t_stat		stat;
 	uint64_t		size;
 }					t_packer;

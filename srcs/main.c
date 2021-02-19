@@ -129,6 +129,37 @@ int8_t		check_elf_header(t_packer *packer)
 	return (SUCCESS);
 }
 
+
+// int8_t check_elf_header(t_packer *packer)
+// {
+// 	Elf64_Ehdr *ehdr;
+// 	const char ElfMagic[] = {0x7f, 'E', 'L', 'F'};
+// 	int8_t retval;
+
+// 	retval  = FAILURE;
+// 	if (TRUE == is_secure_access(packer->size, 0, sizeof(Elf64_Ehdr)))
+// 	{
+// 		ehdr = (Elf64_Ehdr *)packer->content;
+// 		if (ft_memcmp(ehdr->e_ident, ElfMagic, 4) != 0)
+// 		{
+// 			if (ehdr->e_ident[EI_CLASS] == 1)
+// 			{
+// 				if (ehdr->e_ident[EI_DATA] != 1)
+// 					retval = SUCCESS;
+// 				else
+// 					print_error(packer->self_path, FILE_BIG_ENDIAN_ERROR);
+// 			}
+// 			else
+// 				 print_error(packer->self_path, FILE_NOT_64_ERROR);
+// 		}
+// 		else
+// 			print_error(packer->self_path, FILE_NOT_ELF_ERROR);
+// 	} 
+// 	else
+// 		print_error(packer->self_path, FILE_FORMAT_ERROR);
+// 	return (retval);
+// }
+
 int			main(int ac, char **av)
 {
 	t_packer	packer;

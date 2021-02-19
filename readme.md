@@ -2,7 +2,7 @@
 
 ## Plan
 
-1. Get infos:
+1. Get infos:LIB
    1. choper la zone a crypter
    2. Trouver la zone ou s'inserer
    3. Recuperer notre code a injecter
