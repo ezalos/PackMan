@@ -6,11 +6,18 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/19 16:13:04 by ezalos            #+#    #+#             */
-/*   Updated: 2021/02/19 17:47:42 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/02/19 21:33:44 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
+
+void	rbt_free_content(void **content)
+{
+	if (content && *content)
+		free(*content);
+}
+
 
 void 	*ft_memset(void *str, int c, size_t n)
 {
@@ -22,35 +29,41 @@ void 	*ft_memset(void *str, int c, size_t n)
 	return (str);
 }
 
-long long	t_rbt_compare_phdr(void *a, void *b)
+long long	t_rbt_compare_phdr(void *an, void *bn)
 {
-	t_header *hdr_a = ((t_rbt *)a)->content;
-	t_header *hdr_b = ((t_rbt *)b)->content;
+	t_pheader *a = (t_pheader *)an;
+	t_pheader *b = (t_pheader *)bn;
+	long long av = 0;
+	long long bv = 0;
 
-	return (hdr_a->phdr->p_offset - hdr_b->phdr->p_offset);
+	if (a)
+	{
+		av = ((t_pheader *)a)->phdr->p_offset;
+	}
+	if (b)
+	{
+		bv = ((t_pheader *)b)->phdr->p_offset;
+	}
+
+	return (av - bv);
 }
 
-int8_t 		create_rbt_hdr(t_rbt **node, t_header **hdr, Elf64_Phdr *phdr, Elf64_Shdr *shdr)
+int8_t 		create_rbt_phdr(t_rbt **node, t_pheader **hdr, Elf64_Phdr *phdr)
 {
-	int		ret = FAILURE;
+	int ret = FAILURE;
 
 	if (node && hdr)
 	{
 		if ((*node = malloc(sizeof(t_rbt))))
 		{
-			if ((*hdr = malloc(sizeof(t_header))))
+			ft_memset(*node, 0, sizeof(t_rbt));
+			if (((*hdr) = malloc(sizeof(t_pheader))))
 			{
-				ft_memset(*hdr, 0, sizeof(t_header));
-				if (phdr)
-				{
-					(*hdr)->phdr = phdr;
-					(*hdr)->type = HDR_TYPE_PHDR;
-				}
-				else if (shdr)
-				{
-					(*hdr)->shdr = shdr;
-					(*hdr)->type = HDR_TYPE_SHDR;
-				}
+				(*node)->content = *hdr;
+				ft_memset(*hdr, 0, sizeof(t_pheader));
+				// print_program_header(phdr);
+				(*hdr)->phdr = phdr;
+				// print_program_header((*hdr)->phdr);
 				ret = SUCCESS;
 			}
 			else
@@ -65,16 +78,19 @@ int8_t 		create_rbt_hdr(t_rbt **node, t_header **hdr, Elf64_Phdr *phdr, Elf64_Sh
 t_rbt 		*construct_rbt_phdr(t_packer *packer)
 {
 	Elf64_Phdr	*phdr;
-	t_header 	*hdr;
+	t_pheader 	*hdr;
 	t_rbt		*root;
 	t_rbt		*node;
 	int 		i;
 
+	root = NULL;
 	i = 0;
 	phdr = get_program_header(packer, i);
 	while (phdr)
 	{
-		if (SUCCESS == create_rbt_phdr(&node, &hdr, phdr, NULL))
+		hdr = NULL;
+		node = NULL;
+		if (SUCCESS == create_rbt_phdr(&node, &hdr, phdr))
 		{
 			root = tree_insert_func_ll(root, node, hdr, t_rbt_compare_phdr);
 		}
@@ -82,6 +98,8 @@ t_rbt 		*construct_rbt_phdr(t_packer *packer)
 		{
 			//TODO: Cleaner exit if malloc error
 			print_error(packer->self_path, MALLOC_ERROR);
+			tree_free(root, rbt_free_content);
+			root = NULL;
 			exit(EXIT_FAILURE);
 		}
 		i++;
@@ -95,23 +113,130 @@ void 	phdr_fill_available_size(t_packer *packer, t_rbt *root)
 	t_rbt *node;
 	t_rbt *next_node = NULL;
 	int i = 0;
+	int tmp = i;
 
-	node = tree_get_node_th(root, i);
+	node = tree_get_node_th(root, &tmp);
 	while (node)
 	{
-		i++;
-		next_node = tree_get_node_th(root, i);
+		tmp = ++i;
+		next_node = tree_get_node_th(root, &tmp);
 
+		// printf("Now: %15lx \n", (((t_pheader *)node->content)->phdr->p_offset + ((t_pheader *)node->content)->phdr->p_filesz));
+		// printf("Nex: %15lx \n", ((t_pheader *)next_node->content)->phdr->p_offset);
 		if (next_node)
-			((t_header *)node->content)->available_size = ((t_header *)next_node->content)->phdr->p_offset;
+			((t_pheader *)node->content)->available_size = ((t_pheader *)next_node->content)->phdr->p_offset;
 		else
-			((t_header *)node->content)->available_size = packer->size;
+			((t_pheader *)node->content)->available_size = packer->size;
 		//TODO: is p_memsz good ?
-		((t_header *)node->content)->available_size -= (((t_header *)node->content)->phdr->p_offset + ((t_header *)node->content)->phdr->p_memsz);
+		((t_pheader *)node->content)->available_size -= (((t_pheader *)node->content)->phdr->p_offset + ((t_pheader *)node->content)->phdr->p_filesz);
 
-		if (((t_header *)node->content)->available_size < 0)
+		if (((t_pheader *)node->content)->phdr->p_type == PT_LOAD
+		&& ((t_pheader *)node->content)->available_size < 0)
 		{
 			printf("ERROR: %s has intersecting sections\n", packer->self_path);
 		}
+		node = next_node;
+	}
+}
+
+t_pheader *get_rbt_phdr_from_shdr(t_rbt *root, Elf64_Shdr *shdr)
+{
+	t_pheader *hdr;
+	t_rbt *node;
+	int i = 0;
+	int tmp = i;
+
+	//TODO: Algorithm complexity is really bad, bc this function is called for every shdr
+	// Average complexity is O(n) = (Nb_shdr)^(log(Nb_phdr) * (Nb_phdr / 2))
+	node = tree_get_node_th(root, &tmp);
+	while (node)
+	{
+		hdr = node->content;
+		if (hdr->phdr->p_offset <= shdr->sh_offset)
+		{
+			if (hdr->phdr->p_offset + hdr->phdr->p_memsz >= shdr->sh_offset + shdr->sh_size)
+				return (hdr);
+		}
+		tmp = ++i;
+		node = tree_get_node_th(root, &tmp);
+	}
+	return (NULL);
+}
+
+long long t_rbt_compare_shdr(void *a, void *b)
+{
+	t_sheader *hdr_a = ((t_rbt *)a)->content;
+	t_sheader *hdr_b = ((t_rbt *)b)->content;
+
+	return (hdr_a->shdr->sh_offset - hdr_b->shdr->sh_offset);
+}
+
+int8_t create_rbt_shdr(t_rbt **node, t_sheader **hdr, Elf64_Shdr *shdr, t_pheader *parent)
+{
+	int ret = FAILURE;
+
+	if (node && hdr)
+	{
+		if ((*node = malloc(sizeof(t_rbt))))
+		{
+			if ((*hdr = malloc(sizeof(t_sheader))))
+			{
+				(*node)->content = *hdr;
+				ft_memset(*hdr, 0, sizeof(t_sheader));
+				(*hdr)->shdr = shdr;
+				(*hdr)->parent_phdr = parent;
+				ret = SUCCESS;
+			}
+			else
+			{
+				free(*node);
+			}
+		}
+	}
+	return (ret);
+}
+
+//TODO: Should be better protected ? With a return value and by cleaning all trees
+void construct_rbt_shdr(t_packer *packer)
+{
+	Elf64_Shdr *shdr;
+	t_sheader *hdr;
+	t_pheader *parent;
+	t_rbt *node;
+	int i;
+
+	i = 0;
+	shdr = get_section_header(packer, i);
+	while (shdr)
+	{
+		parent = get_rbt_phdr_from_shdr(packer->phdr_tree, shdr);
+		if (parent)
+		{
+			if (SUCCESS == create_rbt_shdr(&node, &hdr, shdr, parent))
+			{
+				parent->shdr_tree = tree_insert_func_ll(parent->shdr_tree, node, hdr, t_rbt_compare_shdr);
+			}
+			else
+			{
+				//TODO: Cleaner exit if malloc error
+				print_error(packer->self_path, MALLOC_ERROR);
+				tree_free(parent->shdr_tree, rbt_free_content);
+				exit(EXIT_FAILURE);
+			}
+		}
+		shdr = get_section_header(packer, ++i);
+	}
+}
+
+void	parse_elf(t_packer *packer)
+{
+	packer->phdr_tree = construct_rbt_phdr(packer);
+	if (packer->phdr_tree)
+	{
+		printf("%s\n", __func__);
+		phdr_fill_available_size(packer, packer->phdr_tree);
+		printf("%s\n", __func__);
+		construct_rbt_shdr(packer);
+		printf("%s\n", __func__);
 	}
 }

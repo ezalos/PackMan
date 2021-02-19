@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tree_free.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/16 20:21:55 by ezalos            #+#    #+#             */
-/*   Updated: 2021/02/19 13:13:28 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/02/19 19:59:19 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,5 +19,6 @@ void				tree_free(t_rbt *root, t_rbt_free_content *func)
 		tree_free(root->left, func);
 		func(&root->content);
 		tree_free(root->right, func);
+		free(root);
 	}
 }

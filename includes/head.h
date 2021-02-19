@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/02/19 17:32:23 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/02/19 20:41:06 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,14 +56,22 @@ typedef struct	s_zone
 	size_t		size;
 }				t_zone;
 
-typedef struct	s_header
+typedef struct	s_pheader
 {
 	uint8_t		type;
 	Elf64_Phdr 	*phdr;
-	Elf64_Shdr	*shdr;
 	t_rbt 		*shdr_tree;
-	size_t		available_size;
-}				t_header;
+	int			available_size;
+}				t_pheader;
+
+typedef struct	s_sheader
+{
+	uint8_t		type;
+	Elf64_Shdr	*shdr;
+	t_pheader	*parent_phdr;
+	int			available_size;
+}				t_sheader;
+
 
 typedef struct stat t_stat;
 

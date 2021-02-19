@@ -6,7 +6,7 @@
 #    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/20 16:46:57 by ezalos            #+#    #+#              #
-#    Updated: 2021/02/19 16:10:50 by ezalos           ###   ########.fr        #
+#    Updated: 2021/02/19 20:43:56 by ezalos           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,8 +50,8 @@ OBJS_ASM	= $(SRCS_ASM:$(SRCS_DIR)%$(ASM_EXT)=$(OBJS_DIR)%.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(OBJS_ASM)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(OBJS_ASM) -I$(HEAD_DIR)
+$(NAME): $(OBJS) $(OBJS_ASM) $(LIB)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(OBJS_ASM) -I $(HEAD_DIR) -I $(LIB_INC) $(LIB)
 
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.c Makefile $(LIB)
 	$(CC) $(CFLAGS) -c $< -o $@ -I$(HEAD_DIR) -I$(LIB_INC) -L$(LIB_DIR)
