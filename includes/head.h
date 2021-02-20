@@ -86,7 +86,7 @@ typedef struct	s_packer
 	t_zone			z_text;
 	t_rbt			*phdr_tree;
 	t_list			*to_crypt;  //list of program headers of segments we want to crypt
-	t_list			*to_inject; //list of zones we can inject code in
+	t_list			*to_inject; //list of zones we can inject code in, ordered by dec size
 	// t_stat		stat;
 
 	uint64_t		size;

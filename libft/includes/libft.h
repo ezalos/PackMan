@@ -6,7 +6,7 @@
 /*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 14:32:42 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/01/20 17:37:23 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/02/20 18:27:03 by rkirszba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ t_list			*ft_list_new(void *data);
 void			ft_list_append(t_list **head, t_list *node);
 void			ft_list_prepend(t_list **head, t_list *node);
 void			ft_list_free(t_list *head, void (*f)(void*));
+void			ft_list_sort(t_list *head, int (*f)(void*, void*));
 
 /*
 ** Binary Trees
