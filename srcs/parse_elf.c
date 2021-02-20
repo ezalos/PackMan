@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/19 16:13:04 by ezalos            #+#    #+#             */
-/*   Updated: 2021/02/19 21:33:44 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/02/20 13:31:04 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,19 +88,22 @@ t_rbt 		*construct_rbt_phdr(t_packer *packer)
 	phdr = get_program_header(packer, i);
 	while (phdr)
 	{
-		hdr = NULL;
-		node = NULL;
-		if (SUCCESS == create_rbt_phdr(&node, &hdr, phdr))
+		if (phdr->p_type & PT_LOAD)
 		{
-			root = tree_insert_func_ll(root, node, hdr, t_rbt_compare_phdr);
-		}
-		else
-		{
-			//TODO: Cleaner exit if malloc error
-			print_error(packer->self_path, MALLOC_ERROR);
-			tree_free(root, rbt_free_content);
-			root = NULL;
-			exit(EXIT_FAILURE);
+			hdr = NULL;
+			node = NULL;
+			if (SUCCESS == create_rbt_phdr(&node, &hdr, phdr))
+			{
+				root = tree_insert_func_ll(root, node, hdr, t_rbt_compare_phdr);
+			}
+			else
+			{
+				//TODO: Cleaner exit if malloc error
+				print_error(packer->self_path, MALLOC_ERROR);
+				tree_free(root, rbt_free_content);
+				root = NULL;
+				exit(EXIT_FAILURE);
+			}
 		}
 		i++;
 		phdr = get_program_header(packer, i);
@@ -121,8 +124,6 @@ void 	phdr_fill_available_size(t_packer *packer, t_rbt *root)
 		tmp = ++i;
 		next_node = tree_get_node_th(root, &tmp);
 
-		// printf("Now: %15lx \n", (((t_pheader *)node->content)->phdr->p_offset + ((t_pheader *)node->content)->phdr->p_filesz));
-		// printf("Nex: %15lx \n", ((t_pheader *)next_node->content)->phdr->p_offset);
 		if (next_node)
 			((t_pheader *)node->content)->available_size = ((t_pheader *)next_node->content)->phdr->p_offset;
 		else
@@ -130,10 +131,15 @@ void 	phdr_fill_available_size(t_packer *packer, t_rbt *root)
 		//TODO: is p_memsz good ?
 		((t_pheader *)node->content)->available_size -= (((t_pheader *)node->content)->phdr->p_offset + ((t_pheader *)node->content)->phdr->p_filesz);
 
-		if (((t_pheader *)node->content)->phdr->p_type == PT_LOAD
+		if ((((t_pheader *)node->content)->phdr->p_type & PT_LOAD)
 		&& ((t_pheader *)node->content)->available_size < 0)
 		{
-			printf("ERROR: %s has intersecting sections\n", packer->self_path);
+			// /!\ Carefull, the segment number displayed is the index in the rbtree.
+			// As the non Loadable segments are skipped, the numbers are shifted
+			printf("ERROR: %s has intersecting segments\n", packer->self_path);
+			printf("Segment %d:\tstart %lx\tend %lx\n", i - 1, ((t_pheader *)node->content)->phdr->p_offset, ((t_pheader *)node->content)->phdr->p_offset + ((t_pheader *)node->content)->phdr->p_memsz);
+			if (next_node)
+				printf("Segment %d:\tstart %lx\tend %lx\n", i, ((t_pheader *)next_node->content)->phdr->p_offset, ((t_pheader *)next_node->content)->phdr->p_offset + ((t_pheader *)next_node->content)->phdr->p_memsz);
 		}
 		node = next_node;
 	}
@@ -220,6 +226,7 @@ void construct_rbt_shdr(t_packer *packer)
 			{
 				//TODO: Cleaner exit if malloc error
 				print_error(packer->self_path, MALLOC_ERROR);
+				// Need to take care of all trees, not just this one.
 				tree_free(parent->shdr_tree, rbt_free_content);
 				exit(EXIT_FAILURE);
 			}
