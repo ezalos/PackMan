@@ -24,10 +24,15 @@ CFLAGS		= -Wall -Werror -Wextra
 # CFLAGS 		+= -fsanitize=address,undefined -g3
 # CFLAGS 		+= -g
 
-LIB_DIR = librbt/
-LIB		= $(LIB_DIR)librbt.a
-LIB_INC	= $(LIB_DIR)includes/
-LIB_HEAD	= $(LIB_INC)librbt.h
+LIB_RBT_DIR		= librbt/
+LIB_RBT			= $(LIB_RBT_DIR)librbt.a
+LIB_RBT_INC		= $(LIB_RBT_DIR)includes/
+LIB_RBT_HEAD	= $(LIB_RBT_INC)librbt.h
+
+LIB_FT_DIR 		= libft/
+LIB_FT			= $(LIB_FT_DIR)libft.a
+LIB_FT_INC		= $(LIB_FT_DIR)includes/
+LIB_FT_HEAD		= $(LIB_FT_INC)libft.h
 
 ASM_EXT		= .asm
 
@@ -50,17 +55,21 @@ OBJS_ASM	= $(SRCS_ASM:$(SRCS_DIR)%$(ASM_EXT)=$(OBJS_DIR)%.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(OBJS_ASM) $(LIB)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(OBJS_ASM) -I $(HEAD_DIR) -I $(LIB_INC) $(LIB)
+$(NAME): $(OBJS) $(OBJS_ASM) $(LIB_RBT) $(LIB_FT)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(OBJS_ASM) -I $(HEAD_DIR) -I $(LIB_RBT_INC) $(LIB_RBT) -I $(LIB_FT_INC) $(LIB_FT)
 
-$(OBJS_DIR)%.o: $(SRCS_DIR)%.c Makefile $(LIB)
-	$(CC) $(CFLAGS) -c $< -o $@ -I$(HEAD_DIR) -I$(LIB_INC) -L$(LIB_DIR)
+$(OBJS_DIR)%.o: $(SRCS_DIR)%.c Makefile $(LIB_RBT) $(LIB_FT)
+	$(CC) $(CFLAGS) -c $< -o $@ -I$(HEAD_DIR) -I$(LIB_RBT_INC) -L$(LIB_RBT_DIR) -I$(LIB_FT_INC) -L$(LIB_FT_DIR)
 
-$(OBJS_DIR)%.o: $(SRCS_DIR)%$(ASM_EXT) Makefile $(LIB)
-	$(NS) $< -o $@ -I$(HEAD_DIR) -I$(LIB_INC) -L$(LIB_DIR)
+$(OBJS_DIR)%.o: $(SRCS_DIR)%$(ASM_EXT) Makefile $(LIB_RBT) $(LIB_FT)
+	$(NS) $< -o $@ -I$(HEAD_DIR) -I$(LIB_RBT_INC)  -I$(LIB_FT_INC)  
+#-L$(LIB_DIR)
 
-$(LIB): FORCE
-	make -C $(LIB_DIR)
+$(LIB_RBT): FORCE
+	make -C $(LIB_RBT_DIR)
+
+$(LIB_FT): FORCE
+	make -C $(LIB_FT_DIR)
 
 clean:
 	rm -rf $(OBJS)

@@ -45,6 +45,7 @@
 # define NAME_OUT_PACKER			"woody.out"
 
 # include "librbt.h"
+# include "libft.h"
 
 # define HDR_TYPE_NONE		0
 # define HDR_TYPE_PHDR		1
@@ -61,7 +62,7 @@ typedef struct	s_pheader
 	uint8_t		type;
 	Elf64_Phdr 	*phdr;
 	t_rbt 		*shdr_tree;
-	int			available_size;
+	int			available_size; //int64_t ?
 }				t_pheader;
 
 typedef struct	s_sheader
@@ -69,7 +70,7 @@ typedef struct	s_sheader
 	uint8_t		type;
 	Elf64_Shdr	*shdr;
 	t_pheader	*parent_phdr;
-	int			available_size;
+	int			available_size; // int64_t
 }				t_sheader;
 
 
@@ -84,6 +85,7 @@ typedef struct	s_packer
 	t_zone			z_text;
 	t_rbt			*phdr_tree;
 	// t_stat		stat;
+
 	uint64_t		size;
 }					t_packer;
 
