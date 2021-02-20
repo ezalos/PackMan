@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   librbt.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/19 13:12:23 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/02/19 13:12:32 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/02/20 19:31:12 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ t_rbt				*tree_root(t_rbt *node);
 void				tree_rot_left(t_rbt *node);
 void				tree_rot_right(t_rbt *node);
 t_rbt				*tree_sibling(t_rbt *node);
+void				**tree_to_array(t_rbt *root);
 t_rbt				*tree_uncle(t_rbt *node);
 int8_t				tree_which_child(t_rbt *node);
 

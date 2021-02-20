@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+         #
+#    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/02/19 13:06:33 by rkirszba          #+#    #+#              #
-#    Updated: 2021/02/19 13:09:56 by rkirszba         ###   ########.fr        #
+#    Updated: 2021/02/20 19:32:01 by ezalos           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,7 +42,8 @@ SRCS_NAMES		= tree_free.c\
 				  tree_remove_delete_case_a.c\
 				  tree_remove_delete_case_b.c\
 				  tree_remove_utils.c\
-				  tree_rotations.c
+				  tree_rotations.c\
+				  tree_to_array.c
 
 
 INCS_DIR		= includes/
