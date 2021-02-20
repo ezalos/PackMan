@@ -49,7 +49,6 @@ int8_t		access_file(t_packer *packer, char *file)
 
 int8_t		get_zones_to_crypt(t_packer *packer)
 {
-	// trouver section + taille de .text et de .rodata
 	(void)packer;
 	return (SUCCESS);
 }
@@ -93,7 +92,7 @@ int8_t		pack_file(t_packer *packer)
 	// }
 	return (ret);
 	packer->out = NAME_OUT_PACKER;
-	browse_file(packer);
+	// browse_file(packer);
 	save_woody(packer); 
 	return (ret);
 }
@@ -116,16 +115,15 @@ int			ft_memcmp(const void *s1, const void *s2, size_t n)
 int8_t		check_elf_header(t_packer *packer)
 {
 	Elf64_Ehdr			*ehdr;
-	const char	ElfMagic[] = {0x7f, 'E', 'L', 'F'};
 
 	if (FALSE == is_secure_access(packer->size, 0, sizeof(Elf64_Ehdr)))
 		return (print_error(packer->self_path, FILE_FORMAT_ERROR));
 	ehdr = (Elf64_Ehdr *)packer->content;
-	if (ft_memcmp(ehdr->e_ident, ElfMagic, 4) != 0)
+	if (ft_memcmp(ehdr->e_ident, ELFMAG, 4) != 0)
 		return (print_error(packer->self_path, FILE_NOT_ELF_ERROR));
-	if (ehdr->e_ident[EI_CLASS] == 1)
+	if (ehdr->e_ident[EI_CLASS] != ELFCLASS64)
 		return (print_error(packer->self_path, FILE_NOT_64_ERROR));
-	if (ehdr->e_ident[EI_DATA] != 1)
+	if (ehdr->e_ident[EI_DATA] != ELFDATA2LSB)
 		return (print_error(packer->self_path, FILE_BIG_ENDIAN_ERROR));
 	return (SUCCESS);
 }

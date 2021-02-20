@@ -54,6 +54,7 @@
 typedef struct	s_zone
 {
 	size_t		offset;
+	uint64_t	vaddr;
 	size_t		size;
 }				t_zone;
 
@@ -84,6 +85,8 @@ typedef struct	s_packer
 	uint8_t			*content;
 	t_zone			z_text;
 	t_rbt			*phdr_tree;
+	t_list			*to_crypt;  //list of program headers of segments we want to crypt
+	t_list			*to_inject; //list of zones we can inject code in
 	// t_stat		stat;
 
 	uint64_t		size;
