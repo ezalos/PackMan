@@ -90,9 +90,11 @@ int8_t		pack_file(t_packer *packer)
 	// 	write_payload(packer);
 	// 	crypt_file(packer);
 	// }
+	print_elf_header((Elf64_Ehdr*)packer->content);
+	parse_elf(packer);
 	return (ret);
 	packer->out = NAME_OUT_PACKER;
-	// browse_file(packer);
+	browse_file(packer);
 	save_woody(packer); 
 	return (ret);
 }
@@ -172,7 +174,7 @@ int			main(int ac, char **av)
 	if (FAILURE == access_file(&packer, av[1]))
 		return (EXIT_FAILURE);
 	ret = check_elf_header(&packer);
-	parse_elf(&packer);
+	// parse_elf(&packer);
 	if (ret == SUCCESS)
 		ret = pack_file(&packer);
 	if (munmap((void *)packer.content, (size_t)packer.size) == FAILURE)

@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/16 17:12:56 by ezalos            #+#    #+#             */
-/*   Updated: 2021/02/19 20:47:21 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/08 13:50:28 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,26 @@ Elf64_Shdr *get_section_header(t_packer *packer, uint32_t index)
     elf = (Elf64_Ehdr *)packer->content;
     shdr = (Elf64_Shdr *)((size_t)packer->content + (size_t)elf->e_shoff + ((size_t)index * (size_t)elf->e_shentsize));
 
-    if (sizeof(Elf64_Shdr) + (size_t)shdr >= (size_t)packer->content + packer->size)
-        shdr = NULL;
+	if (sizeof(Elf64_Shdr) + (size_t)shdr >= (size_t)packer->content + packer->size || index >= elf->e_shnum)
+		shdr = NULL;
 
     return shdr;
+}
+
+int			get_section_header_index(t_packer *packer, Elf64_Shdr *shdr)
+{
+	Elf64_Ehdr *elf = (Elf64_Ehdr *)packer->content;
+	if (!shdr)
+		return -1;
+	return (((size_t)shdr) - ((size_t)packer->content + (size_t)elf->e_shoff)) / (size_t)elf->e_shentsize;
+}
+
+int 		get_program_header_index(t_packer *packer, Elf64_Phdr *phdr)
+{
+	Elf64_Ehdr *elf = (Elf64_Ehdr *)packer->content;
+	if (!phdr)
+		return -1;
+	return (((size_t)phdr) - ((size_t)packer->content + (size_t)elf->e_phoff)) / (size_t)elf->e_phentsize;
 }
 
 Elf64_Phdr *get_program_header(t_packer *packer, uint32_t index)
@@ -50,8 +66,9 @@ Elf64_Phdr *get_program_header(t_packer *packer, uint32_t index)
 
 	// printf("Phdr start: %p\t end: %p\n", phdr, (void*)(sizeof(Elf64_Phdr) + (size_t)phdr));
 	// printf("File start: %p\t end: %p\n", packer->content, (void*)((size_t)packer->content + packer->size));
-	if (sizeof(Elf64_Phdr) + (size_t)phdr >= (size_t)packer->content + packer->size)
+	if (sizeof(Elf64_Phdr) + (size_t)phdr >= (size_t)packer->content + packer->size || index >= elf->e_phnum)
         phdr = NULL;
 
     return phdr;
 }
+

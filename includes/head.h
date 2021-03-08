@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/02/19 20:41:06 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/07 17:44:02 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,15 @@ typedef struct	s_zone
 	size_t		size;
 }				t_zone;
 
+typedef struct s_sheader	t_sheader;
+
+
 typedef struct	s_pheader
 {
 	uint8_t		type;
 	Elf64_Phdr 	*phdr;
 	t_rbt 		*shdr_tree;
+	t_sheader	**shdr_array;
 	int			available_size; //int64_t ?
 }				t_pheader;
 
@@ -85,6 +89,7 @@ typedef struct	s_packer
 	uint8_t			*content;
 	t_zone			z_text;
 	t_rbt			*phdr_tree;
+	t_pheader		**phdr_array;
 	t_list			*to_crypt;  //list of program headers of segments we want to crypt
 	t_list			*to_inject; //list of zones we can inject code in, ordered by dec size
 	// t_stat		stat;
