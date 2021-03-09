@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tree_get.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/16 20:21:09 by ezalos            #+#    #+#             */
-/*   Updated: 2021/02/19 13:16:13 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/03/10 00:48:35 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,10 +49,14 @@ t_rbt	*tree_get_node_th(t_rbt *root, int *umpteenth)
 	if (NULL != root)
 	{
 		node = tree_get_node_th(root->left, umpteenth);
-		if (!*umpteenth || NULL != node)
+		if (NULL != node)
+			return (node);
+		if (!*umpteenth)
 			return (root);
 		(*umpteenth)--;
 		node = tree_get_node_th(root->right, umpteenth);
+		if (NULL != node)
+			return (node);
 	}
 	return (node);
 }

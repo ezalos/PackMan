@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tree_print.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/26 20:59:37 by ezalos            #+#    #+#             */
-/*   Updated: 2021/02/19 13:14:36 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/03/10 00:40:58 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,8 @@ void	tree_print_elem(t_rbt *node)
 		printf("\033[31m");
 	else
 		printf("\033[34m");
-	printf("%p \033[00m", content);
+	(void)content;
+	printf("%p \033[00m", node);// content);
 }
 
 void	tree_print(t_rbt *node, size_t deep)

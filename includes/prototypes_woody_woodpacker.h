@@ -35,6 +35,7 @@ void		new_try(Elf64_Ehdr *elf, void *data, t_packer *packer);
 int8_t		pack_file(t_packer *packer);
 void		parse_elf(t_packer *packer);
 void 		parse_print(t_packer *packer);
+void		phdr_print_tree(t_packer *packer, t_rbt *root);
 int8_t		print_error(char *self_path, char *error);
 void		print_symbol_code(void *data, size_t offset, size_t size);
 int8_t		print_usage(char *self_path);
