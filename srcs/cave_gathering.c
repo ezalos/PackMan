@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/10 21:17:59 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/12 12:04:50 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/12 12:09:38 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,9 +188,9 @@ void		cave_gathering_phdr(t_packer *packer)
 	Elf64_Phdr	*next;
 	int			i;
 
-	printf("\n----------------------\n");
-	printf("    CAVE GATHERING    \n");
-	printf("----------------------\n\n");
+	printf("\n-----------------------\n");
+	printf("  PHDR CAVE GATHERING  \n");
+	printf("-----------------------\n\n");
 	i = -1;
 	while ((curr = get_phdr_from_array(packer, ++i)))
 	{
