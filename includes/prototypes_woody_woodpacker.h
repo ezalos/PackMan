@@ -2,6 +2,7 @@
 # define PROTOTYPES_WOODY_WOODPACKER_H
 
 int8_t		access_file(t_packer *packer, char *file);
+void		cave_gathering(t_packer *packer);
 int8_t		check_elf_header(t_packer *packer);
 void		chirurgy(t_packer *packer,
 			size_t offset,
@@ -17,7 +18,6 @@ int8_t		create_rbt_shdr(t_rbt **node,
 			t_pheader *parent);
 uint8_t		crypt_condition(void *data, Elf64_Sym *sym);
 void		*elf_access_section(void *data, char *section_name, int umpteenth);
-void 		fill_available_size(t_packer *packer);
 int			ft_memcmp(const void *s1, const void *s2, size_t n);
 int8_t		get_payload_zones(t_packer *packer);
 int 		get_program_header_index(t_packer *packer, Elf64_Phdr *phdr);

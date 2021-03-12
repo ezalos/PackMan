@@ -92,7 +92,9 @@ int8_t		pack_file(t_packer *packer)
 	// }
 	print_elf_header((Elf64_Ehdr*)packer->content);
 	parse_elf(packer);
+	cave_gathering(packer);
 	return (ret);
+	
 	packer->out = NAME_OUT_PACKER;
 	browse_file(packer);
 	save_woody(packer); 

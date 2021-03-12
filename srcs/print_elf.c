@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/16 17:13:08 by ezalos            #+#    #+#             */
-/*   Updated: 2021/02/16 19:02:22 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/12 11:13:37 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void print_section_header(t_packer *packer, Elf64_Shdr *shdr)
 void    print_program_header(Elf64_Phdr *phdr)
 {
     printf("---- SEGMENT:----\n");
-    printf("p_type  : %u\t %s\n", phdr->p_type, phdr->p_type == PT_LOAD ? "Load" : "");
+    printf("p_type  : %u\t %s\n", phdr->p_type, phdr->p_type & PT_LOAD ? "Load" : "");
     printf("p_flags : %u\n\tread %d\n\twrite %d\n\texec %d\n", phdr->p_flags, phdr->p_flags & PF_R, phdr->p_flags & PF_W, phdr->p_flags & PF_X);
     printf("p_offset: %lu\n", phdr->p_offset);
     printf("p_vaddr : %p\n", (void *)phdr->p_vaddr);

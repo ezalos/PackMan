@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/07 16:55:52 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/07 18:17:41 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/12 10:10:24 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,11 @@ long long	t_rbt_compare_phdr(void *an, void *bn)
 	if (b)
 	{
 		bv = ((t_pheader *)b)->phdr->p_offset;
+	}
+	if (a && b && av == bv)
+	{
+		bv = ((t_pheader *)a)->phdr->p_filesz;
+		av = ((t_pheader *)b)->phdr->p_filesz;
 	}
 
 	return (av - bv);

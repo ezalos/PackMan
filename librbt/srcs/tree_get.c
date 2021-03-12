@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/16 20:21:09 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/10 00:48:35 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/10 23:02:38 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,17 +48,14 @@ t_rbt	*tree_get_node_th(t_rbt *root, int *umpteenth)
 	node = NULL;
 	if (NULL != root)
 	{
-		node = tree_get_node_th(root->left, umpteenth);
-		if (NULL != node)
+		if ((node = tree_get_node_th(root->left, umpteenth)))
 			return (node);
-		if (!*umpteenth)
+		if (!(*umpteenth)--)
 			return (root);
-		(*umpteenth)--;
-		node = tree_get_node_th(root->right, umpteenth);
-		if (NULL != node)
+		if ((node = tree_get_node_th(root->right, umpteenth)))
 			return (node);
 	}
-	return (node);
+	return (NULL);
 }
 
 t_rbt	*tree_get_in_order_pred(t_rbt *node)

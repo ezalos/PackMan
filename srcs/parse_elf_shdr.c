@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 23:56:07 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/10 18:22:02 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/10 19:07:31 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ t_pheader	*get_rbt_phdr_from_shdr(t_rbt *root, Elf64_Shdr *shdr)
 		tmp = shdr->sh_addralign;
 		if (tmp == 0)
 			tmp = 1;
-		if (shdr->sh_type & PT_LOAD)
+		if (shdr->sh_type & PT_LOAD && FALSE)
 		{
 			if (hdr->phdr->p_vaddr <= shdr->sh_addr + tmp - (shdr->sh_addr % tmp))
 			{
