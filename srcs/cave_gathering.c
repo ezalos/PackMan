@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/10 21:17:59 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/12 12:09:38 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/12 14:12:53 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,13 +140,13 @@ int		print_phdr_contain(t_packer *packer, int i)
 	curr = get_phdr_from_array(packer, ++i);
 	if (!curr)
 		return i - 1;
-	printf("[");
+	printf("%s[%s", _YELLOW, _RESET);
 	next = get_phdr_from_array(packer, i + 1);
 	while (curr && is_phdr_contained(parent, curr))
 	{
 		print_cave_phdr(packer, curr);
 		if (is_phdr_superposed(curr, next))
-			printf("== ");
+			printf(" %s==%s ",_YELLOW, _RESET);
 		else if (is_phdr_contained(curr, next))
 		{
 			i = print_phdr_contain(packer, i);
@@ -166,7 +166,7 @@ int		print_phdr_contain(t_packer *packer, int i)
 		next = get_phdr_from_array(packer, i + 1);
 	}
 	print_cave_size(get_phdr_from_array(packer, i - 1) , parent); //, get_phdr_from_array(packer, i + 1));
-	printf("]");
+	printf("%s]%s", _YELLOW, _RESET);
 	return i - 1;
 }
 
@@ -175,11 +175,11 @@ void		print_cave_gathering_legend(void)
 	printf("Legend: \n");
 	printf("\tLOAD:        \t%sTRUE %sFALSE%s\n", _GREEN, _RED, _RESET);
 	printf("\t%sn%sb%s:         \tposition of phdr in header declaration order\n", _GREEN, _RED, _RESET);
-	printf("\t->%snb%s:       \tcave size\n", _BLUE, _RESET);
-	printf("\t->%snb%s:       \tcave size between ends\n", _MAGENTA, _RESET);
-	printf("\t(nb /!\\ nb):\tOverlap of phdr\n");
-	printf("\tnb == nb:    \tPhdr are superposed\n");
-	printf("\tnb [nb]:     \tPhdr is contained\n");
+	printf("\t%sx%s->%snb%s, %sy%s: \tcave size\n", _GREEN, _RESET, _BLUE, _RESET, _GREEN, _RESET);
+	printf("\t%sx%s%s[%s..., %sy%s->%snb%s%s]%s: \tcave size between ends\n", _GREEN, _RESET, _YELLOW, _RESET, _GREEN, _RESET, _MAGENTA, _RESET, _YELLOW, _RESET);
+	printf("\tnb %s/!\\%s nb:\tOverlap of phdr\n", _YELLOW, _RESET);
+	printf("\tnb %s==%s nb:    \tPhdr are superposed\n", _YELLOW, _RESET);
+	printf("\tnb %s[%snb%s]%s:     \tPhdr is contained\n", _YELLOW, _RESET, _YELLOW, _RESET);
 }
 
 void		cave_gathering_phdr(t_packer *packer)
@@ -200,14 +200,14 @@ void		cave_gathering_phdr(t_packer *packer)
 			{
 				printf("(");
 				print_cave_phdr(packer, curr);
-				printf("/!\\ ");
+				printf("%s/!\\%s ", _YELLOW, _RESET);
 				print_cave_phdr(packer, next);
 				printf(")");
 			}
 			if (is_phdr_superposed(curr, next))
 			{
 				print_cave_phdr(packer, curr);
-				printf("== ");
+				printf(" %s==%s ", _YELLOW, _RESET);
 			}
 			else if (is_phdr_contained(curr, next))
 			{
