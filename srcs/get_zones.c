@@ -6,7 +6,7 @@
 /*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/15 17:54:59 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/03/16 10:30:39 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/03/16 11:36:48 by rkirszba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,13 +58,15 @@ t_list			*get_zones(t_packer *packer, uint8_t type, uint8_t flags,
 	{
 		if (hdr->phdr->p_type == type
 			&& (hdr->phdr->p_flags & flags) == flags)
+		{
 			if (!(zone = create_zone(hdr, data_filler)))
 			{
 				print_error(packer->self_path, strerror(errno));
 				//fonction qui free tout
 				exit(EXIT_FAILURE);
 			}
-		ft_list_append(&zones, zone);
+			ft_list_append(&zones, zone);
+		}
 	}
 	return (zones);
 }
