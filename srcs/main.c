@@ -163,6 +163,24 @@ int8_t		check_elf_header(t_packer *packer)
 // 	return (retval);
 // }
 
+void		print_zones(t_list *zones)
+{
+	t_zone	*zone;
+
+	printf("PRINT ZONE\n");
+	while (zones)
+	{
+		printf("\n");
+		zone = (t_zone*)(zones->data);
+		printf("offset : %lu\n", zone->offset);
+		printf("vaddr  : %lu\n", zone->vaddr);
+		printf("size   : %lu\n", zone->size);
+		print_program_header(zone->phdr);
+		printf("\n");
+		zones = zones->next;
+	}
+}
+
 int			main(int ac, char **av)
 {
 	t_packer	packer;
@@ -179,6 +197,11 @@ int			main(int ac, char **av)
 	// parse_elf(&packer);
 	if (ret == SUCCESS)
 		ret = pack_file(&packer);
+	printf("GET ZONES\n");
+	packer.to_crypt = get_zones(&packer, PT_LOAD, PF_R, &data_filler_zone_to_crypt);
+	print_zones(packer.to_crypt);
+	packer.caves = get_zones(&packer, PT_LOAD, PF_X | PF_R, &data_filler_cave);
+	print_zones(packer.caves);
 	if (munmap((void *)packer.content, (size_t)packer.size) == FAILURE)
 		return (print_error(packer.self_path, strerror(errno)));
 	//free function

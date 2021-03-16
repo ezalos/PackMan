@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   head.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/03/10 19:05:48 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/16 10:26:24 by rkirszba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ typedef struct	s_zone
 	size_t		offset;
 	uint64_t	vaddr;
 	size_t		size;
+	Elf64_Phdr	*phdr;
 }				t_zone;
 
 typedef struct s_sheader	t_sheader;
@@ -91,7 +92,7 @@ typedef struct	s_packer
 	t_rbt			*phdr_tree;
 	t_pheader		**phdr_array;
 	t_list			*to_crypt;  //list of program headers of segments we want to crypt
-	t_list			*to_inject; //list of zones we can inject code in, ordered by dec size
+	t_list			*caves; //list of zones we can inject code in, ordered by dec size
 	// t_stat		stat;
 
 	uint64_t		size;
@@ -126,5 +127,10 @@ Elf64_Phdr 	*get_program_header(t_packer *packer, uint32_t index);
 void 		browse_file(t_packer *packer);
 int8_t		print_error(char *self_path, char *error);
 int8_t		print_usage(char *self_path);
+t_list		*get_zones(t_packer *packer, uint8_t type, uint8_t flags,
+			void (*data_filler)(t_pheader*, t_zone*));
+void		data_filler_cave(t_pheader *hdr, t_zone *zone);
+void		data_filler_zone_to_crypt(t_pheader *hdr, t_zone *zone);
+
 
 #endif
