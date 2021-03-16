@@ -50,7 +50,7 @@ uint8_t insert_init(t_packer *packer, int offset)
 	return (PAYLOAD_INIT_SIZE);
 }
 
-uint8_t	insert_jump(t_packer * packer, int offset_from, int offset_to)
+uint8_t	insert_jump(t_packer *packer, int offset_from, int offset_to)
 {
 	uint8_t instruction = 0xe9;
 	int jump = offset_to - (offset_from + sizeof(instruction));
@@ -65,6 +65,7 @@ uint8_t	insert_jump(t_packer * packer, int offset_from, int offset_to)
 
 	return (written_size);
 }
+
 
 
 // 0:   57                      push   rdi
