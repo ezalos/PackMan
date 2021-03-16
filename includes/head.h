@@ -6,7 +6,7 @@
 /*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/03/16 10:26:24 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/03/16 18:24:05 by rkirszba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # include <string.h>
 # include <sys/types.h>
 # include <unistd.h>
+# include <time.h>
 
 # define DEBUG		1
 
@@ -50,6 +51,9 @@
 # define HDR_TYPE_NONE		0
 # define HDR_TYPE_PHDR		1
 # define HDR_TYPE_SHDR		2
+
+# define PERM_SIZE			0x100
+# define KEY_SIZE			0x8
 
 typedef struct	s_zone
 {
@@ -131,6 +135,7 @@ t_list		*get_zones(t_packer *packer, uint8_t type, uint8_t flags,
 			void (*data_filler)(t_pheader*, t_zone*));
 void		data_filler_cave(t_pheader *hdr, t_zone *zone);
 void		data_filler_zone_to_crypt(t_pheader *hdr, t_zone *zone);
+void		crypt_zones(t_packer *packer);
 
 
 #endif
