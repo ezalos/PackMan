@@ -6,13 +6,13 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/18 15:16:12 by ezalos            #+#    #+#             */
-/*   Updated: 2021/02/18 15:16:19 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/17 11:57:30 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
 
-void change_endian(void *data, int size)
+void	change_endian(void *data, int size)
 {
 	int tmp;
 	int i;

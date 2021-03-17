@@ -1,19 +1,4 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   bytecode_injecters.c                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/03/17 00:45:10 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/17 11:45:31 by ezalos           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "head.h"
-
-#define ENDIAN(x) (((Elf64_Ehdr *)x->content)->e_ident[EI_DATA] != ELFDATA2LSB)
-#define IS64(x) (((Elf64_Ehdr *)x->content)->e_ident[EI_CLASS] != ELFCLASS64)
+/* ************************************************************************** */ /*                                                                            */ /*                                                        :::      ::::::::   */ /*   bytecode_injecters.c                               :+:      :+:    :+:   */ /*                                                    +:+ +:+         +:+     */ /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */ /*                                                +#+#+#+#+#+   +#+           */ /*   Created: 2021/03/17 00:45:10 by ezalos            #+#    #+#             */ /*   Updated: 2021/03/17 11:45:31 by ezalos           ###   ########.fr       */ /*                                                                            */ /* ************************************************************************** */ #include "head.h" #define ENDIAN(x) (((Elf64_Ehdr *)x->content)->e_ident[EI_DATA] != ELFDATA2LSB) #define IS64(x) (((Elf64_Ehdr *)x->content)->e_ident[EI_CLASS] != ELFCLASS64)
 
 // Cahier des charges data:
 //		Update cave size a mesure qu'elles se remplissent
@@ -28,24 +13,30 @@
 //			Liste des index obligatoires dans l'ordre
 //			
 
-// typedef struct s_bytecode
-// {
-// 	int		type;
-// 	size_t	size;
-// 	size_t	offset; -> pour arg du jump...
-// 	void	*func_ptr; -> Si arguments necessaires, complexe
-// 	size_t	arg_nb;
-// } t_bytecode;
 
 #define BTC_JMP 1
 #define BTC_MEM_RIGHTS 2
 #define BTC_DECRYPT 3
 #define BTC_WRITE 4
+#define BTC_DEF_CRYPT 5
 
 #define SIZE_JMP 0x05
 #define SIZE_MEM_RIGHTS 123456789
 #define SIZE_DECRYPT 1234567489
 #define SIZE_WRITE 0x71
+
+typedef struct s_tbc
+{
+	int		type;
+	size_t	size;
+	// size_t	offset; -> pour arg du jump...
+	// void	*func_ptr; -> Si arguments necessaires, complexe
+	size_t	arg_nb;
+	// t_zone 
+	// offset_in_zone 
+	// size_in_zone
+	struct s_btc	*next;
+}				t_btc;
 
 
 typedef struct	s_btc_args
@@ -55,12 +46,14 @@ typedef struct	s_btc_args
 	size_t	mp_len;
 	int		mp_prot;
 	void	*crypt_addr;
-	void	*crypt_key;
+	void	*crypt_func_addr;
 	size_t	crypt_size;
+	size_t *crypt_key;
+	uint8_t crypt_key_len;
 }				t_btc_args;
 
 
-uint8_t test_endian(void)
+uint8_t		test_endian(void)
 {
     int     test_var = 1;
     uint8_t *test_endian = (uint8_t*)&test_var;
@@ -69,10 +62,89 @@ uint8_t test_endian(void)
 }
 
 // Untested
-uint8_t is_same_endian(t_packer *packer)
+uint8_t		is_same_endian(t_packer *packer)
 {
     return (test_endian() == ENDIAN(packer));
 }
+
+t_btc		*create_btc(int type, t_btc *next)
+{
+	(void)type;
+	next++;
+	return (NULL);
+}
+
+void		update_arg_crypt_calls(t_btc *inst, t_zone *write_zone)
+{
+	return;
+}
+
+ssize_t		bytecode_inject(t_packer *packer, t_list *zones,t_zone *zone, t_btc *inst)
+{
+	ssize_t	ret;
+
+	if (inst->type == BTC_DEF_CRYPT)
+	{
+		update_arg_crypt_calls(inst, zone);
+	}
+	update_zone(zone, inst);
+	ret = solve_bytecodes(packer, zones, zone, inst->next, inst->type == BTC_JMP);
+	if (ret != FAILURE)
+	{
+		update_args(ret, inst);
+		write_btc(inst, zone, packer);
+	}
+	else
+	{
+		undo_update_zone(zone, inst);
+	}
+	return (ret);
+}
+
+ssize_t			solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, t_btc *inst, int headless)
+{
+	t_list	*zone_list = zones;
+	t_zone	*zone;
+	ssize_t	ret;
+	t_btc	*jmp;
+
+
+	if (inst == NULL)
+		return (current_zone->offset);
+
+	if (headless)
+	{
+		while (zone_list != NULL)
+		{
+			zone = zone_list->data;
+			if (can_i_write(zone, inst))
+				ret = bytecode_inject(packer, zones, zone, inst);
+			if (ret != FAILURE)
+				return (ret);
+			zone_list = zone_list->next;
+		}
+		return (FAILURE);
+	}
+	else
+	{
+		zone = zone_list->data;
+		if (can_i_write(zone, inst))
+			return (bytecode_inject(packer, zones, zone, inst));
+		else
+		{
+			ret = FAILURE;
+			jmp = create_btc(BTC_JMP, inst->next);
+			// FREE THE BASTARD
+			if (can_i_write(zone, jmp))
+				ret = bytecode_inject(packer, zones, zone, inst);
+			// FREE HIM
+			return (ret);
+		}
+	}
+}
+
+
+// NEED TO TEST IF NO INCLUDES -> Test main ret 0 only
 
 // #include <sys/mman.h>
 // int mprotect(void *addr, size_t len, int prot);
@@ -92,7 +164,7 @@ uint8_t is_same_endian(t_packer *packer)
 //					It needs to:
 //						- Insert all
 //							OR
-//						- Insert mem_rights (* 2, if possible (Cleaner))
+//						- Insert mem_rights (* 2, if possible (Cleaner) -> NOO)
 //						- jump
 //						- at least 1 instruction:
 //							-> the largest obligatory bytecode
