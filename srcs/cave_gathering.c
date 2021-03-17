@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/10 21:17:59 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/12 14:12:53 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/17 19:35:48 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,43 +237,3 @@ void	cave_gathering(t_packer *packer)
 {
 	cave_gathering_phdr(packer);
 }
-
-// void cave_gathering(t_packer *packer)
-// {
-// 	int i_p;
-// 	int i_s;
-// 	int curr_end;
-// 	int next_start;
-
-// 	i_p = -1;
-// 	while (packer->phdr_array[++i_p])
-// 	{
-// 		if (packer->phdr_array[i_p + 1])
-// 		{
-// 			curr_end = packer->phdr_array[i_p]->phdr->p_offset + packer->phdr_array[i_p]->phdr->p_filesz;
-// 			next_start = packer->phdr_array[i_p + 1]->phdr->p_offset;
-// 			packer->phdr_array[i_p]->available_size = next_start - curr_end;
-// 		}
-// 		else
-// 			packer->phdr_array[i_p]->available_size = 0;
-// 		// printf("Phdr %d: %d\n", i_p, packer->phdr_array[i_p]->available_size);
-// 		// printf("\tShdr %p\n", packer->phdr_array[i_p]->shdr_array);
-// 		if (NULL == packer->phdr_array[i_p]->shdr_array)
-// 			continue;
-// 		i_s = -1;
-// 		while (packer->phdr_array[i_p]->shdr_array[++i_s])
-// 		{
-// 			if (packer->phdr_array[i_p]->shdr_array[i_s + 1])
-// 			{
-// 				curr_end = packer->phdr_array[i_p]->shdr_array[i_s]->shdr->sh_offset + packer->phdr_array[i_p]->shdr_array[i_s]->shdr->sh_size;
-// 				next_start = packer->phdr_array[i_p]->shdr_array[i_s + 1]->shdr->sh_offset;
-// 				packer->phdr_array[i_p]->shdr_array[i_s]->available_size = next_start - curr_end;
-// 			}
-// 			else if (packer->phdr_array[i_p + 1])
-// 				packer->phdr_array[i_p]->shdr_array[i_s]->available_size = packer->phdr_array[i_p]->available_size;
-// 			else
-// 				packer->phdr_array[i_p]->shdr_array[i_s]->available_size = 0;
-// 			// printf("\tShdr %d: %d\n", i_s, packer->phdr_array[i_p]->shdr_array[i_s]->available_size);
-// 		}
-// 	}
-// }

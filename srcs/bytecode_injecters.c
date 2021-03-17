@@ -1,4 +1,16 @@
-/* ************************************************************************** */ /*                                                                            */ /*                                                        :::      ::::::::   */ /*   bytecode_injecters.c                               :+:      :+:    :+:   */ /*                                                    +:+ +:+         +:+     */ /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */ /*                                                +#+#+#+#+#+   +#+           */ /*   Created: 2021/03/17 00:45:10 by ezalos            #+#    #+#             */ /*   Updated: 2021/03/17 11:45:31 by ezalos           ###   ########.fr       */ /*                                                                            */ /* ************************************************************************** */ #include "head.h" #define ENDIAN(x) (((Elf64_Ehdr *)x->content)->e_ident[EI_DATA] != ELFDATA2LSB) #define IS64(x) (((Elf64_Ehdr *)x->content)->e_ident[EI_CLASS] != ELFCLASS64)
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   bytecode_injecters.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/03/17 19:29:02 by ezalos            #+#    #+#             */
+/*   Updated: 2021/03/17 19:37:30 by ezalos           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "head.h"
 
 // Cahier des charges data:
 //		Update cave size a mesure qu'elles se remplissent
@@ -14,68 +26,79 @@
 //			
 
 
-#define BTC_JMP 1
-#define BTC_MEM_RIGHTS 2
-#define BTC_DECRYPT 3
-#define BTC_WRITE 4
-#define BTC_DEF_CRYPT 5
 
-#define SIZE_JMP 0x05
-#define SIZE_MEM_RIGHTS 123456789
-#define SIZE_DECRYPT 1234567489
-#define SIZE_WRITE 0x71
-
-typedef struct s_tbc
+t_btc *create_btc(int type)
 {
-	int		type;
-	size_t	size;
-	// size_t	offset; -> pour arg du jump...
-	// void	*func_ptr; -> Si arguments necessaires, complexe
-	size_t	arg_nb;
-	// t_zone 
-	// offset_in_zone 
-	// size_in_zone
-	struct s_btc	*next;
-}				t_btc;
-
-
-typedef struct	s_btc_args
-{
-	int		jump;
-	void	*mp_addr;
-	size_t	mp_len;
-	int		mp_prot;
-	void	*crypt_addr;
-	void	*crypt_func_addr;
-	size_t	crypt_size;
-	size_t *crypt_key;
-	uint8_t crypt_key_len;
-}				t_btc_args;
-
-
-uint8_t		test_endian(void)
-{
-    int     test_var = 1;
-    uint8_t *test_endian = (uint8_t*)&test_var;
-
-    return (test_endian[0] == 0);
+	t_btc *btc;
+	if ((btc = malloc(sizeof(t_btc))))
+		return (NULL);
+	ft_memcpy(btc, &bytecode_lib[type], sizeof(t_btc));
+	if ((btc->args = malloc(sizeof(t_btc_args))))
+	{
+		free(btc);
+		return (NULL);
+	}
+	return (btc);
 }
 
-// Untested
-uint8_t		is_same_endian(t_packer *packer)
+void		free_btc(t_btc *btc)
 {
-    return (test_endian() == ENDIAN(packer));
+	free(btc->args);
+	free(btc);
 }
 
-t_btc		*create_btc(int type, t_btc *next)
+
+
+// void		update_arg_crypt_calls(t_btc *inst, t_zone *write_zone)
+// {
+// 	(void)inst;
+// 	(void)write_zone;
+// 	return;
+// }
+
+void		update_zone(t_zone *zone, t_btc *inst)
 {
-	(void)type;
-	next++;
-	return (NULL);
+	zone->offset = zone->offset + inst->size;
+	zone->size = zone->size - inst->size;
 }
 
-void		update_arg_crypt_calls(t_btc *inst, t_zone *write_zone)
+void		undo_update_zone(t_zone *zone, t_btc *inst)
 {
+	zone->offset = zone->offset - inst->size;
+	zone->size = zone->size + inst->size;
+}
+
+uint8_t		can_i_write(t_zone *zone, t_btc *inst)
+{
+	return (zone->size <= inst->size);
+}
+
+void		update_arg_crypt_calls(t_btc *inst, t_zone *zone)
+{
+	while (inst)
+	{
+		if (inst->type == BTC_DECRYPT)
+		{
+			inst->args->crypt_func_addr = (void*)((size_t)zone->phdr->p_vaddr + (size_t)zone->offset);
+		}
+		inst = inst->next;
+	}
+
+}
+
+void	update_args(ssize_t ret,t_btc *inst)
+{
+	(void)ret;
+	(void)inst;
+	return;
+}
+
+
+void	write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
+{
+	inst++;
+	zone++;
+	packer++;
 	return;
 }
 
@@ -133,11 +156,11 @@ ssize_t			solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone,
 		else
 		{
 			ret = FAILURE;
-			jmp = create_btc(BTC_JMP, inst->next);
-			// FREE THE BASTARD
+			jmp = create_btc(BTC_JMP);
+			jmp->next = inst->next;
 			if (can_i_write(zone, jmp))
-				ret = bytecode_inject(packer, zones, zone, inst);
-			// FREE HIM
+				ret = bytecode_inject(packer, zones, zone, jmp);
+			free_btc(jmp);
 			return (ret);
 		}
 	}
@@ -146,6 +169,7 @@ ssize_t			solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone,
 
 // NEED TO TEST IF NO INCLUDES -> Test main ret 0 only
 
+// #include <sys/mman.h>
 // #include <sys/mman.h>
 // int mprotect(void *addr, size_t len, int prot);
 
