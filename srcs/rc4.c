@@ -12,7 +12,7 @@
 
 #include "head.h"
 
-static void	init_permutations(uint8_t *permutations)
+void	init_permutations(uint8_t *permutations)
 {
 	uint8_t	i;
 
@@ -26,17 +26,17 @@ static void	init_permutations(uint8_t *permutations)
 	}
 }
 
-static void	init_key(uint8_t *key)
+void	init_key(uint8_t *key)
 {
 	size_t	i;
 
 	srand(time(NULL));
 	i = -1;
 	while (++i < KEY_SIZE)
-		key[i] = rand() & 0x100;  //voir si modulo est obligatoire
+		key[i] = rand(); // & 0x100;  //voir si modulo est obligatoire
 }
 
-static void	schedule_key(uint8_t *key, uint8_t *permutations)
+void	schedule_key(uint8_t *key, uint8_t *permutations)
 {
 	uint8_t	i;
 	uint8_t j;
@@ -56,7 +56,7 @@ static void	schedule_key(uint8_t *key, uint8_t *permutations)
 	}
 }
 
-static void	crypt_zone(uint8_t *zone, size_t len, uint8_t *permutations)
+void	crypt_zone(uint8_t *zone, size_t len, uint8_t *permutations)
 {
 	size_t	index;
 	uint8_t	i;

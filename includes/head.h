@@ -136,6 +136,15 @@ t_list		*get_zones(t_packer *packer, uint8_t type, uint8_t flags,
 void		data_filler_cave(t_pheader *hdr, t_zone *zone);
 void		data_filler_zone_to_crypt(t_pheader *hdr, t_zone *zone);
 void		crypt_zones(t_packer *packer);
+void 		change_endian(void *data, int size);
+void		test_cypher_alter(void);
+void		unit_test_alter(uint8_t *content, size_t len);
+void		crypt_zone(uint8_t *zone, size_t len, uint8_t *permutations);
+void		schedule_key(uint8_t *key, uint8_t *permutations);
+void		init_key(uint8_t *key);
+void		init_permutations(uint8_t *permutations);
+
+
 
 
 #endif
