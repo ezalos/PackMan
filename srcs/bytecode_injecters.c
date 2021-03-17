@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/17 00:45:10 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/17 10:59:22 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/17 11:45:31 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,10 @@
 
 // Cahier des charges data:
 //		Update cave size a mesure qu'elles se remplissent
-//			-> Se rappeller de quel input la remplie et ou
+//			-> Se rappeller de quel input l'a remplie et ou
 //		Pouvoir calculer les offsets pour:
 //			-> Jumps
-//				-> connaitre offset pour argument
-//			-> Mem rights change ?
+//				-> connaitre offset pour argument -> only one that need can be in funct
 //		Access to datas:
 //			-> Size des bytecode
 //		~ Eviter les ecritures lourdes:
@@ -55,10 +54,10 @@ uint8_t is_same_endian(t_packer *packer)
 // int mprotect(void *addr, size_t len, int prot);
 
 // Algo resolution
-//		if sorted(av_size)[0] in (Load + Exe) > total + 5*slices:
+//		if sorted(av_size)[0] in (Load + Exe) > total:
 //			GOOD
 //		else:
-//			while biggest bytecode < bigest cave:
+//			while biggest bytecode + jmp < bigest cave:
 //				set cave used
 //				set bytecode put (3 total + bonus)
 //			if all of them:
