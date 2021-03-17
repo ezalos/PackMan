@@ -37,6 +37,29 @@
 // 	size_t	arg_nb;
 // } t_bytecode;
 
+#define BTC_JMP 1
+#define BTC_MEM_RIGHTS 2
+#define BTC_DECRYPT 3
+#define BTC_WRITE 4
+
+#define SIZE_JMP 0x05
+#define SIZE_MEM_RIGHTS 123456789
+#define SIZE_DECRYPT 1234567489
+#define SIZE_WRITE 0x71
+
+
+typedef struct	s_btc_args
+{
+	int		jump;
+	void	*mp_addr;
+	size_t	mp_len;
+	int		mp_prot;
+	void	*crypt_addr;
+	void	*crypt_key;
+	size_t	crypt_size;
+}				t_btc_args;
+
+
 uint8_t test_endian(void)
 {
     int     test_var = 1;
@@ -45,6 +68,7 @@ uint8_t test_endian(void)
     return (test_endian[0] == 0);
 }
 
+// Untested
 uint8_t is_same_endian(t_packer *packer)
 {
     return (test_endian() == ENDIAN(packer));
@@ -93,10 +117,10 @@ void    inject_jump(t_packer *packer, uint8_t* dest, int arg1)
     ft_memcpy(dest + 1, &arg1, sizeof(arg1));
 }
 
-#define PAYLOAD_SIZE	0x70
+
 void inject_write(t_packer *packer, uint8_t* dest)
 {
-    uint8_t payload[PAYLOAD_SIZE] = {
+    uint8_t payload[SIZE_WRITE] = {
 		0x57, // push   rdi
 		0x56, // push   rsi
 		0x52, // push   rdx
@@ -141,5 +165,58 @@ void inject_write(t_packer *packer, uint8_t* dest)
 		0x5f  // pop    rdi
 	};
 
-	ft_memcpy(dest, payload, PAYLOAD_SIZE);
+    // DO THIS AT SOME POINT
+    uint8_t endian_flipped_payload[SIZE_WRITE] = {
+		0x57, // push   rdi
+		0x56, // push   rsi
+		0x52, // push   rdx
+		0x50, // push   rax
+
+		0x68, 0x2e, 0x2e, 0x2e, 0x2e, // push   0x2e2e2e2e
+		0x48, 0x89, 0xe6,			  // mov    rsi,rsp
+		0xbf, 0x01, 0x00, 0x00, 0x00, // mov    edi,0x1
+		0xba, 0x04, 0x00, 0x00, 0x00, // mov    edx,0x4
+		0xb8, 0x01, 0x00, 0x00, 0x00, // mov    eax,0x1
+		0x0f, 0x05,					  // syscall
+
+		0x68, 0x57, 0x4f, 0x4f, 0x44, // push   0x444f4f57
+		0x48, 0x89, 0xe6,			  // mov    rsi,rsp
+		0xbf, 0x01, 0x00, 0x00, 0x00, // mov    edi,0x1
+		0xba, 0x04, 0x00, 0x00, 0x00, // mov    edx,0x4
+		0xb8, 0x01, 0x00, 0x00, 0x00, // mov    eax,0x1
+		0x0f, 0x05,					  // syscall
+
+		0x68, 0x59, 0x2e, 0x2e, 0x2e, // push   0x2e2e2e59
+		0x48, 0x89, 0xe6,			  // mov    rsi,rsp
+		0xbf, 0x01, 0x00, 0x00, 0x00, // mov    edi,0x1
+		0xba, 0x04, 0x00, 0x00, 0x00, // mov    edx,0x4
+		0xb8, 0x01, 0x00, 0x00, 0x00, // mov    eax,0x1
+		0x0f, 0x05,					  // syscall
+
+		0x68, 0x2e, 0x0a, 0x00, 0x00, // push   0xa2e
+		0x48, 0x89, 0xe6,			  // mov    rsi,rsp
+		0xbf, 0x01, 0x00, 0x00, 0x00, // mov    edi,0x1
+		0xba, 0x02, 0x00, 0x00, 0x00, // mov    edx,0x2
+		0xb8, 0x01, 0x00, 0x00, 0x00, // mov    eax,0x1
+		0x0f, 0x05,					  // syscall
+
+		0x58, // pop    rax
+		0x58, // pop    rax
+		0x58, // pop    rax
+		0x58, // pop    rax
+
+		0x58, // pop    rax
+		0x5a, // pop    rdx
+		0x5e, // pop    rsi
+		0x5f  // pop    rdi
+	};
+
+    if (!is_same_endian(packer))
+    {
+        ft_memcpy(dest, endian_flipped_payload, SIZE_WRITE);
+    }
+    else
+    {
+        ft_memcpy(dest, payload, SIZE_WRITE);
+    }
 }
