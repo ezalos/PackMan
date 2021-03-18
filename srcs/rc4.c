@@ -33,10 +33,10 @@ void	init_key(uint8_t *key)
 	srand(time(NULL));
 	i = -1;
 	while (++i < KEY_SIZE)
-		key[i] = rand(); // & 0x100;  //voir si modulo est obligatoire
+		key[i] = rand();
 }
 
-void	schedule_key(uint8_t *key, uint8_t *permutations)
+void	schedule_key(uint8_t *permutations, uint8_t *key)
 {
 	uint8_t	i;
 	uint8_t j;
@@ -46,7 +46,7 @@ void	schedule_key(uint8_t *key, uint8_t *permutations)
 	j = 0;
 	while (TRUE)
 	{
-		j = (j + permutations[i] + key[i & 0x8]); // mettre modulo PERM_SIZE si on change le type
+		j = (j + permutations[i] + key[i & (KEY_SIZE - 1)]); // mettre modulo PERM_SIZE si on change le type
 		tmp = permutations[i];
 		permutations[i] = permutations[j];
 		permutations[j] = tmp;
@@ -74,7 +74,7 @@ void	crypt_zone(uint8_t *zone, size_t len, uint8_t *permutations)
 		tmp = permutations[i];
 		permutations[i] = permutations[j];
 		permutations[j] = tmp;
-		k = permutations[permutations[i] + permutations[j] /*mettre modulo PERM_SIZE si on change le type*/]; // mettre modulo 0x100 si on change le type
+		k = permutations[(uint8_t)(permutations[i] + permutations[j]) /*mettre modulo PERM_SIZE si on change le type*/]; // mettre modulo 0x100 si on change le type
 		zone[index] ^= k;
 	}
 }
@@ -89,7 +89,7 @@ void	crypt_zones(t_packer *packer)
 
 	init_permutations(permutations);
 	init_key(key);
-	schedule_key(key, permutations);
+	schedule_key(permutations, key);
 	content = (uint8_t*)(packer->content);
 	to_crypt = packer->to_crypt;
 	while (to_crypt)

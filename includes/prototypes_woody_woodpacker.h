@@ -29,7 +29,7 @@ uint8_t		insert_write(t_packer *packer, int offset);
 int8_t		is_secure_access(uint64_t mem_size,
 			uint64_t offset,
 			uint64_t access_size);
-int			main(int ac, char **av);
+// int			main(int ac, char **av);
 void		make_array_of_arrays(t_packer *packer);
 void		new_try(Elf64_Ehdr *elf, void *data, t_packer *packer);
 int8_t		pack_file(t_packer *packer);

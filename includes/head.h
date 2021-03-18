@@ -140,7 +140,7 @@ void 		change_endian(void *data, int size);
 void		test_cypher_alter(void);
 void		unit_test_alter(uint8_t *content, size_t len);
 void		crypt_zone(uint8_t *zone, size_t len, uint8_t *permutations);
-void		schedule_key(uint8_t *key, uint8_t *permutations);
+void		schedule_key(uint8_t *permutations, uint8_t *key);
 void		init_key(uint8_t *key);
 void		init_permutations(uint8_t *permutations);
 

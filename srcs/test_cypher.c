@@ -56,7 +56,7 @@ void	unit_test_alter(uint8_t *content, size_t len)
 	printf("\n");
 	
 	init_permutations(permutations);
-	schedule_key(key, permutations);
+	schedule_key(permutations, key);
 
 	crypt_zone(dup, len, permutations);
 	printf("  Crypted: ");
@@ -66,7 +66,7 @@ void	unit_test_alter(uint8_t *content, size_t len)
 	printf("\n");
 
 	init_permutations(permutations);
-	schedule_key(key, permutations);
+	schedule_key(permutations, key);
 
 	crypt_zone(dup, len, permutations);
 	printf("Decrypted: ");
