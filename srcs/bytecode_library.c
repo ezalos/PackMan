@@ -85,14 +85,14 @@ t_btc bytecode_lib[BYTECODE_LIB_LEN] = {
 	{
 		BTC_INIT_PERM,
 		SIZE_INIT_PERM,
-		NULL,
+		NULL,			//replace by the function
 		NULL,
 		NULL
 	},
 	{
 		BTC_KEY_SCHED,
 		SIZE_KEY_SCHED,
-		NULL,
+		NULL,			//replace by the function
 		NULL,
 		NULL
 	}
