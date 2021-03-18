@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   head.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/03/16 18:24:05 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/03/18 11:09:28 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ typedef struct	s_zone
 	Elf64_Phdr	*phdr;
 }				t_zone;
 
+
 typedef struct s_sheader	t_sheader;
 
 
@@ -75,6 +76,7 @@ typedef struct	s_pheader
 	int			available_size; //int64_t ?
 }				t_pheader;
 
+
 typedef struct	s_sheader
 {
 	uint8_t		type;
@@ -85,6 +87,7 @@ typedef struct	s_sheader
 
 
 typedef struct stat t_stat;
+
 
 typedef struct	s_packer
 {
@@ -101,6 +104,52 @@ typedef struct	s_packer
 
 	uint64_t		size;
 }					t_packer;
+
+typedef struct	s_btc_args
+{
+	int		jump;
+	void	*mp_addr;
+	size_t	mp_len;
+	int		mp_prot;
+	void	*crypt_addr;
+	void	*crypt_func_addr;
+	size_t	crypt_size;
+	size_t *crypt_key;
+	uint8_t crypt_key_len;
+}				t_btc_args;
+
+typedef void (*t_write_func)(t_btc_args*);
+
+typedef struct	s_btc
+{
+	int				type;
+	size_t			size;
+	// size_t	offset; -> pour arg du jump...
+	t_write_func	func_ptr;// -> Si arguments necessaires, complexe
+	t_btc_args		*args;
+	struct s_btc	*next;
+	// t_zone 
+	// offset_in_zone 
+	// size_in_zone
+}				t_btc;
+
+#define ENDIAN(x) (((Elf64_Ehdr *)x->content)->e_ident[EI_DATA] != ELFDATA2LSB)
+
+#define BYTECODE_LIB_LEN 5
+
+#define BTC_JMP 0
+#define BTC_MEM_RIGHTS 1
+#define BTC_DECRYPT 2
+#define BTC_WRITE 3
+#define BTC_DEF_CRYPT 4
+
+#define SIZE_JMP 0x05
+#define SIZE_MEM_RIGHTS 123456789
+#define SIZE_DECRYPT 1234567489
+#define SIZE_WRITE 0x37
+#define SIZE_DEF_CRYPT 123456
+
+extern t_btc bytecode_lib[BYTECODE_LIB_LEN];
 
 #define _RED "\x1b[31m"
 #define _GREEN "\x1b[32m"
