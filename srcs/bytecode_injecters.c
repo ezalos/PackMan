@@ -99,7 +99,7 @@ void    inject_jump(t_packer *packer, uint8_t* dest, int arg1)
 }
 
 
-void inject_write(t_packer *packer, uint8_t* dest)
+void	inject_write(t_packer *packer, uint8_t* dest)
 {
     uint8_t payload[SIZE_WRITE] = {
 		0x48, 0x83, 0xec, 0x10,						//sub    rsp,0x10
@@ -118,4 +118,88 @@ void inject_write(t_packer *packer, uint8_t* dest)
 	};
 	(void)packer;
 	ft_memcpy(dest, payload, SIZE_WRITE);
+}
+
+void	inject_def_crypt(t_packer *packer, uint8_t *dest)
+{
+	uint8_t	payload[SIZE_DEF_CRYPT] = {
+		0x55,                     	//push   rbp
+		0x48, 0x89, 0xe5,           //mov    rbp,rsp
+		0x53,                  		//push   rbx
+		0x4d, 0x31, 0xc0,           //xor    r8,r8
+		0x48, 0x31, 0xdb,           //xor    rbx,rbx
+		0x48, 0x31, 0xc9,           //xor    rcx,rcx
+		0x48, 0x31, 0xc0,           //xor    rax,rax
+		// 0000000000000058 <_do_cypher>:
+		0xfe, 0xc3,					//inc    bl
+		0x02, 0x0c, 0x1a,          	//add    cl,BYTE PTR [rdx+rbx*1]
+		0x8a, 0x04, 0x1a,           //mov    al,BYTE PTR [rdx+rbx*1]
+		0x8a, 0x24, 0x0a,     	    //mov    ah,BYTE PTR [rdx+rcx*1]
+		0x88, 0x24, 0x1a,           //mov    BYTE PTR [rdx+rbx*1],ah
+		0x88, 0x04, 0x0a,           //mov    BYTE PTR [rdx+rcx*1],al
+		0x48, 0x31, 0xc0,           //xor    rax,rax
+		0x8a, 0x04, 0x1a,           //mov    al,BYTE PTR [rdx+rbx*1]
+		0x02, 0x04, 0x0a,           //add    al,BYTE PTR [rdx+rcx*1]
+		0x8a, 0x04, 0x02,           //mov    al,BYTE PTR [rdx+rax*1]
+		0x4a, 0x31, 0x04, 0x07,     //xor    QWORD PTR [rdi+r8*1],rax
+		0x49, 0xff, 0xc0,           //inc    r8
+		0x49, 0x39, 0xf0,           //cmp    r8,rsi
+		0x75, 0xd7,                 //jne    58 <_do_cypher>
+		0x5b,                      	//pop    rbx
+		0xc9,                      	//leave  
+		0xc3                      	//ret  
+	};
+
+
+
+	(void)packer;
+	ft_memcpy(dest, payload, SIZE_DEF_CRYPT);
+}
+
+void	inject_init_perm(t_packer *packer, uint8_t *dest)
+{
+	uint8_t	payload[SIZE_INIT_PERM] = {
+		0x55,                      					//push   rbp
+		0x48, 0x89, 0xe5,               			//mov    rbp,rsp
+		0xb9, 0xff, 0x00, 0x00, 0x00,       		//mov    ecx,0xff
+		//<_fill_permutations>:
+		0x88, 0x0c, 0x0f,                			//mov    BYTE PTR [rdi+rcx*1],cl
+		0xe2, 0xfb,                   				//loop   9 <_fill_permutations>
+		0x88, 0x0f,                   				//mov    BYTE PTR [rdi],cl
+		0xc9,                     					//leave  
+		0xc3                     			 		//ret    
+	};
+
+	(void)packer;
+	ft_memcpy(dest, payload, SIZE_INIT_PERM);
+}
+
+void	inject_key_sched(t_packer *packer, uint8_t *dest)
+{
+	uint8_t payload[SIZE_KEY_SCHED] = {
+		0x5,                      					//push   rbp
+		0x48, 0x89, 0xe5,                			//mov    rbp,rsp
+		0x48, 0x31, 0xc9,                			//xor    rcx,rcx
+		0x48, 0x31, 0xd2,                			//xor    rdx,rdx
+		//<_do_permutations>:
+		0x48, 0x31, 0xc0,                			//xor    rax,rax
+		0x88, 0xc8,                   				//mov    al,cl
+		0x24, 0x07,                   				//and    al,0x7
+		0x8a, 0x04, 0x06,                			//mov    al,BYTE PTR [rsi+rax*1]
+		0x00, 0xc2,                   				//add    dl,al
+		0x8a, 0x04, 0x0f,                			//mov    al,BYTE PTR [rdi+rcx*1]
+		0x00, 0xc2,                   				//add    dl,al
+		0x8a, 0x04, 0x0f,                			//mov    al,BYTE PTR [rdi+rcx*1]
+		0x8a, 0x24, 0x17,                			//mov    ah,BYTE PTR [rdi+rdx*1]
+		0x88, 0x24, 0x0f,                			//mov    BYTE PTR [rdi+rcx*1],ah
+		0x88, 0x04, 0x17,               			//mov    BYTE PTR [rdi+rdx*1],al
+		0x48, 0xff, 0xc1,                			//inc    rcx
+		0x48, 0x81, 0xf9, 0xff, 0x00, 0x00, 0x00,	//cmp    rcx,0xff
+		0x7e, 0xd7,                   				//jle    1c <_do_permutations>
+		0xc9,                      					//leave  
+		0xc3                      					//ret
+	};
+
+	(void)packer;
+	ft_memcpy(dest, payload, SIZE_KEY_SCHED);
 }

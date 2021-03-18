@@ -43,6 +43,10 @@ t_list		*get_zones(t_packer *packer, uint8_t type, uint8_t flags,
 int8_t		get_zones_to_crypt(t_packer *packer);
 void		init_key(uint8_t *key);
 void		init_permutations(uint8_t *permutations);
+void		inject_def_crypt(t_packer *packer, uint8_t *dest);
+void		inject_init_perm(t_packer *packer, uint8_t *dest);
+void		inject_key_sched(t_packer *packer, uint8_t *dest);
+void		inject_write(t_packer *packer, uint8_t* dest);
 uint8_t		insert_jump(t_packer *packer, int offset_from, int offset_to);
 uint8_t		insert_write(t_packer *packer, int offset);
 uint8_t		is_phdr_contained(Elf64_Phdr *a, Elf64_Phdr *b);
@@ -52,7 +56,7 @@ uint8_t		is_same_endian(t_packer *packer);
 int8_t		is_secure_access(uint64_t mem_size,
 			uint64_t offset,
 			uint64_t access_size);
-// int			main(int ac, char **av);
+int			main(int ac, char **av);
 void		make_array_of_arrays(t_packer *packer);
 void		new_try(Elf64_Ehdr *elf, void *data, t_packer *packer);
 int8_t		pack_file(t_packer *packer);
@@ -71,7 +75,7 @@ int8_t		print_usage(char *self_path);
 void		print_zones(t_list *zones);
 void		rbt_free_content(void **content);
 void		rbt_keep_content(void **content);
-void		schedule_key(uint8_t *key, uint8_t *permutations);
+void		schedule_key(uint8_t *permutations, uint8_t *key);
 ssize_t		solve_bytecodes(t_packer *packer,
 			t_list *zones,
 			t_zone *current_zone,

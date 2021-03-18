@@ -135,19 +135,23 @@ typedef struct	s_btc
 
 #define ENDIAN(x) (((Elf64_Ehdr *)x->content)->e_ident[EI_DATA] != ELFDATA2LSB)
 
-#define BYTECODE_LIB_LEN 5
+#define BYTECODE_LIB_LEN 7
 
 #define BTC_JMP 0
 #define BTC_MEM_RIGHTS 1
 #define BTC_DECRYPT 2
 #define BTC_WRITE 3
 #define BTC_DEF_CRYPT 4
+#define BTC_INIT_PERM 5
+#define BTC_KEY_SCHED 6
 
 #define SIZE_JMP 0x05
 #define SIZE_MEM_RIGHTS 123456789
 #define SIZE_DECRYPT 1234567489
 #define SIZE_WRITE 0x37
-#define SIZE_DEF_CRYPT 123456
+#define SIZE_DEF_CRYPT 61
+#define SIZE_INIT_PERM 18
+#define SIZE_KEY_SCHED 53
 
 extern t_btc bytecode_lib[BYTECODE_LIB_LEN];
 

@@ -6,5 +6,6 @@ RUN apt	install gcc -y
 RUN apt install nasm -y
 RUN apt install zsh -y
 RUN apt install wget -y
+RUN apt install vim -y
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true\
 CMD ["zsh"]
