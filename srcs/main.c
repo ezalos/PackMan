@@ -93,6 +93,8 @@ int8_t		pack_file(t_packer *packer)
 	print_elf_header((Elf64_Ehdr*)packer->content);
 	parse_elf(packer);
 	cave_gathering(packer);
+	printf("\n*** %s: Printing results\n", __func__);
+	parse_print(packer);
 	return (ret);
 	
 	packer->out = NAME_OUT_PACKER;

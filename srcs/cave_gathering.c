@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/10 21:17:59 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/17 19:35:48 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/18 10:51:05 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,14 +113,59 @@ void		print_cave_phdr(t_packer *packer, Elf64_Phdr *a)
 	printf("%s%d%s", (a->p_type & PT_LOAD) ? _GREEN : _RED, get_program_header_index(packer, a), _RESET);
 }
 
-void		print_cave_size(Elf64_Phdr *a, Elf64_Phdr *b)
+t_pheader	*find_t_pheader_from_phdr(t_packer *packer, Elf64_Phdr *a)
 {
+	t_pheader	*the_choosen_one;
+	int i;
+
+	the_choosen_one = NULL;
+	if (packer->phdr_array)
+	{
+		i = -1;
+		while (packer->phdr_array[++i])
+			if (packer->phdr_array[i]->phdr == a)
+				the_choosen_one = packer->phdr_array[i];
+	}
+	return (the_choosen_one);
+}
+
+void		print_cave_size(Elf64_Phdr *a, Elf64_Phdr *b, t_packer *packer)
+{
+
+	long long	size;
+	char		*color;
+	Elf64_Phdr	*quest;
+
+	(void)quest;
 	if (!a || !b)
 		return;
 	if (is_phdr_contained(b, a))
-		printf("->%s%lld%s", _MAGENTA, phdr_space_between_ends(a, b), _RESET);
+	{
+		color = _MAGENTA;
+		size = phdr_space_between_ends(a, b);
+		// if (a->p_offset == b->p_offset)
+		// {
+		// 	if (a->p_filesz > b->p_filesz)
+		// 		quest = b;
+		// 	else
+		// 		quest = a;
+		// }
+		// else
+		// {
+		// 	if (a->p_offset > b->p_offset)
+		// 		quest = a;
+		// 	else
+		// 		quest = b;
+		// }
+		find_t_pheader_from_phdr(packer,  a)->available_size = -size;
+	}
 	else
-		printf("->%s%lld%s", _BLUE, phdr_space_between(a, b), _RESET);
+	{
+		color = _BLUE;
+		size = phdr_space_between(a, b);
+		find_t_pheader_from_phdr(packer, a)->available_size = size;
+	}
+	printf("->%s%lld%s", color, size, _RESET);
 }
 
 Elf64_Phdr	*get_phdr_from_array(t_packer *packer, int i)
@@ -159,13 +204,13 @@ int		print_phdr_contain(t_packer *packer, int i)
 		}
 		else if (next && is_phdr_contained(parent, next))
 		{
-			print_cave_size(curr, get_phdr_from_array(packer, i + 1));
+			print_cave_size(curr, get_phdr_from_array(packer, i + 1), packer);
 			printf(", ");
 		}
 		curr = get_phdr_from_array(packer, ++i);
 		next = get_phdr_from_array(packer, i + 1);
 	}
-	print_cave_size(get_phdr_from_array(packer, i - 1) , parent); //, get_phdr_from_array(packer, i + 1));
+	print_cave_size(get_phdr_from_array(packer, i - 1), parent, packer); //, get_phdr_from_array(packer, i + 1));
 	printf("%s]%s", _YELLOW, _RESET);
 	return i - 1;
 }
@@ -216,14 +261,14 @@ void		cave_gathering_phdr(t_packer *packer)
 				if (get_phdr_from_array(packer, i + 1)
 				&& curr != get_phdr_from_array(packer, i + 1))
 				{
-					print_cave_size(curr, get_phdr_from_array(packer, i + 1));
+					print_cave_size(curr, get_phdr_from_array(packer, i + 1), packer);
 					printf(", ");
 				}
 			}
 			else
 			{
 				print_cave_phdr(packer, curr);
-				print_cave_size(curr, get_phdr_from_array(packer, i + 1));
+				print_cave_size(curr, get_phdr_from_array(packer, i + 1), packer);
 				printf(", ");
 			}
 		}
@@ -235,5 +280,6 @@ void		cave_gathering_phdr(t_packer *packer)
 
 void	cave_gathering(t_packer *packer)
 {
+	// Assumption packer->phdr_array is sorted by ascending offset, and then by descending filesize.
 	cave_gathering_phdr(packer);
 }

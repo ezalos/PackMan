@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/19 16:13:04 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/11 13:56:58 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/18 10:19:51 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,5 @@ void	parse_elf(t_packer *packer)
 		make_array_of_arrays(packer);
 		// printf("\n*** %s: Filling available sizes\n", __func__);
 		// fill_available_size(packer);
-		printf("\n*** %s: Printing results\n", __func__);
-		parse_print(packer);
 	}
 }
