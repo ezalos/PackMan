@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/03/17 19:42:22 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/18 11:09:28 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,7 @@ typedef struct	s_btc
 #define SIZE_JMP 0x05
 #define SIZE_MEM_RIGHTS 123456789
 #define SIZE_DECRYPT 1234567489
-#define SIZE_WRITE 0x71
+#define SIZE_WRITE 0x37
 #define SIZE_DEF_CRYPT 123456
 
 extern t_btc bytecode_lib[BYTECODE_LIB_LEN];

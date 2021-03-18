@@ -3,7 +3,8 @@
 
 int8_t		access_file(t_packer *packer, char *file);
 ssize_t		bytecode_inject(t_packer *packer,
-			t_list *zones,t_zone *zone,
+			t_list *zones,
+			t_zone *zone,
 			t_btc *inst);
 uint8_t		can_i_write(t_zone *zone, t_btc *inst);
 void		cave_gathering(t_packer *packer);
@@ -17,6 +18,7 @@ void		chirurgy(t_packer *packer,
 			Elf64_Shdr *shdr);
 t_rbt		*construct_rbt_phdr(t_packer *packer);
 void		construct_rbt_shdr(t_packer *packer);
+t_btc		*create_btc(int type);
 int8_t		create_rbt_phdr(t_rbt **node, t_pheader **hdr, Elf64_Phdr *phdr);
 int8_t		create_rbt_shdr(t_rbt **node,
 			t_sheader **hdr,
@@ -84,7 +86,7 @@ void		undo_update_zone(t_zone *zone, t_btc *inst);
 void		unit_test_alter(uint8_t *content, size_t len);
 void		unit_test_cypher(char *str, int len, char key);
 void		update_arg_crypt_calls(t_btc *inst, t_zone *zone);
-void		update_args(ssize_t ret,t_btc *inst);
+void		update_args(ssize_t ret, t_btc *inst);
 void		update_zone(t_zone *zone, t_btc *inst);
 void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer);
 void		write_decrypt_call(t_btc_args *arg);
