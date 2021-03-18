@@ -174,6 +174,10 @@ extern t_btc bytecode_lib[BYTECODE_LIB_LEN];
 
 # include "prototypes_woody_woodpacker.h"
 
+extern void	init_permutations_asm(uint8_t *permutations);
+extern void	schedule_key_asm(uint8_t *permutations, uint8_t *key);
+extern void crypt_zone_asm(uint8_t *zone, size_t len, uint8_t *permutations);
+
 void		ft_cypher(char *data, int len, char key);
 void 		print_section_header(t_packer *packer, Elf64_Shdr *shdr);
 void 		print_program_header(Elf64_Phdr *phdr);
