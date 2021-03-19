@@ -120,6 +120,7 @@ void	inject_write(t_packer *packer, uint8_t* dest)
 	ft_memcpy(dest, payload, SIZE_WRITE);
 }
 
+// to call this payload: need to mov zone addr in rdi, len in rsi and permutations addr in rdx
 void	inject_def_crypt(t_packer *packer, uint8_t *dest)
 {
 	uint8_t	payload[SIZE_DEF_CRYPT] = {
@@ -156,6 +157,7 @@ void	inject_def_crypt(t_packer *packer, uint8_t *dest)
 	ft_memcpy(dest, payload, SIZE_DEF_CRYPT);
 }
 
+// to call this payload : need to mov permutations address in rdi
 void	inject_init_perm(t_packer *packer, uint8_t *dest)
 {
 	uint8_t	payload[SIZE_INIT_PERM] = {
@@ -174,6 +176,8 @@ void	inject_init_perm(t_packer *packer, uint8_t *dest)
 	ft_memcpy(dest, payload, SIZE_INIT_PERM);
 }
 
+
+// to call this payload : need to mov permutations address in rdi and key address in rsi
 void	inject_key_sched(t_packer *packer, uint8_t *dest)
 {
 	uint8_t payload[SIZE_KEY_SCHED] = {
@@ -203,3 +207,8 @@ void	inject_key_sched(t_packer *packer, uint8_t *dest)
 	(void)packer;
 	ft_memcpy(dest, payload, SIZE_KEY_SCHED);
 }
+
+
+// decrypt:
+// - allocata 256 bytes for permutations tab on the stack
+// - allocate 8 bytes for the key
