@@ -1,0 +1,50 @@
+Complete payload:
+
+		|	BTC_BEGIN (variable size, variable code):
+		|		- push all registers
+		|		- push (addr + len) * n1 zones_to_decrypt
+		|		- push (addr + len + initial prot) * n2 zones_change_perm
+		|		- push n2
+		|
+		|	BTC_MEM_RIGHTS_1 (const size, const code):
+		|		- loop over n2 (= [rsp]):
+		|			- apply routine to change perm
+		|	
+		|	BTC_DECRYPT (const size, variable code):
+		|		- push key (8 bytes that we know from the crypting part)
+		|		- sub rsp, 0x100 (256 bytes for the permutation tab)
+		|		- call (including preparation of registers) BTC_INIT_PERM
+		|		- call (including preparation of registers) BTC_KEY_SCHED
+		|			* if easiest we can include directly those two steps in BTC_DECRYPT
+		|			without calling functions
+		|		- loop over n1:
+SF1		|			(= [rsp + 0x100 + 8 + n * sizeof(addr + len + initial prot)
+		|				+ sizeof(n)])
+		|			- call (including preparation of registers) BTC_DEF_CRYPT
+		|		- add rsp, 0x108
+		|
+		|	BTC_MEM_RIGHTS_2 (const size, const code):
+		|		- loop over n2 (= [rsp]):
+		|			- apply routine to change perm (using the initial prot)
+		|
+		|	BTC_WRITE_WOODY (const size, const code):
+		|		- writes woody
+		|
+		|	BTC_END (const size, const code):
+		|		- add rsp, 0x10 (sizeof "....Woody....\n")
+		|		- add rsp, n2 * sizeof(addr + len + initial prot)
+		|		- add rsp, n1 * sizeof(addr + len)			
+		|		- pop all registers
+		|
+		|	BTC_JMP (const size, variable code):
+		|		- go to initial entrypoint
+
+
+SF 1-1	|	BTC_INIT_PERM (const size, const code):
+		|		- initialize perm tab
+		
+SF 1-2	|	BTC_KEY_SCHED (const size, const code):
+		|		- make permutations
+
+SF 1-3	|	BTC_DEF_CRYPT (const size, const code):
+		|		- decrypt a zone
