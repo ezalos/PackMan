@@ -3,6 +3,7 @@ Complete payload:
 		|	BTC_BEGIN (variable size, variable code):
 		|		- push all registers
 		|		- push (addr + len) * n1 zones_to_decrypt
+		|		- push n1
 		|		- push (addr + len + initial prot) * n2 zones_change_perm
 		|		- push n2
 		|
