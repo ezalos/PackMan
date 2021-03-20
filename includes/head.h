@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/03/18 11:09:28 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/20 20:17:09 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,10 @@
 # define TRUE		1
 # define FALSE		0
 
+/*
+**	ERROR MANAGEMENT
+*/
+
 # define FILE_NOT_ELF_ERROR			"The file is not of type ELF"
 # define FILE_NOT_64_ERROR			"The file architecture is not x86_64"
 # define FILE_BIG_ENDIAN_ERROR		"The file is big endian"
@@ -47,10 +51,6 @@
 
 # include "librbt.h"
 # include "libft.h"
-
-# define HDR_TYPE_NONE		0
-# define HDR_TYPE_PHDR		1
-# define HDR_TYPE_SHDR		2
 
 # define PERM_SIZE			0x100
 # define KEY_SIZE			0x8
@@ -114,8 +114,8 @@ typedef struct	s_btc_args
 	void	*crypt_addr;
 	void	*crypt_func_addr;
 	size_t	crypt_size;
-	size_t *crypt_key;
-	uint8_t crypt_key_len;
+	size_t	*crypt_key;
+	uint8_t	crypt_key_len;
 }				t_btc_args;
 
 typedef void (*t_write_func)(t_btc_args*);
@@ -135,25 +135,33 @@ typedef struct	s_btc
 
 #define ENDIAN(x) (((Elf64_Ehdr *)x->content)->e_ident[EI_DATA] != ELFDATA2LSB)
 
+/*
+**	BYTECODE LIBRARY
+*/
+
 #define BYTECODE_LIB_LEN 7
 
-#define BTC_JMP 0
-#define BTC_MEM_RIGHTS 1
-#define BTC_DECRYPT 2
-#define BTC_WRITE 3
-#define BTC_DEF_CRYPT 4
-#define BTC_INIT_PERM 5
-#define BTC_KEY_SCHED 6
+#define BTC_CALL_JMP		0
+#define BTC_CALL_MPROTECT	1
+#define BTC_CALL_CYPHER		2
+#define BTC_DEF_WRITE		3
+#define BTC_DEF_CYPHER		4
+#define BTC_DEF_INIT_PERM	5
+#define BTC_DEF_KEY_SCHED	6
 
-#define SIZE_JMP 0x05
-#define SIZE_MEM_RIGHTS 123456789
-#define SIZE_DECRYPT 1234567489
-#define SIZE_WRITE 0x37
-#define SIZE_DEF_CRYPT 61
-#define SIZE_INIT_PERM 18
-#define SIZE_KEY_SCHED 53
+#define SIZE_CALL_JMP		0x05
+#define SIZE_CALL_MPROTECT	123456789
+#define SIZE_CALL_CYPHER	1234567489
+#define SIZE_DEF_WRITE		0x37
+#define SIZE_DEF_CYPHER		61
+#define SIZE_DEF_INIT_PERM	18
+#define SIZE_DEF_KEY_SCHED	53
 
 extern t_btc bytecode_lib[BYTECODE_LIB_LEN];
+
+/*
+**	COLORS
+*/
 
 #define _RED "\x1b[31m"
 #define _GREEN "\x1b[32m"
@@ -171,6 +179,10 @@ extern t_btc bytecode_lib[BYTECODE_LIB_LEN];
 #define CU_LOAD "\033[u"
 #define CU_SAVE "\033[s"
 #define CL_SCREEN "\033[2J"
+
+/*
+**	PROTOTYPES
+*/
 
 # include "prototypes_woody_woodpacker.h"
 

@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/16 10:57:23 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/17 19:26:06 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/20 19:47:24 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,50 +48,50 @@ void	write_decrypt_definition(t_btc_args *arg)
 
 t_btc bytecode_lib[BYTECODE_LIB_LEN] = {
 	{
-		BTC_JMP,
-		SIZE_JMP,
+		BTC_CALL_JMP,
+		SIZE_CALL_JMP,
 		write_jump,
 		NULL,
 		NULL
 	},
 	{
-		BTC_MEM_RIGHTS,
-		SIZE_MEM_RIGHTS,
+		BTC_CALL_MPROTECT,
+		SIZE_CALL_MPROTECT,
 		write_mem_rights,
 		NULL,
 		NULL
 	},
 	{
-		BTC_DECRYPT,
-		SIZE_DECRYPT,
+		BTC_CALL_CYPHER,
+		SIZE_CALL_CYPHER,
 		write_decrypt_call,
 		NULL,
 		NULL
 	},
 	{
-		BTC_WRITE,
-		SIZE_WRITE,
+		BTC_DEF_WRITE,
+		SIZE_DEF_WRITE,
 		write_woody,
 		NULL,
 		NULL
 	},
 	{
-		BTC_DEF_CRYPT,
-		SIZE_DEF_CRYPT,
+		BTC_DEF_CYPHER,
+		SIZE_DEF_CYPHER,
 		write_decrypt_definition,
 		NULL,
 		NULL
 	},
 	{
-		BTC_INIT_PERM,
-		SIZE_INIT_PERM,
+		BTC_DEF_INIT_PERM,
+		SIZE_DEF_INIT_PERM,
 		NULL,			//replace by the function
 		NULL,
 		NULL
 	},
 	{
-		BTC_KEY_SCHED,
-		SIZE_KEY_SCHED,
+		BTC_DEF_KEY_SCHED,
+		SIZE_DEF_KEY_SCHED,
 		NULL,			//replace by the function
 		NULL,
 		NULL

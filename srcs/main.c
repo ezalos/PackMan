@@ -82,24 +82,30 @@ int8_t		pack_file(t_packer *packer)
 
 	ret = SUCCESS;
 	printf("Content: %p\tsize: %zu\n", packer->content, packer->size);
-	// ret = get_zones_to_crypt(packer);
-	// if (ret == SUCCESS)
-	// 	ret = get_payload_zones(packer);
-	// if (ret == SUCCESS)
-	// {
-	// 	write_payload(packer);
-	// 	crypt_file(packer);
-	// }
 	print_elf_header((Elf64_Ehdr*)packer->content);
 	parse_elf(packer);
 	cave_gathering(packer);
 	printf("\n*** %s: Printing results\n", __func__);
 	parse_print(packer);
-	return (ret);
-	
-	packer->out = NAME_OUT_PACKER;
-	browse_file(packer);
-	save_woody(packer); 
+	printf("\n*** %s: Get zones to crypt\n", __func__);
+	ret = get_zones_to_crypt(packer);
+	if (ret == SUCCESS)
+	{
+		printf("\n*** %s: Get payload zones\n", __func__);
+		ret = get_payload_zones(packer);
+	}
+	if (ret == SUCCESS)
+	{
+		// write_payload(packer);
+		// crypt_file(packer);
+	}
+	printf("\n*** %s: Chirurgy\n", __func__);
+	if (chirurgy(packer) != FAILURE)
+	{
+		packer->out = NAME_OUT_PACKER;
+		printf("\n*** %s: Save woody\n", __func__);
+		save_woody(packer);
+	}
 	return (ret);
 }
 
