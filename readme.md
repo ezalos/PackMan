@@ -30,7 +30,7 @@ or:
 
 ```
 make
-./woody [FILE_TO_CRYPT]
+./woody_woodpacker [FILE_TO_CRYPT]
 ```
 
 ## Walkthrough
