@@ -1,24 +1,23 @@
 Complete payload:
 
-		|	BTC_PUSHA (variable size, variable code):
+		|	BTC_BEGIN (const size, const code):
 		|		- push all registers
 		|
-		|	BTC_MEM_RIGHTS (const size, variable code):
+		|	BTC_MPROTECT (const size, variable code):
 		|		- call mprotect (including preparation of registers)
 		|	
 		|					|
 		|					|
 		|					|
 		|
-		|	BTC_DECRYPT_ZONES (const size, variable code):
+		|	BTC_DECRYPT_PREPARE (const size, variable code):
 		|		- push key (8 bytes that we know from the crypting part)
 		|		- sub rsp, 0x100 (256 bytes for the permutation tab)
 		|		- call (including preparation of registers) BTC_INIT_PERM
 		|		- call (including preparation of registers) BTC_KEY_SCHED
-		|			* if easiest we can include directly those two steps in BTC_DECRYPT
-		|			without calling functions		
+		|			* if easier we can include directly those two steps in BTC_DECRYPT
+		|			without calling functions	
 		|
-		|	
 		|	BTC_DECRYPT_ZONE (const size, variable code):
 SF1		|		- call BTC_DEF_CRYPT (including preparation of registers)
 		|
@@ -26,18 +25,21 @@ SF1		|		- call BTC_DEF_CRYPT (including preparation of registers)
 		|					|
 		|					|
 		|
-		|	BTC_MEM_RIGHTS (const size, const code):
+		|	BTC_WRITE_WOODY (const size, const code):
+		|		- writes woody
+		|		- add rsp, 0x10 (sizeof "....Woody....\n")
+		|
+		|	BTC_END (const size, const code):
+		|		- add rsp, 0x10 (sizeof "....Woody....\n")
+		|		- add rsp, 0x108 (perm tab + key)
+		|		- pop all registers
+		|
+		|	BTC_MPROTECT (const size, variable code):
 		|		- call mprotect (including preparation of registers) to set permissions back
 		|
 		|					|
 		|					|
 		|					|
-		|
-		|	BTC_WRITE_WOODY (const size, const code):
-		|		- writes woody
-		|
-		|	BTC_POPA (const size, const code):			
-		|		- pop all registers
 		|
 		|	BTC_JMP (const size, variable code):
 		|		- go to initial entrypoint
