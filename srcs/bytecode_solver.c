@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/21 11:12:31 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/21 13:43:45 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_btc *inst)
 {
+	uint8_t	headless;
 	ssize_t ret;
 
 	if (inst->type == BTC_DEF_CYPHER)
@@ -21,7 +22,9 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_btc *i
 		update_arg_crypt_calls(inst, zone);
 	}
 	update_zone(zone, inst);
-	ret = solve_bytecodes(packer, zones, zone, inst->next, inst->type == BTC_CALL_JMP);
+	//TODO Headless resolution
+	headless = inst->type == BTC_CALL_JMP;
+	ret = solve_bytecodes(packer, zones, zone, inst->next, headless);
 	undo_update_zone(zone, inst);
 	if (ret != FAILURE)
 	{
