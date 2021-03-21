@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_zones.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/15 17:54:59 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/03/16 11:36:48 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/03/21 13:06:05 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ static t_list	*create_zone(t_pheader *hdr, void (*data_filler)(t_pheader*, t_zon
 
 	if (!(zone = (t_zone*)malloc(sizeof(*zone))))
 		return (NULL);
+	ft_memset(zone, 0, sizeof(t_zone));
 	data_filler(hdr, zone);
 	if (!(node = ft_list_new((void*)zone)))
 	{
