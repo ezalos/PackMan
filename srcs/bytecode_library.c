@@ -48,9 +48,9 @@ void	write_decrypt_definition(t_btc_args *arg)
 
 t_btc bytecode_lib[BYTECODE_LIB_LEN] = {
 	{
-		BTC_CALL_JMP,
-		SIZE_CALL_JMP,
-		write_jump,
+		BTC_DEF_BEGIN,
+		SIZE_DEF_BEGIN,
+		NULL,
 		NULL,
 		NULL
 	},
@@ -58,6 +58,13 @@ t_btc bytecode_lib[BYTECODE_LIB_LEN] = {
 		BTC_CALL_MPROTECT,
 		SIZE_CALL_MPROTECT,
 		write_mem_rights,
+		NULL,
+		NULL
+	},
+	{
+		BTC_DEF_CYPHER_PREPARE,
+		SIZE_DEF_CYPHER_PREPARE,
+		NULL,
 		NULL,
 		NULL
 	},
@@ -76,9 +83,16 @@ t_btc bytecode_lib[BYTECODE_LIB_LEN] = {
 		NULL
 	},
 	{
-		BTC_DEF_CYPHER,
-		SIZE_DEF_CYPHER,
-		write_decrypt_definition,
+		BTC_DEF_END,
+		SIZE_DEF_END,
+		NULL,
+		NULL,
+		NULL
+	},
+	{
+		BTC_CALL_JMP,
+		SIZE_CALL_JMP,
+		write_jump,
 		NULL,
 		NULL
 	},
@@ -93,6 +107,13 @@ t_btc bytecode_lib[BYTECODE_LIB_LEN] = {
 		BTC_DEF_KEY_SCHED,
 		SIZE_DEF_KEY_SCHED,
 		NULL,			//replace by the function
+		NULL,
+		NULL
+	},
+	{
+		BTC_DEF_CYPHER,
+		SIZE_DEF_CYPHER,
+		write_decrypt_definition,
 		NULL,
 		NULL
 	}

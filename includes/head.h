@@ -133,29 +133,38 @@ typedef struct	s_btc
 	// size_in_zone
 }				t_btc;
 
-#define ENDIAN(x) (((Elf64_Ehdr *)x->content)->e_ident[EI_DATA] != ELFDATA2LSB)
+# define ENDIAN(x) (((Elf64_Ehdr *)x->content)->e_ident[EI_DATA] != ELFDATA2LSB)
 
 /*
 **	BYTECODE LIBRARY
 */
 
-#define BYTECODE_LIB_LEN 7
+# define BYTECODE_LIB_LEN 			10
 
-#define BTC_CALL_JMP		0
-#define BTC_CALL_MPROTECT	1
-#define BTC_CALL_CYPHER		2
-#define BTC_DEF_WRITE		3
-#define BTC_DEF_CYPHER		4
-#define BTC_DEF_INIT_PERM	5
-#define BTC_DEF_KEY_SCHED	6
+# define BTC_DEF_BEGIN				0
+# define BTC_CALL_MPROTECT			1
+# define BTC_DEF_CYPHER_PREPARE		2
+# define BTC_CALL_CYPHER			3
+# define BTC_DEF_WRITE				4		
+# define BTC_DEF_END				5
+# define BTC_CALL_JMP				6
+# define BTC_DEF_INIT_PERM			7
+# define BTC_DEF_KEY_SCHED			8
+# define BTC_DEF_CYPHER				9
 
-#define SIZE_CALL_JMP		0x05
-#define SIZE_CALL_MPROTECT	123456789
-#define SIZE_CALL_CYPHER	1234567489
-#define SIZE_DEF_WRITE		0x37
-#define SIZE_DEF_CYPHER		61
-#define SIZE_DEF_INIT_PERM	18
-#define SIZE_DEF_KEY_SCHED	53
+
+# define SIZE_DEF_BEGIN				27
+# define SIZE_CALL_MPROTECT			64
+# define SIZE_DEF_CYPHER_PREPARE	55
+# define SIZE_CALL_CYPHER			58
+# define SIZE_DEF_WRITE				55		
+# define SIZE_DEF_END				32
+# define SIZE_CALL_JMP				5
+# define SIZE_DEF_INIT_PERM			18
+# define SIZE_DEF_KEY_SCHED			53
+# define SIZE_DEF_CYPHER			61
+
+
 
 extern t_btc bytecode_lib[BYTECODE_LIB_LEN];
 

@@ -1,6 +1,6 @@
 section .text
 
-btc_begin:
+btc_def_begin:
 	push rbp
 	push rsp
 	push rax
