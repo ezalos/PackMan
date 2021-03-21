@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/19 16:13:04 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/18 10:19:51 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/21 11:00:54 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void 	parse_print(t_packer *packer)
 		phdr = packer->phdr_array[i_p]->phdr;
 		printf("%sPhdr %2d [%2d]%s\t%sLoad: %s%s\n", _GREEN, i_p, get_program_header_index(packer, packer->phdr_array[i_p]->phdr), _RESET, _YELLOW, phdr->p_type & PT_LOAD ? "True" : "False", _RESET);
 		printf("Start 0x%lx\tSegment size   %ld\n", phdr->p_offset, phdr->p_filesz);
-		printf("End   0x%lx\t%sAvailable size %d%s\n\n", phdr->p_filesz + phdr->p_offset, _CYAN, packer->phdr_array[i_p]->available_size, _RESET);
+		printf("End   0x%lx\t%sAvailable size %d%s\n", phdr->p_filesz + phdr->p_offset, _CYAN, packer->phdr_array[i_p]->available_size, _RESET);
 		if (!packer->phdr_array[i_p]->shdr_array)
 			continue;
 		i_s = -1;
@@ -38,7 +38,7 @@ void 	parse_print(t_packer *packer)
 			printf("\t%sShdr %2d [%2d]:\t%s%s\n", _GREEN, i_s, get_section_header_index(packer, shdr), get_sec_name(packer, shdr), _RESET);
 			printf("\t%sAlloc: %s\tExec: %s%s\n", _YELLOW,shdr->sh_flags & SHF_ALLOC ? "True" : "False", shdr->sh_flags & SHF_EXECINSTR ? "True" : "False", _RESET);
 			printf("\tStart 0x%lx\tSection size   %ld\n", shdr->sh_offset, shdr->sh_size);
-			printf("\tEnd   0x%lx\t%sAvailable size %d%s\n\n", shdr->sh_size + shdr->sh_offset, _CYAN, packer->phdr_array[i_p]->shdr_array[i_s]->available_size, _RESET);
+			printf("\tEnd   0x%lx\t%sAvailable size %d%s\n", shdr->sh_size + shdr->sh_offset, _CYAN, packer->phdr_array[i_p]->shdr_array[i_s]->available_size, _RESET);
 		}
 	}
 }
