@@ -42,27 +42,6 @@ int8_t		access_file(t_packer *packer, char *file)
 	return (SUCCESS);
 }
 
-// choper la zone a crypter
-// choper la zone ou s'inserer
-// modifier le entry point (plus complexe), et changer le jump final dans la zone que l'on insere
-// crypter
-
-int8_t		get_zones_to_crypt(t_packer *packer)
-{
-	(void)packer;
-	return (SUCCESS);
-}
-
-int8_t		get_payload_zones(t_packer *packer)
-{
-	// recuperer les zones espacees + adresse header des segments + sections auxquelles elles sont rattachees
-	// verification qu'il y a suffisamment d'espace
-	// si non, verifier qu'il y a de un .NOTE avec suffisamment d'espace
-
-	(void)packer;
-	return (SUCCESS);
-}
-
 int8_t save_woody(t_packer *packer)
 {
 	int fd;
