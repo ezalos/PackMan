@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/17 19:29:02 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/20 20:16:28 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/21 11:16:15 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,10 @@ void		undo_update_zone(t_zone *zone, t_btc *inst)
 
 uint8_t		can_i_write(t_zone *zone, t_btc *inst)
 {
+	printf("Zone: %p\n", zone);
+	printf("Inst: %p\n", inst);
+	printf("Zone->size: %zu\n", zone->size);
+
 	return (zone->size <= inst->size);
 }
 

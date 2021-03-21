@@ -6,7 +6,7 @@
 #    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/20 16:46:57 by ezalos            #+#    #+#              #
-#    Updated: 2021/02/19 20:43:56 by ezalos           ###   ########.fr        #
+#    Updated: 2021/03/21 11:14:38 by ezalos           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ CC			= gcc
 AR			= ar -rcs
 NS			= nasm -f elf64
 
-CFLAGS		= -Wall -Werror -Wextra
+CFLAGS		= -Wall -Werror -Wextra -g3
 
 #For developping purposes:
 # CFLAGS 		+= -fsanitize=address,undefined -g3
