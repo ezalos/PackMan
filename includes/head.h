@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   head.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/03/20 20:17:09 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/23 22:41:53 by rkirszba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,7 @@ typedef struct	s_btc
 	// size_t	offset; -> pour arg du jump...
 	t_write_func	func_ptr;// -> Si arguments necessaires, complexe
 	t_btc_args		*args;
-	struct s_btc	*next;
+	// struct s_btc	*next;
 	// t_zone 
 	// offset_in_zone 
 	// size_in_zone
