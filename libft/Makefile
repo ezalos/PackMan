@@ -6,7 +6,7 @@
 #    By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/12 14:42:41 by rkirszba          #+#    #+#              #
-#    Updated: 2021/02/20 18:26:26 by rkirszba         ###   ########.fr        #
+#    Updated: 2021/03/23 22:32:23 by rkirszba         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,6 +46,10 @@ SRCS_NAMES		= ft_strlen.c\
 				  ft_list_prepend.c\
 				  ft_list_sort.c\
 				  ft_list_free.c\
+				  ft_dlist_new.c\
+				  ft_dlist_append.c\
+				  ft_dlist_prepend.c\
+				  ft_dlist_free.c\
 				  ft_btree_new.c\
 				  ft_btree_insert.c\
 				  ft_btree_inorder.c\

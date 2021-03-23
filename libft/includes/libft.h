@@ -6,7 +6,7 @@
 /*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 14:32:42 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/02/20 18:27:03 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/03/23 22:20:25 by rkirszba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,14 @@ typedef struct	s_list
 	void			*data;
 	struct s_list	*next;
 }				t_list;
+
+typedef struct	s_dlist
+{
+	void			*data;
+	struct s_dlist	*prev;
+	struct s_dlist	*next;
+}				t_dlist;
+
 
 
 typedef struct	s_btree
@@ -74,6 +82,15 @@ void			ft_list_append(t_list **head, t_list *node);
 void			ft_list_prepend(t_list **head, t_list *node);
 void			ft_list_free(t_list *head, void (*f)(void*));
 void			ft_list_sort(t_list *head, int (*f)(void*, void*));
+
+/*
+** Double linked lists
+*/
+
+t_dlist			*ft_dlist_new(void *data);
+void			ft_dlist_append(t_dlist **head, t_dlist *node);
+void			ft_dlist_prepend(t_dlist **head, t_dlist *node);
+void			ft_dlist_free(t_dlist *head, void (*f)(void*));
 
 /*
 ** Binary Trees
