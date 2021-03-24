@@ -1,0 +1,27 @@
+typedef struct	s_btc
+{
+	int				type;
+	size_t			size;
+	t_write_func	func_ptr;
+	void			*args;
+}				t_btc;
+
+liste doublement chainee du set d'instructions minimal:
+btc_def_begin -> btc_mprotect (pour que le segment texte devienne writable) -> btc_def_cypher_prepare
+-> btc_call_cypher * (n zones to decrypt) -> btc_def_write -> btc_call_mprotect (pour que le segment
+texte redevienne executable) -> btc_def_end -> btc_call_jmp -> btc_def_init_perm -> btc_def_key_sched
+-> btc_def_cypher
+
+
+algo:
+- trouve une place dispo pour chaque element de la liste d'instructions
+- eventuellement ajoute des instructions (jmp et mprotect si pas assez de place)
+- met à jour les pheader (changement de filesz et memsz)
+- met a jour args
+- permet d'obtenir : liste d'instructions mises à jour
+	avec l'offset de chaque instruction dans le fichier et sa vaddr
+
+
+ecriture des instructions dans le fichier:
+- les instructions au code variable utilisent args pour ecrire les informations manquantes
+

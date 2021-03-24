@@ -1,3 +1,4 @@
 *.o
 peda
 peda-session*
+libft/test.c

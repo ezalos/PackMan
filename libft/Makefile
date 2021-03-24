@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
+#    By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/12 14:42:41 by rkirszba          #+#    #+#              #
-#    Updated: 2021/03/24 17:32:00 by ezalos           ###   ########.fr        #
+#    Updated: 2021/03/24 19:46:22 by rkirszba         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,6 +50,8 @@ SRCS_NAMES		= ft_strlen.c\
 				  ft_dlist_append.c\
 				  ft_dlist_append_end.c\
 				  ft_dlist_prepend.c\
+				  ft_dlist_remove.c\
+				  ft_dlist_cut.c\
 				  ft_dlist_free.c\
 				  ft_btree_new.c\
 				  ft_btree_insert.c\
