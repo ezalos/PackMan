@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 14:32:42 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/03/23 22:20:25 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/03/24 17:30:06 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ void			ft_list_sort(t_list *head, int (*f)(void*, void*));
 
 t_dlist			*ft_dlist_new(void *data);
 void			ft_dlist_append(t_dlist **head, t_dlist *node);
+void			ft_dlist_append_end(t_dlist **head, t_dlist *node);
 void			ft_dlist_prepend(t_dlist **head, t_dlist *node);
 void			ft_dlist_free(t_dlist *head, void (*f)(void*));
 

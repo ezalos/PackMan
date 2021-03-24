@@ -12,24 +12,24 @@
 
 #include "head.h"
 
-t_btc		*blueprint_creation(t_packer *packer)
+t_dlist		*blueprint_creation(t_packer *packer)
 {
-	t_btc *blueprint;
+	t_dlist *blueprint;
+	t_dlist *inst;
 
 	(void)packer;
-	blueprint = create_btc(BTC_DEF_WRITE);
-	printf("Blueprint: %p\n", blueprint);
-	blueprint->next = create_btc(BTC_CALL_JMP);
-	printf("Blueprint->next: %p\n", blueprint->next);
+	blueprint = ft_dlist_new(create_btc(BTC_DEF_WRITE));
+	inst = ft_dlist_new(create_btc(BTC_CALL_JMP));
+	ft_dlist_append(*blueprint, inst);
 	return (blueprint);
 }
 
 ssize_t		chirurgy(t_packer *packer)
 {
-	t_btc	*blueprint;
+	t_dlist	*blueprint;
 	ssize_t ret;
 
-	printf("\n*** %s: Creating blueaprint\n", __func__);
+	printf("\n*** %s: Creating blueprint\n", __func__);
 	blueprint = blueprint_creation(packer);
 
 	printf("\n*** %s: Solving injection\n", __func__);

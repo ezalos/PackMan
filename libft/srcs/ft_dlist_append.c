@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_dlist_append.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/23 22:09:26 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/03/23 22:12:23 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/03/24 17:31:43 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,9 @@ void	ft_dlist_append(t_dlist **head, t_dlist *node)
 		return ;
 	}
 	curs = *head;
-	while (curs->next)
-		curs = curs->next;
-	curs->next = node;
 	node->prev = curs;
+	node->next = curs->next;
+	if (curs->next)
+		curs->prev = node;
+	curs->next = node;
 }
