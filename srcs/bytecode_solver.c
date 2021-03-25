@@ -114,6 +114,8 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 		// else
 		ret = zone->offset;
 	}
+	depth -= 1;
+	printf("\n");
 	return (ret);
 }
 
@@ -132,7 +134,7 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, 
 	(void)current_zone;
 	if (inst == NULL)
 	{
-		logging_recursive("Inst is NULL -> WE FOUND THE SOLUTION!!\n");
+		logging_recursive("Inst is NULL -> WE FOUND THE SOLUTION!!\n\n");
 		depth -= 1;
 		return (((Elf64_Ehdr *)packer->content)->e_entry);
 	}
