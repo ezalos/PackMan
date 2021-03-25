@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/25 23:23:07 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 23:23:14 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 23:34:37 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int8_t		gather_all_infos(t_packer *packer)
 	packer->to_crypt = get_zones(packer, PT_LOAD, PF_R, &data_filler_zone_to_crypt);
 	packer->caves = get_zones(packer, PT_LOAD, PF_X | PF_R, &data_filler_cave);
 
-	if (DEBUG == 2)
+	if (debug_level == 2)
 	{
 		print_zones(packer->to_crypt);
 		print_zones(packer->caves);

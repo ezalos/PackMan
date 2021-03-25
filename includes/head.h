@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/03/25 22:22:45 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 23:40:23 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@
 # include <unistd.h>
 # include <time.h>
 
-# define DEBUG		2
+# define DEBUG		0
+extern int debug_level;
 
 # define SUCCESS	0
 # define FAILURE	-1

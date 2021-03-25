@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 22:25:43 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 23:38:55 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,7 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 		// else
 	}
 	depth -= 1;
-	printf("\n");
+	logging("\n");
 	return (ret);
 }
 
@@ -136,7 +136,7 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, 
 
 	// depth for aestethics 
 	depth += 1;
-	printf("\n");
+	logging("\n");
 	(void)current_zone;
 	if (inst == NULL)
 	{

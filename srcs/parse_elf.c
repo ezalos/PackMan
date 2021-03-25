@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/19 16:13:04 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 22:59:41 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 23:35:21 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,16 +45,15 @@ void 	parse_print(t_packer *packer)
 
 int8_t	parse_elf(t_packer *packer)
 {
-	printf("*** %s Constructing phdr tree\n", __func__);
+	logging("*** %s Constructing phdr tree\n", __func__);
 	packer->phdr_tree = construct_rbt_phdr(packer);
 	if (packer->phdr_tree)
 	{
-		printf("\n*** %s: Constructing all shdr trees\n", __func__);
+		logging("\n*** %s: Constructing all shdr trees\n", __func__);
 		construct_rbt_shdr(packer);
-		printf("\n*** %s: Convert tree of trees in array of arrays\n", __func__);
+		logging("\n*** %s: Convert tree of trees in array of arrays\n", __func__);
 		make_array_of_arrays(packer);
-		// printf("\n*** %s: Filling available sizes\n", __func__);
-		// fill_available_size(packer);
+		logging("\n*** %s: Checking file memory referenced by phdr & shdr\n", __func__);
 		if (FALSE == parse_elf_check_phdr(packer))
 		{
 			dprintf(2, "ERROR: Corrupted binary\n");

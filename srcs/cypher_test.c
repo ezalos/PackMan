@@ -35,9 +35,6 @@ void		test_cypher(void)
 	unit_test_cypher("", 0, 0b10101010);
 }
 
-
-
-
 void	unit_test_alter(uint8_t *content, size_t len)
 {
 	uint8_t		*dup;
