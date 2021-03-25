@@ -80,5 +80,4 @@ void	update_args(t_btc *inst, t_zone *zone, ssize_t ret)
 		dprintf(2, "Error: Unknown btc type\n");
 	}
 	return;
-	BTC_DEF_BEGIN
 }
