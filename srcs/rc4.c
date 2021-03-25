@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   rc4.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/16 17:04:49 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/03/16 18:47:29 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/03/25 19:50:55 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	init_key(uint8_t *key)
 {
 	size_t	i;
 
-	srand(time(NULL));
+	srand(clock());
 	i = -1;
 	while (++i < KEY_SIZE)
 		key[i] = rand();
@@ -87,15 +87,15 @@ void	crypt_zones(t_packer *packer)
 	t_list		*to_crypt;
 	t_zone		*zone;
 
-	init_permutations(permutations);
+	init_permutations(permutations);//asm
 	init_key(key);
-	schedule_key(permutations, key);
+	schedule_key(permutations, key);//asm
 	content = (uint8_t*)(packer->content);
 	to_crypt = packer->to_crypt;
 	while (to_crypt)
 	{
 		zone = (t_zone*)(to_crypt->data);
-		crypt_zone(content + zone->offset, zone->size, permutations);
+		crypt_zone(content + zone->offset, zone->size, permutations);//asm
 		to_crypt = to_crypt->next;
 	}
 }
