@@ -6,7 +6,7 @@
 #    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/20 16:46:57 by ezalos            #+#    #+#              #
-#    Updated: 2021/03/25 01:05:07 by ezalos           ###   ########.fr        #
+#    Updated: 2021/03/25 15:50:42 by ezalos           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,6 +38,7 @@ ASM_EXT		= .asm
 
 SRCS_DIR	= srcs/
 HEAD_DIR	= includes/
+HEAD_FILES	= $(wildcard $(HEAD_DIR)*.h)
 OBJS_DIR	= objs/
 
 $(shell mkdir -p $(OBJS_DIR))
@@ -55,10 +56,10 @@ OBJS_ASM	= $(SRCS_ASM:$(SRCS_DIR)%$(ASM_EXT)=$(OBJS_DIR)%.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(OBJS_ASM) $(LIB_RBT) $(LIB_FT)
+$(NAME): $(OBJS) $(OBJS_ASM) $(LIB_RBT) $(LIB_FT) $(HEAD_FILES)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(OBJS_ASM) -I $(HEAD_DIR) -I $(LIB_RBT_INC) $(LIB_RBT) -I $(LIB_FT_INC) $(LIB_FT)
 
-$(OBJS_DIR)%.o: $(SRCS_DIR)%.c Makefile $(LIB_RBT) $(LIB_FT)
+$(OBJS_DIR)%.o: $(SRCS_DIR)%.c Makefile $(LIB_RBT) $(LIB_FT) $(HEAD_FILES)
 	$(CC) $(CFLAGS) -c $< -o $@ -I$(HEAD_DIR) -I$(LIB_RBT_INC) -L$(LIB_RBT_DIR) -I$(LIB_FT_INC) -L$(LIB_FT_DIR)
 
 $(OBJS_DIR)%.o: $(SRCS_DIR)%$(ASM_EXT) Makefile $(LIB_RBT) $(LIB_FT)

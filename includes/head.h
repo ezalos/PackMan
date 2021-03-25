@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/03/25 02:10:47 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 15:51:22 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,7 +153,7 @@ typedef struct	s_btc
 # define BTC_DEF_CYPHER				9
 
 
-# define SIZE_DEF_BEGIN				26
+# define SIZE_DEF_BEGIN				25
 # define SIZE_CALL_MPROTECT			64
 # define SIZE_DEF_CYPHER_PREPARE	55
 # define SIZE_CALL_CYPHER			58
