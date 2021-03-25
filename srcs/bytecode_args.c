@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:13:17 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/24 23:24:40 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 16:25:18 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	update_args(t_btc *inst, t_zone *zone, ssize_t ret)
 {
 	if (inst->type == BTC_CALL_JMP)
 	{
-		inst->args->jump = ret - (zone->offset + 1 /*instuction code (0xe9) size*/);
+		inst->args->jump = ret - (zone->offset + inst->size/*instuction code (0xe9) size*/);
 	}
 	else if (inst->type == BTC_CALL_MPROTECT)
 	{

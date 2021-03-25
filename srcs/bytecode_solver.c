@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 15:39:25 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 16:08:46 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,10 +72,10 @@ void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
 
 	dest = zone->offset + packer->content;
 	logging_recursive("%s : %s\n", __func__, btc_to_str(inst));
-	logging_recursive("%d\n", inst->type);
-	logging_recursive("Writing at offset: %zu or known under the cute name 0x%lx\n", zone->offset, zone->offset);
+	logging_recursive("Writing at offset: 0x%lx (%ld)\n", zone->offset, zone->offset);
+	logging_recursive("Btc localisation: [%lx - %lx]\n", zone->offset, zone->offset + inst->size);
 	logging_recursive("Size is: %zu\n", inst->size);
-	logging_recursive("It's in phdr nb %d\n", get_program_header_index(packer, zone->phdr));
+	logging_recursive("Phdr nb %d\n", get_program_header_index(packer, zone->phdr));
 	inst->func_ptr(packer, dest, inst->args);
 	zone->phdr->p_filesz += inst->size;
 	zone->phdr->p_memsz += inst->size;
