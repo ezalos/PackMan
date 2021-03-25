@@ -71,9 +71,14 @@ void	update_args(t_btc *inst, t_zone *zone, ssize_t ret)
 	{
 		// Nothing
 	}
+	else if (inst->type == BTC_DEF_BEGIN)
+	{
+		// Nothing
+	}
 	else
 	{
 		dprintf(2, "Error: Unknown btc type\n");
 	}
 	return;
+	BTC_DEF_BEGIN
 }
