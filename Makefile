@@ -6,7 +6,7 @@
 #    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/20 16:46:57 by ezalos            #+#    #+#              #
-#    Updated: 2021/03/21 11:14:38 by ezalos           ###   ########.fr        #
+#    Updated: 2021/03/25 01:05:07 by ezalos           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -97,6 +97,7 @@ endif
 run: $(NAME)
 	rm -f $(PACKED)
 	./$(NAME) $(COMMAND_ARGS)
+	chmod 777 $(PACKED)
 	chmod +x $(PACKED)
 
 prototypes:

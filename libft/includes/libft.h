@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 14:32:42 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/03/24 19:46:00 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/03/24 23:40:40 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ void			ft_dlist_append(t_dlist **head, t_dlist *node);
 void			ft_dlist_append_end(t_dlist **head, t_dlist *node);
 void			ft_dlist_prepend(t_dlist **head, t_dlist *node);
 void			ft_dlist_remove(t_dlist **head, t_dlist *node);
-t_dlist			*ft_dlist_cut(t_dlist *head, t_dlist *node);
+t_dlist			*ft_dlist_cut(t_dlist **head, t_dlist *node);
 void			ft_dlist_free(t_dlist *head, void (*f)(void*));
 
 /*

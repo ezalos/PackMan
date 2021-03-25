@@ -177,6 +177,8 @@ int			main(int ac, char **av)
 	// parse_elf(&packer);
 	if (ret == SUCCESS)
 		ret = pack_file(&packer);
+	printf("Entry point: %p\n", (void*)((Elf64_Ehdr*)packer.content)->e_entry);
+	return 0;
 	printf("GET ZONES\n");
 	packer.to_crypt = get_zones(&packer, PT_LOAD, PF_R, &data_filler_zone_to_crypt);
 	print_zones(packer.to_crypt);

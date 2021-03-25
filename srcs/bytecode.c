@@ -18,9 +18,13 @@ t_dlist		*blueprint_creation(t_packer *packer)
 	t_dlist *inst;
 
 	(void)packer;
-	blueprint = ft_dlist_new(create_btc(BTC_DEF_WRITE));
+	blueprint = ft_dlist_new(create_btc(BTC_DEF_BEGIN));
+	inst = ft_dlist_new(create_btc(BTC_DEF_WRITE));
+	ft_dlist_append_end(&blueprint, inst);
 	inst = ft_dlist_new(create_btc(BTC_CALL_JMP));
-	ft_dlist_append(*blueprint, inst);
+	ft_dlist_append_end(&blueprint, inst);
+	inst = ft_dlist_new(create_btc(BTC_DEF_END));
+	ft_dlist_append_end(&blueprint, inst);
 	return (blueprint);
 }
 

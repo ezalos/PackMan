@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/23 22:09:26 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/03/24 17:31:43 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/24 23:22:22 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 void	ft_dlist_append(t_dlist **head, t_dlist *node)
 {
 	t_dlist *curs;
+	t_dlist *prev;
+	t_dlist *next;
 
 	if (!head || !node)
 		return ;
@@ -24,9 +26,12 @@ void	ft_dlist_append(t_dlist **head, t_dlist *node)
 		return ;
 	}
 	curs = *head;
-	node->prev = curs;
-	node->next = curs->next;
-	if (curs->next)
-		curs->prev = node;
-	curs->next = node;
+	prev = curs->prev;
+	if (prev)
+		prev->next = curs;
+	next = curs->next;
+	if (next)
+		next->prev = curs;
+	curs->next = next;
+	curs->prev = prev;
 }

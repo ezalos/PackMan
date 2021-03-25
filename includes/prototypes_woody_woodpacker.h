@@ -2,10 +2,11 @@
 # define PROTOTYPES_WOODY_WOODPACKER_H
 
 int8_t		access_file(t_packer *packer, char *file);
+t_dlist		*blueprint_creation(t_packer *packer);
 ssize_t		bytecode_inject(t_packer *packer,
 			t_list *zones,
 			t_zone *zone,
-			t_btc *inst);
+			t_dlist *inst);
 uint8_t		can_i_write(t_zone *zone, t_btc *inst);
 void		cave_gathering(t_packer *packer);
 void		cave_gathering_phdr(t_packer *packer);
@@ -29,20 +30,26 @@ void		*elf_access_section(void *data, char *section_name, int umpteenth);
 t_pheader	*find_t_pheader_from_phdr(t_packer *packer, Elf64_Phdr *a);
 void		free_btc(t_btc *btc);
 int			ft_memcmp(const void *s1, const void *s2, size_t n);
-int8_t		get_payload_zones(t_packer *packer);
 Elf64_Phdr	*get_phdr_from_array(t_packer *packer, int i);
 int 		get_program_header_index(t_packer *packer, Elf64_Phdr *phdr);
 t_pheader	*get_rbt_phdr_from_shdr(t_rbt *root, Elf64_Shdr *shdr);
 int			get_section_header_index(t_packer *packer, Elf64_Shdr *shdr);
 t_list		*get_zones(t_packer *packer, uint8_t type, uint8_t flags,
 			void (*data_filler)(t_pheader*, t_zone*));
-int8_t		get_zones_to_crypt(t_packer *packer);
 void		init_key(uint8_t *key);
 void		init_permutations(uint8_t *permutations);
-void		inject_def_crypt(t_packer *packer, uint8_t *dest);
-void		inject_init_perm(t_packer *packer, uint8_t *dest);
-void		inject_key_sched(t_packer *packer, uint8_t *dest);
-void		inject_write(t_packer *packer, uint8_t* dest);
+void		inject_call_cypher(t_packer *packer, uint8_t *dest, void *args);
+void		inject_call_jmp(t_packer *packer, uint8_t* dest, void *args);
+void		inject_call_mprotect(t_packer *packer, uint8_t *dest, void *args);
+void		inject_def_begin(t_packer *packer, uint8_t *dest, void *args);
+void		inject_def_cypher(t_packer *packer, uint8_t *dest, void *args);
+void		inject_def_cypher_prepare(t_packer *packer,
+			uint8_t *dest,
+			void *args);
+void		inject_def_end(t_packer *packer, uint8_t *dest, void *args);
+void		inject_def_init_perm(t_packer *packer, uint8_t *dest, void *args);
+void		inject_def_key_sched(t_packer *packer, uint8_t *dest, void *args);
+void		inject_def_write(t_packer *packer, uint8_t* dest, void *args);
 uint8_t		is_phdr_contained(Elf64_Phdr *a, Elf64_Phdr *b);
 uint8_t		is_phdr_overlap(Elf64_Phdr *a, Elf64_Phdr *b);
 uint8_t		is_phdr_superposed(Elf64_Phdr *a, Elf64_Phdr *b);
@@ -73,7 +80,7 @@ void		schedule_key(uint8_t *permutations, uint8_t *key);
 ssize_t		solve_bytecodes(t_packer *packer,
 			t_list *zones,
 			t_zone *current_zone,
-			t_btc *inst,
+			t_dlist *inst,
 			int headless);
 long long	t_rbt_compare_phdr(void *an, void *bn);
 long long	t_rbt_compare_shdr(void *a, void *b);
@@ -83,14 +90,9 @@ uint8_t		test_endian(void);
 void		undo_update_zone(t_zone *zone, t_btc *inst);
 void		unit_test_alter(uint8_t *content, size_t len);
 void		unit_test_cypher(char *str, int len, char key);
-void		update_arg_crypt_calls(t_btc *inst, t_zone *zone);
+void		update_arg_crypt_calls(t_dlist *inst, t_zone *zone);
 void		update_args(t_btc *inst, t_zone *zone, ssize_t ret);
 void		update_zone(t_zone *zone, t_btc *inst);
 void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer);
-void		write_decrypt_call(t_btc_args *arg);
-void		write_decrypt_definition(t_btc_args *arg);
-void		write_jump(t_btc_args *arg);
-void		write_mem_rights(t_btc_args *arg);
-void		write_woody(t_btc_args *arg);
 
 #endif

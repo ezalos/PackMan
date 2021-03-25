@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/17 19:29:02 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/21 11:16:15 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 01:25:43 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,40 +58,7 @@
 //		Bss ?
 
 
-
-void		update_zone(t_zone *zone, t_btc *inst)
-{
-	zone->offset = zone->offset + inst->size;
-	zone->size = zone->size - inst->size;
-}
-
-void		undo_update_zone(t_zone *zone, t_btc *inst)
-{
-	zone->offset = zone->offset - inst->size;
-	zone->size = zone->size + inst->size;
-}
-
-uint8_t		can_i_write(t_zone *zone, t_btc *inst)
-{
-	printf("Zone: %p\n", zone);
-	printf("Inst: %p\n", inst);
-	printf("Zone->size: %zu\n", zone->size);
-
-	return (zone->size <= inst->size);
-}
-
-void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
-{
-	//TODO : todo
-	inst++;
-	zone++;
-	packer++;
-	return;
-}
-
-
-
-void	inject_def_begin(t_packer *packer, uint8_t *dest)
+void	inject_def_begin(t_packer *packer, uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_BEGIN] = {
 	0x55,               //push   rbp
@@ -114,10 +81,11 @@ void	inject_def_begin(t_packer *packer, uint8_t *dest)
 	};
 
 	(void)packer;
+	(void)args;
 	ft_memcpy(dest, payload, SIZE_DEF_BEGIN);
 }
 
-void	inject_call_mprotect(t_packer *packer, uint8_t *dest)
+void	inject_call_mprotect(t_packer *packer, uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_CALL_MPROTECT] = {
 		0x48, 0x83, 0xec, 0x10,             		//sub    rsp,0x10
@@ -139,10 +107,11 @@ void	inject_call_mprotect(t_packer *packer, uint8_t *dest)
 	};
 
 	(void)packer;
+	(void)args;
 	ft_memcpy(dest, payload, SIZE_CALL_MPROTECT);
 }
 
-void	inject_def_cypher_prepare(t_packer *packer, uint8_t *dest)
+void	inject_def_cypher_prepare(t_packer *packer, uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_CYPHER_PREPARE] = {
 		0x48, 0x81, 0xec, 0x08, 0x01, 0x00, 0x00,   //sub    rsp,0x108
@@ -159,10 +128,11 @@ void	inject_def_cypher_prepare(t_packer *packer, uint8_t *dest)
 	};
 
 	(void)packer;
+	(void)args;
 	ft_memcpy(dest, payload, SIZE_DEF_CYPHER_PREPARE);
 }
 
-void	inject_call_cypher(t_packer *packer, uint8_t *dest)
+void	inject_call_cypher(t_packer *packer, uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_CALL_CYPHER] = {
 		0x48, 0x83, 0xec, 0x10,             		//sub    rsp,0x10
@@ -181,10 +151,11 @@ void	inject_call_cypher(t_packer *packer, uint8_t *dest)
 	};
 
 	(void)packer;
+	(void)args;
 	ft_memcpy(dest, payload, SIZE_CALL_CYPHER);
 }
 
-void	inject_def_write(t_packer *packer, uint8_t* dest)
+void	inject_def_write(t_packer *packer, uint8_t* dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_WRITE] = {
 		0x48, 0x83, 0xec, 0x10,					  	//sub    rsp,0x10
@@ -204,10 +175,11 @@ void	inject_def_write(t_packer *packer, uint8_t* dest)
 
 	// revoir en faisant des xor rdi, rdi   xor rdx, rdx    xor rax, rax
 	(void)packer;
+	(void)args;
 	ft_memcpy(dest, payload, SIZE_DEF_WRITE);
 }
 
-void	inject_def_end(t_packer *packer, uint8_t *dest)
+void	inject_def_end(t_packer *packer, uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_END] = {
 		0x48, 0x81, 0xc4, 0x18, 0x01, 0x00, 0x00,	//add    rsp,0x118
@@ -231,12 +203,13 @@ void	inject_def_end(t_packer *packer, uint8_t *dest)
 	};
 
 	(void)packer;
+	(void)args;
 	ft_memcpy(dest, payload, SIZE_DEF_END);
 }
 
 
 // UNSAFE DOES NOT CHECK FOR WRITEABILITY OR SIZE
-void    inject_call_jmp(t_packer *packer, uint8_t* dest, int arg1)
+void	inject_call_jmp(t_packer *packer, uint8_t* dest, void *args)
 {
     // uint8_t opcode = 0xe9;
 	// (void)packer;
@@ -250,15 +223,15 @@ void    inject_call_jmp(t_packer *packer, uint8_t* dest, int arg1)
 	uint8_t payload[SIZE_CALL_JMP] = {
 		0xe9, 0xfc, 0xff, 0xff, 0xff	//jmp    1 <call_jmp+0x1>
 	};
-
 	(void)packer;
-	(void)arg1;
-	ft_memcpy(dest, payload, SIZE_CALL_JMP);
+	(void)args;
+	ft_memcpy(dest, payload, SIZE_CALL_JMP - sizeof(int));
+	ft_memcpy(dest + 1, &((t_btc_args*)args)->jump, sizeof(int));
 }
 
 
 // to call this payload : need to mov permutations address in rdi
-void	inject_def_init_perm(t_packer *packer, uint8_t *dest)
+void	inject_def_init_perm(t_packer *packer, uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_INIT_PERM] = {
 		0x55,						  //push   rbp
@@ -273,12 +246,13 @@ void	inject_def_init_perm(t_packer *packer, uint8_t *dest)
 	};
 
 	(void)packer;
+	(void)args;
 	ft_memcpy(dest, payload, SIZE_DEF_INIT_PERM);
 }
 
 
 // to call this payload : need to mov permutations address in rdi and key address in rsi
-void	inject_def_key_sched(t_packer *packer, uint8_t *dest)
+void	inject_def_key_sched(t_packer *packer, uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_KEY_SCHED] = {
 		0x5,			  //push   rbp
@@ -305,11 +279,12 @@ void	inject_def_key_sched(t_packer *packer, uint8_t *dest)
 	};
 
 	(void)packer;
+	(void)args;
 	ft_memcpy(dest, payload, SIZE_DEF_KEY_SCHED);
 }
 
 // to call this payload: need to mov zone addr in rdi, len in rsi and permutations addr in rdx
-void	inject_def_cypher(t_packer *packer, uint8_t *dest)
+void	inject_def_cypher(t_packer *packer, uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_CYPHER] = {
 		0x55,			  		//push   rbp
@@ -340,5 +315,6 @@ void	inject_def_cypher(t_packer *packer, uint8_t *dest)
 	};
 
 	(void)packer;
+	(void)args;
 	ft_memcpy(dest, payload, SIZE_DEF_CYPHER);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   head.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/03/23 22:41:53 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/03/25 00:52:53 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ typedef struct	s_btc_args
 	uint8_t	crypt_key_len;
 }				t_btc_args;
 
-typedef void (*t_write_func)(t_btc_args*);
+typedef void (*t_write_func)(t_packer *packer, uint8_t *dest, void *args);
 
 typedef struct	s_btc
 {

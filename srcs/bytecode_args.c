@@ -6,19 +6,19 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:13:17 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/20 20:31:37 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/24 23:24:40 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
 
-void	update_arg_crypt_calls(t_btc *inst, t_zone *zone)
+void	update_arg_crypt_calls(t_dlist *inst, t_zone *zone)
 {
 	while (inst)
 	{
-		if (inst->type == BTC_CALL_CYPHER)
+		if (((t_btc*)inst->data)->type == BTC_CALL_CYPHER)
 		{
-			inst->args->crypt_func_addr = (void *)((size_t)zone->phdr->p_vaddr + (size_t)zone->offset);
+			((t_btc *)inst->data)->args->crypt_func_addr = (void *)((size_t)zone->phdr->p_vaddr + (size_t)zone->offset);
 		}
 		inst = inst->next;
 	}
