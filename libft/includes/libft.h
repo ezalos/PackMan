@@ -6,11 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 14:32:42 by rkirszba          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2021/03/24 23:40:40 by ezalos           ###   ########.fr       */
-=======
-/*   Updated: 2021/03/24 23:23:55 by rkirszba         ###   ########.fr       */
->>>>>>> d8c0c9d9b33f144731fe4546ad81f428e8b6dfab
+/*   Updated: 2021/03/25 02:08:11 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +93,7 @@ void			ft_dlist_append_end(t_dlist **head, t_dlist *node);
 void			ft_dlist_prepend(t_dlist **head, t_dlist *node);
 void			ft_dlist_insert_prev(t_dlist **head, t_dlist *curs, t_dlist *new);
 void			ft_dlist_insert_next(t_dlist **head, t_dlist *curs, t_dlist *new);
+t_dlist			*ft_dlist_insert_next_wesh(t_dlist *curs, t_dlist *new);
 void			ft_dlist_remove(t_dlist **head, t_dlist *node);
 t_dlist			*ft_dlist_cut(t_dlist **head, t_dlist *node);
 void			ft_dlist_free(t_dlist *head, void (*f)(void*));

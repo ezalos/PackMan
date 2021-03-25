@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 01:39:05 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 02:24:50 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
 	printf("%s\n", __func__);
 	print_btc_name(inst);
 	printf("Writing at offset: %zu or known under the cute name 0x%lx\n", zone->offset, zone->offset);
+	printf("Size is: %zu\n", inst->size);
+	printf("It's in phdr nb %d\n", get_program_header_index(packer, zone->phdr));
 	inst->func_ptr(packer, dest, inst->args);
 	zone->phdr->p_filesz += inst->size;
 	return;
@@ -98,6 +100,9 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 	{
 		update_args(((t_btc *)inst->data), zone, ret);
 		write_btc(inst->data, zone, packer);
+		// if (!inst->prev)
+		// 	ret = zone->offset + zone->vaddr;
+		// else
 		ret = zone->offset;
 	}
 	return (ret);
@@ -151,7 +156,7 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, 
 			ret = FAILURE;
 			jmp = ft_dlist_new(create_btc(BTC_CALL_JMP));
 			//TODO Change func for dlist_insert_next()
-			ft_dlist_append(&inst, jmp);
+			ft_dlist_insert_next_wesh(inst, jmp);
 			// jmp->next = inst->next;
 			if (can_i_write(zone, jmp->data))
 			{
