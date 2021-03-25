@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/17 19:29:02 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 02:09:50 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 15:47:16 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void	inject_def_begin(t_packer *packer, uint8_t *dest, void *args)
 	0x41, 0x55,         //push   r13
 	0x41, 0x56,         //push   r14
 	0x41, 0x57,   		//push   r15
-	0x18, 0xc,        	//pushf  
+	0x9c	        	//pushf  
 	};
 
 	(void)packer;
