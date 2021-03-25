@@ -27,7 +27,7 @@
 # include <unistd.h>
 # include <time.h>
 
-# define DEBUG		1
+# define DEBUG		2
 
 # define SUCCESS	0
 # define FAILURE	-1

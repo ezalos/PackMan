@@ -42,14 +42,20 @@ void		print_btc_name(t_btc *inst)
 
 void		update_zone(t_zone *zone, t_btc *inst)
 {
+	// printed boundary is included
+	debug_recursive("Updating zone from %zu->%zu ", zone->offset, zone->offset + zone->size);
 	zone->offset = zone->offset + inst->size;
 	zone->size = zone->size - inst->size;
+	debug("to %zu->%zu\n", zone->offset, zone->offset + zone->size);
 }
 
 void		undo_update_zone(t_zone *zone, t_btc *inst)
 {
+	debug_recursive("Updating zone (undo) from %zu->%zu ", zone->offset, zone->offset + zone->size);
 	zone->offset = zone->offset - inst->size;
 	zone->size = zone->size + inst->size;
+	debug("to %zu->%zu\n", zone->offset, zone->offset + zone->size);
+
 }
 
 uint8_t		can_i_write(t_zone *zone, t_btc *inst)
@@ -65,20 +71,18 @@ void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
 	uint8_t		*dest;
 
 	dest = zone->offset + packer->content;
-	printf("%s\n", __func__);
-	print_btc_name(inst);
-	printf("Writing at offset: %zu or known under the cute name 0x%lx\n", zone->offset, zone->offset);
-	printf("Size is: %zu\n", inst->size);
-	printf("It's in phdr nb %d\n", get_program_header_index(packer, zone->phdr));
+	logging_recursive("%s : %s\n", __func__, btc_to_str(inst));
+	logging_recursive("%d\n", inst->type);
+	logging_recursive("Writing at offset: %zu or known under the cute name 0x%lx\n", zone->offset, zone->offset);
+	logging_recursive("Size is: %zu\n", inst->size);
+	logging_recursive("It's in phdr nb %d\n", get_program_header_index(packer, zone->phdr));
 	inst->func_ptr(packer, dest, inst->args);
 	zone->phdr->p_filesz += inst->size;
 	zone->phdr->p_memsz += inst->size;
-
 	return;
 }
 
 #include <stdarg.h>
-#define DEBUG 1
 
 
 ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist *inst)
@@ -124,6 +128,7 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, 
 
 	// depth for aestethics 
 	depth += 1;
+	printf("\n");
 	(void)current_zone;
 	if (inst == NULL)
 	{

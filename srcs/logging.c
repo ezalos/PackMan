@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "head.h"
-#define DEBUG 1
 #define SPACES 4
 
 extern int depth;
