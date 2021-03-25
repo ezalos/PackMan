@@ -72,8 +72,8 @@ void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
 
 	dest = zone->offset + packer->content;
 	logging_recursive("%s:\t\t %s\n", __func__, btc_to_str(inst));
-	logging_recursive("Writing at offset:\t0x%lx (%ld)\n", zone->offset, zone->offset);
-	logging_recursive("Btc localisation:\t[%lx - %lx]\n", zone->offset, zone->offset + inst->size);
+	logging_recursive("Writing at offset:\t 0x%lx (%ld)\n", zone->offset, zone->offset);
+	logging_recursive("Btc localisation:\t [%lx - %lx]\n", zone->offset, zone->offset + inst->size);
 	logging_recursive("Size is:\t\t %zu\n", inst->size);
 	logging_recursive("It's in phdr nb\t\t %d\n", get_program_header_index(packer, zone->phdr));
 	inst->func_ptr(packer, dest, inst->args);
