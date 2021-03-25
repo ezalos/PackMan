@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 16:08:46 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 16:28:09 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void		print_btc_name(t_btc *inst)
 void		update_zone(t_zone *zone, t_btc *inst)
 {
 	// printed boundary is included
-	debug_recursive("Updating zone from %zu->%zu ", zone->offset, zone->offset + zone->size);
+	debug_recursive("Updating zone:\t %zu->%zu ", zone->offset, zone->offset + zone->size);
 	zone->offset = zone->offset + inst->size;
 	zone->size = zone->size - inst->size;
 	debug("to %zu->%zu\n", zone->offset, zone->offset + zone->size);
@@ -51,7 +51,7 @@ void		update_zone(t_zone *zone, t_btc *inst)
 
 void		undo_update_zone(t_zone *zone, t_btc *inst)
 {
-	debug_recursive("Updating zone (undo) from %zu->%zu ", zone->offset, zone->offset + zone->size);
+	debug_recursive("Updating zone (undo):\t %zu->%zu ", zone->offset, zone->offset + zone->size);
 	zone->offset = zone->offset - inst->size;
 	zone->size = zone->size + inst->size;
 	debug("to %zu->%zu\n", zone->offset, zone->offset + zone->size);
@@ -60,7 +60,7 @@ void		undo_update_zone(t_zone *zone, t_btc *inst)
 
 uint8_t		can_i_write(t_zone *zone, t_btc *inst)
 {
-	logging_recursive("%s: %zu <= %zu ?\n", __func__, inst->size, zone->size);
+	logging_recursive("%s:\t %zu <= %zu ?\n", __func__, inst->size, zone->size);
 
 	return (inst->size <= zone->size);
 }
@@ -71,11 +71,11 @@ void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
 	uint8_t		*dest;
 
 	dest = zone->offset + packer->content;
-	logging_recursive("%s : %s\n", __func__, btc_to_str(inst));
-	logging_recursive("Writing at offset: 0x%lx (%ld)\n", zone->offset, zone->offset);
-	logging_recursive("Btc localisation: [%lx - %lx]\n", zone->offset, zone->offset + inst->size);
-	logging_recursive("Size is: %zu\n", inst->size);
-	logging_recursive("Phdr nb %d\n", get_program_header_index(packer, zone->phdr));
+	logging_recursive("%s:\t\t %s\n", __func__, btc_to_str(inst));
+	logging_recursive("Writing at offset:\t0x%lx (%ld)\n", zone->offset, zone->offset);
+	logging_recursive("Btc localisation:\t[%lx - %lx]\n", zone->offset, zone->offset + inst->size);
+	logging_recursive("Size is:\t\t %zu\n", inst->size);
+	logging_recursive("It's in phdr nb\t\t %d\n", get_program_header_index(packer, zone->phdr));
 	inst->func_ptr(packer, dest, inst->args);
 	zone->phdr->p_filesz += inst->size;
 	zone->phdr->p_memsz += inst->size;
@@ -134,23 +134,23 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, 
 	(void)current_zone;
 	if (inst == NULL)
 	{
-		logging_recursive("Inst is NULL -> WE FOUND THE SOLUTION!!\n");
+		logging_recursive("Inst is NULL -> WE FOUND THE SOLUTION!!\n\n");
 		depth -= 1;
 		return (((Elf64_Ehdr *)packer->content)->e_entry);
 	}
 		// return (current_zone->offset);
 	// logging("%s: inst nb %d\n", __func__, ((t_btc *)inst->data)->type);
-	logging_recursive("Trying to place %s\n", btc_to_str(((t_btc *)inst->data)));
+	logging_recursive("Trying to place\t %s\n", btc_to_str(((t_btc *)inst->data)));
 	if (headless == TRUE)
 	{
-		logging_recursive("Headless TRUE\n");
+		logging_recursive("Headless\t TRUE\n");
 		while (zone_list != NULL)
 		{
 			zone = zone_list->data;
-			logging_recursive("Checking zone at offset %zu\n", zone->offset);
+			logging_recursive("Try at offset\t %zu\n", zone->offset);
 			if (can_i_write(zone, inst->data))
 			{
-				logging_recursive("Zone selected\n");
+				logging_recursive("We can write\n");
 				ret = bytecode_inject(packer, zones, zone, inst);
 			}
 			if (ret != FAILURE)
@@ -165,12 +165,12 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, 
 	}
 	else
 	{
-		logging_recursive("Headless FALSE\n");
+		logging_recursive("Headless\t FALSE\n");
 		zone = zone_list->data;
-		logging_recursive("Current offset: %zu\n", zone->offset);
+		logging_recursive("Current offset:\t %zu\n", zone->offset);
 		if (can_i_write(zone, inst->data))
 		{
-			logging_recursive("We can  write.\n");
+			logging_recursive("We can write.\n");
 			return (bytecode_inject(packer, zones, zone, inst));
 		}
 		else
