@@ -2,8 +2,9 @@
 # define PROTOTYPES_WOODY_WOODPACKER_H
 
 int8_t		access_file(t_packer *packer, char *file);
+int8_t		blueprint_add(t_dlist **blueprint, int btc_type);
 t_dlist		*blueprint_creation(t_packer *packer);
-t_dlist		*blueprint_minimal(t_packer *packer);
+t_dlist		*blueprint_minimal(void);
 char		*btc_to_str(t_btc *inst);
 ssize_t		bytecode_inject(t_packer *packer,
 			t_list *zones,
