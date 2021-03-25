@@ -2,7 +2,7 @@
 #include <stdarg.h>
 #include "head.h"
 #define DEBUG 1
-#define SPACES 2
+#define SPACES 4
 
 int debug_level = DEBUG;
 

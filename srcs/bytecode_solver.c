@@ -12,6 +12,7 @@
 
 #include "head.h"
 
+int depth = -1;
 
 void		print_btc_name(t_btc *inst)
 {
@@ -51,7 +52,7 @@ void		undo_update_zone(t_zone *zone, t_btc *inst)
 	zone->size = zone->size + inst->size;
 }
 
-uint8_t		can_i_write(t_zone *zone, t_btc *inst, int depth)
+uint8_t		can_i_write(t_zone *zone, t_btc *inst)
 {
 	logging_recursive(depth, "%s: %zu <= %zu ?\n", __func__, inst->size, zone->size);
 
@@ -80,7 +81,7 @@ void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
 #define DEBUG 1
 
 
-ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist *inst, int depth)
+ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist *inst)
 {
 	uint8_t	headless;
 	ssize_t ret;
@@ -98,7 +99,7 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 	update_zone(zone, inst->data);
 	//TODO Headless resolution
 	headless = ((t_btc *)inst->data)->type == BTC_CALL_JMP;
-	ret = solve_bytecodes(packer, zones, zone, inst->next, headless, depth + 1);
+	ret = solve_bytecodes(packer, zones, zone, inst->next, headless);
 	undo_update_zone(zone, ((t_btc *)inst->data));
 	if (ret != FAILURE)
 	{
@@ -114,17 +115,20 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 
 
 // depth is used for pretty printing
-ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, t_dlist *inst, int headless, int depth)
+ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, t_dlist *inst, int headless)
 {
 	t_list	*zone_list = zones;
 	t_zone	*zone;
 	ssize_t ret;
 	t_dlist	*jmp;
 
+	// depth for aestethics 
+	depth += 1;
 	(void)current_zone;
 	if (inst == NULL)
 	{
 		logging_recursive(depth, "Inst is NULL -> WE FOUND THE SOLUTION!!\n");
+		depth -= 1;
 		return (((Elf64_Ehdr *)packer->content)->e_entry);
 	}
 		// return (current_zone->offset);
@@ -137,15 +141,19 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, 
 		{
 			zone = zone_list->data;
 			logging_recursive(depth, "Checking zone at offset %zu\n", zone->offset);
-			if (can_i_write(zone, inst->data, depth))
+			if (can_i_write(zone, inst->data))
 			{
 				logging_recursive(depth, "Zone selected\n");
-				ret = bytecode_inject(packer, zones, zone, inst, depth + 1);
+				ret = bytecode_inject(packer, zones, zone, inst);
 			}
 			if (ret != FAILURE)
+			{
+				depth -= 1;
 				return (ret);
+			}
 			zone_list = zone_list->next;
 		}
+		depth -= 1;
 		return (FAILURE);
 	}
 	else
@@ -153,10 +161,10 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, 
 		logging_recursive(depth, "Headless FALSE\n");
 		zone = zone_list->data;
 		logging_recursive(depth, "Current offset: %zu\n", zone->offset);
-		if (can_i_write(zone, inst->data, depth))
+		if (can_i_write(zone, inst->data))
 		{
 			logging_recursive(depth, "We can  write.\n");
-			return (bytecode_inject(packer, zones, zone, inst, depth + 1));
+			return (bytecode_inject(packer, zones, zone, inst));
 		}
 		else
 		{
@@ -166,15 +174,16 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, 
 			ft_dlist_insert_next_wesh(inst, jmp);
 			// jmp->next = inst->next;
 			logging_recursive(depth, "Cannot write instruction, trying jump\n");
-			if (can_i_write(zone, jmp->data, depth))
+			if (can_i_write(zone, jmp->data))
 			{
 				logging_recursive(depth, "Jump ok\n");
-				ret = bytecode_inject(packer, zones, zone, jmp, depth + 1);
+				ret = bytecode_inject(packer, zones, zone, jmp);
 			}
 			//TODO Change 1st arg
 			jmp = ft_dlist_cut(&jmp, jmp);
 			free_btc(jmp->data);
 			ft_dlist_free(jmp, NULL);
+			depth -= 1;
 			return (ret);
 		}
 	}

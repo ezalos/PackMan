@@ -7,9 +7,8 @@ char		*btc_to_str(t_btc *inst);
 ssize_t		bytecode_inject(t_packer *packer,
 			t_list *zones,
 			t_zone *zone,
-			t_dlist *inst,
-			int depth);
-uint8_t		can_i_write(t_zone *zone, t_btc *inst, int depth);
+			t_dlist *inst);
+uint8_t		can_i_write(t_zone *zone, t_btc *inst);
 void		cave_gathering(t_packer *packer);
 void		cave_gathering_phdr(t_packer *packer);
 void		change_endian(void *data, int size);
@@ -89,8 +88,7 @@ ssize_t		solve_bytecodes(t_packer *packer,
 			t_list *zones,
 			t_zone *current_zone,
 			t_dlist *inst,
-			int headless,
-			int depth);
+			int headless);
 long long	t_rbt_compare_phdr(void *an, void *bn);
 long long	t_rbt_compare_shdr(void *a, void *b);
 void		test_cypher(void);
