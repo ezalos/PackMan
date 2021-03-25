@@ -82,14 +82,13 @@ void	crypt_zone(uint8_t *zone, size_t len, uint8_t *permutations)
 void	crypt_zones(t_packer *packer)
 {
 	uint8_t 	permutations[PERM_SIZE];
-	uint8_t		key[KEY_SIZE];
 	uint8_t		*content;
 	t_list		*to_crypt;
 	t_zone		*zone;
 
 	init_permutations(permutations);//asm
-	init_key(key);
-	schedule_key(permutations, key);//asm
+	init_key(packer->key);
+	schedule_key(permutations, packer->key);//asm
 	content = (uint8_t*)(packer->content);
 	to_crypt = packer->to_crypt;
 	while (to_crypt)

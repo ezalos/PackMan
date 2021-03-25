@@ -100,6 +100,7 @@ typedef struct	s_packer
 	t_pheader		**phdr_array;
 	t_list			*to_crypt;  //list of program headers of segments we want to crypt
 	t_list			*caves; //list of zones we can inject code in, ordered by dec size
+	uint8_t			key[KEY_SIZE];
 	// t_stat		stat;
 
 	uint64_t		size;
