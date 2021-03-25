@@ -12,7 +12,7 @@
 
 #include "head.h"
 
-t_dlist		*blueprint_creation(t_packer *packer)
+t_dlist		*blueprint_minimal(t_packer *packer)
 {
 	t_dlist *blueprint;
 	t_dlist *inst;
@@ -28,13 +28,14 @@ t_dlist		*blueprint_creation(t_packer *packer)
 	return (blueprint);
 }
 
-t_dlist		*blueprint_minimal(t_packer *packer)
+t_dlist		*blueprint_creation(t_packer *packer)
 {
 	t_dlist *blueprint;
 	t_dlist *inst;
 
 	(void)packer;
 	blueprint = ft_dlist_new(create_btc(BTC_DEF_BEGIN));
+
 	inst = ft_dlist_new(create_btc(BTC_DEF_WRITE));
 	ft_dlist_append_end(&blueprint, inst);
 	inst = ft_dlist_new(create_btc(BTC_DEF_END));
@@ -53,7 +54,7 @@ ssize_t		chirurgy(t_packer *packer)
 	blueprint = blueprint_creation(packer);
 
 	logging("\n*** %s: Solving injection\n", __func__);
-	ret = solve_bytecodes(packer, packer->caves, NULL, blueprint, TRUE);
+	ret = solve_bytecodes(packer, packer->caves, blueprint, TRUE);
 	if (ret != FAILURE)
 	{
 		((Elf64_Ehdr *)packer->content)->e_entry = ret;

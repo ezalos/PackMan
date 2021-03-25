@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 23:38:55 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 23:51:28 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,50 +84,50 @@ void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
 	return;
 }
 
-#include <stdarg.h>
-
+uint8_t		is_btc_headless(t_btc *btc)
+{
+	if (btc->type == BTC_CALL_JMP)
+		return (TRUE);
+	if (btc->type == BTC_DEF_INIT_PERM)
+		return (TRUE);
+	if (btc->type == BTC_DEF_KEY_SCHED)
+		return (TRUE);
+	if (btc->type == BTC_DEF_CYPHER)
+		return (TRUE);
+	return (FALSE);
+}
 
 ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist *inst)
 {
 	uint8_t	headless;
 	ssize_t ret;
 
-	// if (inst == NULL)
-	// {
-	// 	printf("Inst is NULL -> WE FOUND THE SOLUTION!!\n");
-	// 	return (((Elf64_Ehdr *)packer->content)->e_entry);
-	// }
-	// logging_recursive("%s: inst nb %d\n", __func__, ((t_btc *)inst->data)->type);
 	if (((t_btc*)inst->data)->type == BTC_DEF_CYPHER)
 	{
 		update_arg_crypt_calls(inst, zone);
 	}
 	update_zone(zone, inst->data);
-	//TODO Headless resolution
-	headless = ((t_btc *)inst->data)->type == BTC_CALL_JMP;
-	ret = solve_bytecodes(packer, zones, zone, inst->next, headless);
+	headless = is_btc_headless((t_btc *)inst->data);
+	ret = solve_bytecodes(packer, zones, inst->next, headless);
 	undo_update_zone(zone, ((t_btc *)inst->data));
 	if (ret != FAILURE)
 	{
 		update_args(((t_btc *)inst->data), zone, ret);
 		write_btc(inst->data, zone, packer);
 		ret = zone->offset;
-		//TODO: Entry point from t_zone->vadrr
 		if (!inst->prev)
 		{
 			ret = zone->vaddr;
 			logging_recursive("Last return size %lx\n", ret);
 		}
-		// else
 	}
 	depth -= 1;
 	logging("\n");
 	return (ret);
 }
 
-
 // depth is used for pretty printing
-ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, t_dlist *inst, int headless)
+ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int headless)
 {
 	t_list	*zone_list = zones;
 	t_zone	*zone;
@@ -137,15 +137,12 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, 
 	// depth for aestethics 
 	depth += 1;
 	logging("\n");
-	(void)current_zone;
 	if (inst == NULL)
 	{
 		logging_recursive("Inst is NULL -> WE FOUND THE SOLUTION!!\n\n");
 		depth -= 1;
 		return (((Elf64_Ehdr *)packer->content)->e_entry);
 	}
-		// return (current_zone->offset);
-	// logging("%s: inst nb %d\n", __func__, ((t_btc *)inst->data)->type);
 	logging_recursive("Trying to place\t %s\n", btc_to_str(((t_btc *)inst->data)));
 	if (headless == TRUE)
 	{
@@ -183,17 +180,14 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, 
 		{
 			ret = FAILURE;
 			jmp = ft_dlist_new(create_btc(BTC_CALL_JMP));
-			//TODO Change func for dlist_insert_next()
 			ft_dlist_insert_next_wesh(inst, jmp);
-			// jmp->next = inst->next;
 			logging_recursive("Cannot write instruction, trying jump\n");
 			if (can_i_write(zone, jmp->data))
 			{
 				logging_recursive("Jump ok\n");
 				ret = bytecode_inject(packer, zones, zone, jmp);
 			}
-			//TODO Change 1st arg
-			jmp = ft_dlist_cut(&jmp, jmp);
+			jmp = ft_dlist_cut_unsafe(jmp);
 			free_btc(jmp->data);
 			ft_dlist_free(jmp, NULL);
 			depth -= 1;
