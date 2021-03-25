@@ -54,7 +54,7 @@ void		undo_update_zone(t_zone *zone, t_btc *inst)
 
 uint8_t		can_i_write(t_zone *zone, t_btc *inst)
 {
-	logging_recursive(depth, "%s: %zu <= %zu ?\n", __func__, inst->size, zone->size);
+	logging_recursive("%s: %zu <= %zu ?\n", __func__, inst->size, zone->size);
 
 	return (inst->size <= zone->size);
 }
@@ -91,7 +91,7 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 	// 	printf("Inst is NULL -> WE FOUND THE SOLUTION!!\n");
 	// 	return (((Elf64_Ehdr *)packer->content)->e_entry);
 	// }
-	// logging_recursive(depth, "%s: inst nb %d\n", __func__, ((t_btc *)inst->data)->type);
+	// logging_recursive("%s: inst nb %d\n", __func__, ((t_btc *)inst->data)->type);
 	if (((t_btc*)inst->data)->type == BTC_DEF_CYPHER)
 	{
 		update_arg_crypt_calls(inst, zone);
@@ -127,23 +127,23 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, 
 	(void)current_zone;
 	if (inst == NULL)
 	{
-		logging_recursive(depth, "Inst is NULL -> WE FOUND THE SOLUTION!!\n");
+		logging_recursive("Inst is NULL -> WE FOUND THE SOLUTION!!\n");
 		depth -= 1;
 		return (((Elf64_Ehdr *)packer->content)->e_entry);
 	}
 		// return (current_zone->offset);
 	// logging("%s: inst nb %d\n", __func__, ((t_btc *)inst->data)->type);
-	logging_recursive(depth, "Trying to place %s\n", btc_to_str(((t_btc *)inst->data)));
+	logging_recursive("Trying to place %s\n", btc_to_str(((t_btc *)inst->data)));
 	if (headless == TRUE)
 	{
-		logging_recursive(depth, "Headless TRUE\n");
+		logging_recursive("Headless TRUE\n");
 		while (zone_list != NULL)
 		{
 			zone = zone_list->data;
-			logging_recursive(depth, "Checking zone at offset %zu\n", zone->offset);
+			logging_recursive("Checking zone at offset %zu\n", zone->offset);
 			if (can_i_write(zone, inst->data))
 			{
-				logging_recursive(depth, "Zone selected\n");
+				logging_recursive("Zone selected\n");
 				ret = bytecode_inject(packer, zones, zone, inst);
 			}
 			if (ret != FAILURE)
@@ -158,12 +158,12 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, 
 	}
 	else
 	{
-		logging_recursive(depth, "Headless FALSE\n");
+		logging_recursive("Headless FALSE\n");
 		zone = zone_list->data;
-		logging_recursive(depth, "Current offset: %zu\n", zone->offset);
+		logging_recursive("Current offset: %zu\n", zone->offset);
 		if (can_i_write(zone, inst->data))
 		{
-			logging_recursive(depth, "We can  write.\n");
+			logging_recursive("We can  write.\n");
 			return (bytecode_inject(packer, zones, zone, inst));
 		}
 		else
@@ -173,10 +173,10 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, 
 			//TODO Change func for dlist_insert_next()
 			ft_dlist_insert_next_wesh(inst, jmp);
 			// jmp->next = inst->next;
-			logging_recursive(depth, "Cannot write instruction, trying jump\n");
+			logging_recursive("Cannot write instruction, trying jump\n");
 			if (can_i_write(zone, jmp->data))
 			{
-				logging_recursive(depth, "Jump ok\n");
+				logging_recursive("Jump ok\n");
 				ret = bytecode_inject(packer, zones, zone, jmp);
 			}
 			//TODO Change 1st arg

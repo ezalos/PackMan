@@ -37,7 +37,7 @@ ssize_t		chirurgy(t_packer *packer)
 	blueprint = blueprint_creation(packer);
 
 	printf("\n*** %s: Solving injection\n", __func__);
-	ret = solve_bytecodes(packer, packer->caves, NULL, blueprint, TRUE, 0);
+	ret = solve_bytecodes(packer, packer->caves, NULL, blueprint, TRUE);
 	if (ret != FAILURE)
 	{
 		((Elf64_Ehdr *)packer->content)->e_entry = ret;

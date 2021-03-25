@@ -27,6 +27,8 @@ void		crypt_zone(uint8_t *zone, size_t len, uint8_t *permutations);
 void		crypt_zones(t_packer *packer);
 void		data_filler_cave(t_pheader *hdr, t_zone *zone);
 void		data_filler_zone_to_crypt(t_pheader *hdr, t_zone *zone);
+void		debug(const char* fmt, ...);
+void		debug_recursive(const char* fmt, ...);
 void		*elf_access_section(void *data, char *section_name, int umpteenth);
 t_pheader	*find_t_pheader_from_phdr(t_packer *packer, Elf64_Phdr *a);
 void		free_btc(t_btc *btc);
@@ -60,7 +62,7 @@ int8_t		is_secure_access(uint64_t mem_size,
 			uint64_t access_size);
 void		log_btc_name(t_btc *inst);
 void		logging(const char* fmt, ...);
-void		logging_recursive(int recursive_depth, const char* fmt, ...);
+void		logging_recursive(const char* fmt, ...);
 void		logging_set_level(int level);
 int			main(int ac, char **av);
 void		make_array_of_arrays(t_packer *packer);

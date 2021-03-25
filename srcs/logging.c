@@ -4,6 +4,8 @@
 #define DEBUG 1
 #define SPACES 4
 
+extern int depth;
+
 int debug_level = DEBUG;
 
 void	logging_set_level(int level)
@@ -15,7 +17,7 @@ void	logging(const char* fmt, ...)
 {
     va_list args;
 
-    if (debug_level == 1)
+    if (debug_level >= 1)
     {
         va_start(args, fmt);
         vprintf(fmt, args);
@@ -41,13 +43,38 @@ void	print_spaces(int nb)
     }
 }
 
-void	logging_recursive(int recursive_depth, const char* fmt, ...)
+void	logging_recursive(const char* fmt, ...)
 {
     va_list args;
 
-    if (debug_level == 1)
+    if (debug_level >= 1)
     {
-        print_spaces(recursive_depth);
+        print_spaces(depth);
+        va_start(args, fmt);
+        vprintf(fmt, args);
+        va_end(args);
+    }
+}
+
+void	debug(const char* fmt, ...)
+{
+    va_list args;
+
+    if (debug_level >= 2)
+    {
+        va_start(args, fmt);
+        vprintf(fmt, args);
+        va_end(args);
+    }
+}
+
+void	debug_recursive(const char* fmt, ...)
+{
+    va_list args;
+
+    if (debug_level >= 2)
+    {
+        print_spaces(depth);
         va_start(args, fmt);
         vprintf(fmt, args);
         va_end(args);
