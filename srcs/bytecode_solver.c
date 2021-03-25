@@ -51,9 +51,9 @@ void		undo_update_zone(t_zone *zone, t_btc *inst)
 	zone->size = zone->size + inst->size;
 }
 
-uint8_t		can_i_write(t_zone *zone, t_btc *inst)
+uint8_t		can_i_write(t_zone *zone, t_btc *inst, int depth)
 {
-	printf("%s: %zu <= %zu ?\n", __func__, inst->size, zone->size);
+	logging_recursive(depth, "%s: %zu <= %zu ?\n", __func__, inst->size, zone->size);
 
 	return (inst->size <= zone->size);
 }
@@ -71,11 +71,16 @@ void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
 	printf("It's in phdr nb %d\n", get_program_header_index(packer, zone->phdr));
 	inst->func_ptr(packer, dest, inst->args);
 	zone->phdr->p_filesz += inst->size;
+	zone->phdr->p_memsz += inst->size;
+
 	return;
 }
 
+#include <stdarg.h>
+#define DEBUG 1
 
-ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist *inst)
+
+ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist *inst, int depth)
 {
 	uint8_t	headless;
 	ssize_t ret;
@@ -85,8 +90,7 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 	// 	printf("Inst is NULL -> WE FOUND THE SOLUTION!!\n");
 	// 	return (((Elf64_Ehdr *)packer->content)->e_entry);
 	// }
-	printf("%s: inst nb %d\n", __func__, ((t_btc *)inst->data)->type);
-	print_btc_name(inst->data);
+	// logging_recursive(depth, "%s: inst nb %d\n", __func__, ((t_btc *)inst->data)->type);
 	if (((t_btc*)inst->data)->type == BTC_DEF_CYPHER)
 	{
 		update_arg_crypt_calls(inst, zone);
@@ -94,7 +98,7 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 	update_zone(zone, inst->data);
 	//TODO Headless resolution
 	headless = ((t_btc *)inst->data)->type == BTC_CALL_JMP;
-	ret = solve_bytecodes(packer, zones, zone, inst->next, headless);
+	ret = solve_bytecodes(packer, zones, zone, inst->next, headless, depth + 1);
 	undo_update_zone(zone, ((t_btc *)inst->data));
 	if (ret != FAILURE)
 	{
@@ -108,7 +112,9 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 	return (ret);
 }
 
-ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, t_dlist *inst, int headless)
+
+// depth is used for pretty printing
+ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, t_dlist *inst, int headless, int depth)
 {
 	t_list	*zone_list = zones;
 	t_zone	*zone;
@@ -118,23 +124,23 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, 
 	(void)current_zone;
 	if (inst == NULL)
 	{
-		printf("Inst is NULL -> WE FOUND THE SOLUTION!!\n");
+		logging_recursive(depth, "Inst is NULL -> WE FOUND THE SOLUTION!!\n");
 		return (((Elf64_Ehdr *)packer->content)->e_entry);
 	}
 		// return (current_zone->offset);
-	printf("%s: inst nb %d\n", __func__, ((t_btc *)inst->data)->type);
-	print_btc_name(inst->data);
+	// logging("%s: inst nb %d\n", __func__, ((t_btc *)inst->data)->type);
+	logging_recursive(depth, "Trying to place %s\n", btc_to_str(((t_btc *)inst->data)));
 	if (headless == TRUE)
 	{
-		printf("Headless TRUE\n");
+		logging_recursive(depth, "Headless TRUE\n");
 		while (zone_list != NULL)
 		{
-			printf("Zone list\n");
 			zone = zone_list->data;
-			if (can_i_write(zone, inst->data))
+			logging_recursive(depth, "Checking zone at offset %zu\n", zone->offset);
+			if (can_i_write(zone, inst->data, depth))
 			{
-				printf("Zone selected in while\n");
-				ret = bytecode_inject(packer, zones, zone, inst);
+				logging_recursive(depth, "Zone selected\n");
+				ret = bytecode_inject(packer, zones, zone, inst, depth + 1);
 			}
 			if (ret != FAILURE)
 				return (ret);
@@ -144,12 +150,13 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, 
 	}
 	else
 	{
-		printf("Headless FALSE\n");
+		logging_recursive(depth, "Headless FALSE\n");
 		zone = zone_list->data;
-		if (can_i_write(zone, inst->data))
+		logging_recursive(depth, "Current offset: %zu\n", zone->offset);
+		if (can_i_write(zone, inst->data, depth))
 		{
-			printf("We can coontinue to write in same zone!!!\n");
-			return (bytecode_inject(packer, zones, zone, inst));
+			logging_recursive(depth, "We can  write.\n");
+			return (bytecode_inject(packer, zones, zone, inst, depth + 1));
 		}
 		else
 		{
@@ -158,10 +165,11 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_zone *current_zone, 
 			//TODO Change func for dlist_insert_next()
 			ft_dlist_insert_next_wesh(inst, jmp);
 			// jmp->next = inst->next;
-			if (can_i_write(zone, jmp->data))
+			logging_recursive(depth, "Cannot write instruction, trying jump\n");
+			if (can_i_write(zone, jmp->data, depth))
 			{
-				printf("Jump resolution launched\n");
-				ret = bytecode_inject(packer, zones, zone, jmp);
+				logging_recursive(depth, "Jump ok\n");
+				ret = bytecode_inject(packer, zones, zone, jmp, depth + 1);
 			}
 			//TODO Change 1st arg
 			jmp = ft_dlist_cut(&jmp, jmp);

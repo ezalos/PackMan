@@ -223,6 +223,13 @@ void		init_key(uint8_t *key);
 void		init_permutations(uint8_t *permutations);
 
 
+// 			LOGGING DEBUG FUNCTIONS
+
+// void		logging(const char* fmt, ...);
+// void	    logging_set_level(int level);
+// void		log_btc_name(t_btc *inst);
+// char		*btc_to_str(t_btc *inst);
+
 
 
 #endif

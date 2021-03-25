@@ -3,11 +3,13 @@
 
 int8_t		access_file(t_packer *packer, char *file);
 t_dlist		*blueprint_creation(t_packer *packer);
+char		*btc_to_str(t_btc *inst);
 ssize_t		bytecode_inject(t_packer *packer,
 			t_list *zones,
 			t_zone *zone,
-			t_dlist *inst);
-uint8_t		can_i_write(t_zone *zone, t_btc *inst);
+			t_dlist *inst,
+			int depth);
+uint8_t		can_i_write(t_zone *zone, t_btc *inst, int depth);
 void		cave_gathering(t_packer *packer);
 void		cave_gathering_phdr(t_packer *packer);
 void		change_endian(void *data, int size);
@@ -57,6 +59,10 @@ uint8_t		is_same_endian(t_packer *packer);
 int8_t		is_secure_access(uint64_t mem_size,
 			uint64_t offset,
 			uint64_t access_size);
+void		log_btc_name(t_btc *inst);
+void		logging(const char* fmt, ...);
+void		logging_recursive(int recursive_depth, const char* fmt, ...);
+void		logging_set_level(int level);
 int			main(int ac, char **av);
 void		make_array_of_arrays(t_packer *packer);
 void		new_try(Elf64_Ehdr *elf, void *data, t_packer *packer);
@@ -66,11 +72,13 @@ void 		parse_print(t_packer *packer);
 void		phdr_print_tree(t_packer *packer, t_rbt *root);
 long long	phdr_space_between(Elf64_Phdr *a, Elf64_Phdr *b);
 long long	phdr_space_between_ends(Elf64_Phdr *a, Elf64_Phdr *b);
+void		print_btc_name(t_btc *inst);
 void		print_cave_gathering_legend(void);
 void		print_cave_phdr(t_packer *packer, Elf64_Phdr *a);
 void		print_cave_size(Elf64_Phdr *a, Elf64_Phdr *b, t_packer *packer);
 int8_t		print_error(char *self_path, char *error);
 int			print_phdr_contain(t_packer *packer, int i);
+void		print_spaces(int nb);
 void		print_symbol_code(void *data, size_t offset, size_t size);
 int8_t		print_usage(char *self_path);
 void		print_zones(t_list *zones);
@@ -81,7 +89,8 @@ ssize_t		solve_bytecodes(t_packer *packer,
 			t_list *zones,
 			t_zone *current_zone,
 			t_dlist *inst,
-			int headless);
+			int headless,
+			int depth);
 long long	t_rbt_compare_phdr(void *an, void *bn);
 long long	t_rbt_compare_shdr(void *a, void *b);
 void		test_cypher(void);
