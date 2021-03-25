@@ -39,6 +39,10 @@ void	update_args(t_btc *inst, t_zone *zone, ssize_t ret)
 		inst->args->mp_len = getpagesize();
 		inst->args->mp_prot = PROT_READ | PROT_EXEC | PROT_WRITE;
 	}
+	else if (inst->type == BTC_DEF_CYPHER_PREPARE)
+	{
+		// Nothing
+	}
 	else if (inst->type == BTC_CALL_CYPHER)
 	{
 		// Should be done before ...
@@ -48,6 +52,10 @@ void	update_args(t_btc *inst, t_zone *zone, ssize_t ret)
 		// inst->args->crypt_size = 0;
 	}
 	else if (inst->type == BTC_DEF_WRITE)
+	{
+		// Nothing
+	}
+	else if (inst->type == BTC_DEF_END)
 	{
 		// Nothing
 	}

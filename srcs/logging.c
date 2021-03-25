@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "head.h"
-#define SPACES 4
+#define SPACES 1
 
 extern int depth;
 
@@ -35,7 +35,7 @@ void	print_spaces(int nb)
         k = 0;
         while (k < SPACES)
         {
-            printf(" ");
+            printf("\t");
             k++;
         }
         j++;
