@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/17 19:29:02 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 16:05:19 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 17:00:16 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,8 @@
 void	inject_def_begin(t_packer *packer, uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_BEGIN] = {
-	0x55,               //push   rbp
 	0x54,               //push   rsp
+	0x55,               //push   rbp
 	0x50,               //push   rax
 	0x53,               //push   rbx
 	0x51,               //push   rcx
@@ -170,7 +170,9 @@ void	inject_def_write(t_packer *packer, uint8_t* dest, void *args)
 		0x48, 0x89, 0xe6,			  				//mov    rsi,rsp
 		0xba, 0x0e, 0x00, 0x00, 0x00, 				//mov    edx,0xe
 		0xb8, 0x01, 0x00, 0x00, 0x00, 				//mov    eax,0x1
-		0x0f, 0x05					  				//syscall
+		0x0f, 0x05,					  				//syscall
+		0x48, 0x83, 0xc4, 0x10          			//add    rsp,0x10
+
 	};
 
 	// revoir en faisant des xor rdi, rdi   xor rdx, rdx    xor rax, rax
@@ -182,7 +184,7 @@ void	inject_def_write(t_packer *packer, uint8_t* dest, void *args)
 void	inject_def_end(t_packer *packer, uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_END] = {
-		0x48, 0x81, 0xc4, 0x18, 0x01, 0x00, 0x00,	//add    rsp,0x118
+		// 0x48, 0x81, 0xc4, 0x18, 0x01, 0x00, 0x00,	//add    rsp,0x118
 		0x9d,                      					//popf   
 		0x41, 0x5f,                   				//pop    r15
 		0x41, 0x5e,                   				//pop    r14
@@ -198,8 +200,8 @@ void	inject_def_end(t_packer *packer, uint8_t *dest, void *args)
 		0x59,                      					//pop    rcx
 		0x5b,                      					//pop    rbx
 		0x58,                      					//pop    rax
-		0x5c,                      					//pop    rsp
-		0x5d                      					//pop    rbp
+		0x5d,                      					//pop    rbp
+		0x5c                      					//pop    rsp
 	};
 
 	(void)packer;

@@ -10,3 +10,4 @@ write_woody:
 	mov rdx, 0xe
 	mov rax, 0x1
 	syscall
+	add rsp, 0x10
