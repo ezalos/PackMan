@@ -6,59 +6,13 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/17 19:29:02 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 17:00:16 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 22:22:37 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
 
-// Cahier des charges data:
-//		Update cave size a mesure qu'elles se remplissent
-//			-> Se rappeller de quel input l'a remplie et ou
-//		Pouvoir calculer les offsets pour:
-//			-> Jumps
-//				-> connaitre offset pour argument -> only one that need can be in funct
-//		Access to datas:
-//			-> Size des bytecode
-//		~ Eviter les ecritures lourdes:
-//			-> Pointeurs sur fonctions ?
-//			Liste des index obligatoires dans l'ordre
-//
-
-// NEED TO TEST IF NO INCLUDES -> Test main ret 0 only
-
-// #include <sys/mman.h>
-// #include <sys/mman.h>
-// int mprotect(void *addr, size_t len, int prot);
-
-// Algo resolution
-//		if sorted(av_size)[0] in (Load + Exe) > total:
-//			GOOD
-//		else:
-//			while biggest bytecode + jmp < bigest cave:
-//				set cave used
-//				set bytecode put (3 total + bonus)
-//			if all of them:
-//				GOOD
-//			else:
-//				needs to look again for inserting a mem right
-//				if can we inject a mem rights change ?
-//					It needs to:
-//						- Insert all
-//							OR
-//						- Insert mem_rights (* 2, if possible (Cleaner) -> NOO)
-//						- jump
-//						- at least 1 instruction:
-//							-> the largest obligatory bytecode
-//				else -> change 1 phdr rights:
-//					Choose it -> fit all or mem change
-//					Redo ope
-//		Then can look for Load No_Exe
-//		Then No-Load No-Exe
-//		Bss ?
-
-
-void	inject_def_begin(t_packer *packer, uint8_t *dest, void *args)
+void	inject_def_begin(uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_BEGIN] = {
 	0x54,               //push   rsp
@@ -80,12 +34,11 @@ void	inject_def_begin(t_packer *packer, uint8_t *dest, void *args)
 	0x9c	        	//pushf  
 	};
 
-	(void)packer;
 	(void)args;
 	ft_memcpy(dest, payload, SIZE_DEF_BEGIN);
 }
 
-void	inject_call_mprotect(t_packer *packer, uint8_t *dest, void *args)
+void	inject_call_mprotect(uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_CALL_MPROTECT] = {
 		0x48, 0x83, 0xec, 0x10,             		//sub    rsp,0x10
@@ -106,12 +59,11 @@ void	inject_call_mprotect(t_packer *packer, uint8_t *dest, void *args)
 		0x48, 0x83, 0xc4, 0x10,             		//add    rsp,0x10
 	};
 
-	(void)packer;
 	(void)args;
 	ft_memcpy(dest, payload, SIZE_CALL_MPROTECT);
 }
 
-void	inject_def_cypher_prepare(t_packer *packer, uint8_t *dest, void *args)
+void	inject_def_cypher_prepare(uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_CYPHER_PREPARE] = {
 		0x48, 0x81, 0xec, 0x08, 0x01, 0x00, 0x00,   //sub    rsp,0x108
@@ -127,14 +79,12 @@ void	inject_def_cypher_prepare(t_packer *packer, uint8_t *dest, void *args)
 		0xe8, 0xfc, 0xff, 0xff, 0xff          		//call   33 <btc_def_cypher_prepare+0x33>
 	};
 
-	
-	(void)args;
-	ft_memcpy(payload + 0xe, packer->key, 0x4);
-	ft_memcpy(payload + 0x16, packer->key + 0x4, 0x4);
+	ft_memcpy(payload + 0xe, ((t_btc_args *)args)->crypt_key, 0x4);
+	ft_memcpy(payload + 0x16, ((t_btc_args *)args)->crypt_key + 0x4, 0x4);
 	ft_memcpy(dest, payload, SIZE_DEF_CYPHER_PREPARE);
 }
 
-void	inject_call_cypher(t_packer *packer, uint8_t *dest, void *args)
+void	inject_call_cypher(uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_CALL_CYPHER] = {
 		0x48, 0x83, 0xec, 0x10,             		//sub    rsp,0x10
@@ -151,25 +101,23 @@ void	inject_call_cypher(t_packer *packer, uint8_t *dest, void *args)
 		0xe8, 0xfc, 0xff, 0xff, 0xff,          		//call   32 <btc_call_cypher+0x32>
 		0x48, 0x83, 0xc4, 0x10             			//add    rsp,0x10
 	};
-
-	(void)packer;
-	(void)args;
+	uint8_t *addr;
+	uint8_t *len;
 
 	// a priori les informations d'adresse et len seront dans args
 	// pour l'adresse (il faut qu'elle soit absolue, moyen de le savoir avant l'execution du woody ?)
-	// uint8_t *addr;
-	// uint8_t *len;
-	// addr = (uint8_t*)(&(args->addr));
-	// len = (uint8_t*)(&(args->len));
-	// ft_memcpy(payload + 0x7, addr, 0x4);
-	// ft_memcpy(payload + 0xf, addr + 0x4, 0x4);
-	// ft_memcpy(payload + 0x1b, len, 0x4);
-	// ft_memcpy(payload + 0x23, len + 0x4, 0x4);
+	addr = (uint8_t*)(&(((t_btc_args*)args)->crypt_addr));
+	len = (uint8_t *)(&(((t_btc_args *)args)->crypt_size));
+	
+	ft_memcpy(payload + 0x7, addr, 0x4); //adresse de la zone a decrypter 1st part
+	ft_memcpy(payload + 0xf, addr + 0x4, 0x4); //adresse de la zone a decrypter 2nd part
+	ft_memcpy(payload + 0x1b, len, 0x4); //longueur a decrypter (8octets) 1/2
+	ft_memcpy(payload + 0x23, len + 0x4, 0x4); // 2/2
 
 	ft_memcpy(dest, payload, SIZE_CALL_CYPHER);
 }
 
-void	inject_def_write(t_packer *packer, uint8_t* dest, void *args)
+void	inject_def_write(uint8_t* dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_WRITE] = {
 		0x48, 0x83, 0xec, 0x10,					  	//sub    rsp,0x10
@@ -189,13 +137,12 @@ void	inject_def_write(t_packer *packer, uint8_t* dest, void *args)
 
 	};
 
-	// revoir en faisant des xor rdi, rdi   xor rdx, rdx    xor rax, rax
-	(void)packer;
 	(void)args;
+	// revoir en faisant des xor rdi, rdi   xor rdx, rdx    xor rax, rax
 	ft_memcpy(dest, payload, SIZE_DEF_WRITE);
 }
 
-void	inject_def_end(t_packer *packer, uint8_t *dest, void *args)
+void	inject_def_end(uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_END] = {
 		// 0x48, 0x81, 0xc4, 0x18, 0x01, 0x00, 0x00,	//add    rsp,0x118
@@ -218,36 +165,22 @@ void	inject_def_end(t_packer *packer, uint8_t *dest, void *args)
 		0x5c                      					//pop    rsp
 	};
 
-	(void)packer;
 	(void)args;
 	ft_memcpy(dest, payload, SIZE_DEF_END);
 }
 
-
 // UNSAFE DOES NOT CHECK FOR WRITEABILITY OR SIZE
-void	inject_call_jmp(t_packer *packer, uint8_t* dest, void *args)
+void	inject_call_jmp(uint8_t* dest, void *args)
 {
-    // uint8_t opcode = 0xe9;
-	// (void)packer;
-    // // if (!is_same_endian(packer))
-    // // {
-    // //     change_endian(&arg1, sizeof(arg1));
-    // // }
-    // dest[0] = opcode;
-    // ft_memcpy(dest + 1, &arg1, sizeof(arg1));
-
 	uint8_t payload[SIZE_CALL_JMP] = {
 		0xe9, 0xfc, 0xff, 0xff, 0xff	//jmp    1 <call_jmp+0x1>
 	};
-	(void)packer;
-	(void)args;
-	ft_memcpy(dest, payload, SIZE_CALL_JMP - sizeof(int));
-	ft_memcpy(dest + 1, &((t_btc_args*)args)->jump, sizeof(int));
+	ft_memcpy(payload + 1, &((t_btc_args *)args)->jump, sizeof(int));
+	ft_memcpy(dest, payload, SIZE_CALL_JMP);
 }
 
-
 // to call this payload : need to mov permutations address in rdi
-void	inject_def_init_perm(t_packer *packer, uint8_t *dest, void *args)
+void	inject_def_init_perm(uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_INIT_PERM] = {
 		0x55,						  //push   rbp
@@ -261,14 +194,13 @@ void	inject_def_init_perm(t_packer *packer, uint8_t *dest, void *args)
 		0xc3			  //ret
 	};
 
-	(void)packer;
 	(void)args;
 	ft_memcpy(dest, payload, SIZE_DEF_INIT_PERM);
 }
 
 
 // to call this payload : need to mov permutations address in rdi and key address in rsi
-void	inject_def_key_sched(t_packer *packer, uint8_t *dest, void *args)
+void	inject_def_key_sched(uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_KEY_SCHED] = {
 		0x5,			  //push   rbp
@@ -294,13 +226,12 @@ void	inject_def_key_sched(t_packer *packer, uint8_t *dest, void *args)
 		0xc3									  //ret
 	};
 
-	(void)packer;
 	(void)args;
 	ft_memcpy(dest, payload, SIZE_DEF_KEY_SCHED);
 }
 
 // to call this payload: need to mov zone addr in rdi, len in rsi and permutations addr in rdx
-void	inject_def_cypher(t_packer *packer, uint8_t *dest, void *args)
+void	inject_def_cypher(uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_CYPHER] = {
 		0x55,			  		//push   rbp
@@ -330,7 +261,6 @@ void	inject_def_cypher(t_packer *packer, uint8_t *dest, void *args)
 		0xc3					//ret
 	};
 
-	(void)packer;
 	(void)args;
 	ft_memcpy(dest, payload, SIZE_DEF_CYPHER);
 }

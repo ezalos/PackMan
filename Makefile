@@ -6,7 +6,7 @@
 #    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/20 16:46:57 by ezalos            #+#    #+#              #
-#    Updated: 2021/03/25 15:50:42 by ezalos           ###   ########.fr        #
+#    Updated: 2021/03/25 22:48:01 by ezalos           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -98,8 +98,7 @@ endif
 run: $(NAME)
 	rm -f $(PACKED)
 	./$(NAME) $(COMMAND_ARGS)
-	chmod 777 $(PACKED)
-	chmod +x $(PACKED)
+	./$(PACKED)
 
 prototypes:
 	python3 .tmp/prototype_catcher.py srcs includes/prototypes_$(NAME).h $(NAME)

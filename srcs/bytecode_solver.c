@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 16:28:09 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 22:25:43 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,16 +44,18 @@ void		update_zone(t_zone *zone, t_btc *inst)
 {
 	// printed boundary is included
 	debug_recursive("Updating zone:\t %zu->%zu ", zone->offset, zone->offset + zone->size);
-	zone->offset = zone->offset + inst->size;
-	zone->size = zone->size - inst->size;
+	zone->offset += inst->size;
+	zone->vaddr += inst->size;
+	zone->size -= inst->size;
 	debug("to %zu->%zu\n", zone->offset, zone->offset + zone->size);
 }
 
 void		undo_update_zone(t_zone *zone, t_btc *inst)
 {
 	debug_recursive("Updating zone (undo):\t %zu->%zu ", zone->offset, zone->offset + zone->size);
-	zone->offset = zone->offset - inst->size;
-	zone->size = zone->size + inst->size;
+	zone->offset -= inst->size;
+	zone->vaddr -= inst->size;
+	zone->size += inst->size;
 	debug("to %zu->%zu\n", zone->offset, zone->offset + zone->size);
 
 }
@@ -76,7 +78,7 @@ void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
 	logging_recursive("Btc localisation:\t [%lx - %lx]\n", zone->offset, zone->offset + inst->size);
 	logging_recursive("Size is:\t\t %zu\n", inst->size);
 	logging_recursive("It's in phdr nb\t\t %d\n", get_program_header_index(packer, zone->phdr));
-	inst->func_ptr(packer, dest, inst->args);
+	inst->func_ptr(dest, inst->args);
 	zone->phdr->p_filesz += inst->size;
 	zone->phdr->p_memsz += inst->size;
 	return;
@@ -109,10 +111,14 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 	{
 		update_args(((t_btc *)inst->data), zone, ret);
 		write_btc(inst->data, zone, packer);
-		// if (!inst->prev)
-		// 	ret = zone->offset + zone->vaddr;
-		// else
 		ret = zone->offset;
+		//TODO: Entry point from t_zone->vadrr
+		if (!inst->prev)
+		{
+			ret = zone->vaddr;
+			logging_recursive("Last return size %lx\n", ret);
+		}
+		// else
 	}
 	depth -= 1;
 	printf("\n");

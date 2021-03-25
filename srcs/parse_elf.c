@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/19 16:13:04 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/21 11:00:54 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 22:59:41 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void 	parse_print(t_packer *packer)
 	}
 }
 
-void	parse_elf(t_packer *packer)
+int8_t	parse_elf(t_packer *packer)
 {
 	printf("*** %s Constructing phdr tree\n", __func__);
 	packer->phdr_tree = construct_rbt_phdr(packer);
@@ -55,5 +55,12 @@ void	parse_elf(t_packer *packer)
 		make_array_of_arrays(packer);
 		// printf("\n*** %s: Filling available sizes\n", __func__);
 		// fill_available_size(packer);
+		if (FALSE == parse_elf_check_phdr(packer))
+		{
+			dprintf(2, "ERROR: Corrupted binary\n");
+			return (FAILURE);
+		}
+		return (SUCCESS);
 	}
+	return (FAILURE);
 }

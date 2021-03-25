@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/03/25 17:01:20 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 22:22:45 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,10 +116,9 @@ typedef struct	s_btc_args
 	void	*crypt_func_addr;
 	size_t	crypt_size;
 	size_t	*crypt_key;
-	uint8_t	crypt_key_len;
 }				t_btc_args;
 
-typedef void (*t_write_func)(t_packer *packer, uint8_t *dest, void *args);
+typedef void (*t_write_func)(uint8_t *dest, void *args);
 
 typedef struct	s_btc
 {
