@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/03/25 17:00:24 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/25 17:01:20 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,7 @@ typedef struct	s_btc
 # define SIZE_CALL_MPROTECT			64
 # define SIZE_DEF_CYPHER_PREPARE	55
 # define SIZE_CALL_CYPHER			58
-# define SIZE_DEF_WRITE				59		
+# define SIZE_DEF_WRITE				(55 + 4)		
 # define SIZE_DEF_END				(32 - 7)
 # define SIZE_CALL_JMP				5
 # define SIZE_DEF_INIT_PERM			18
