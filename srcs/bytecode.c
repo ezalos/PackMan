@@ -39,6 +39,9 @@ ssize_t		chirurgy(t_packer *packer)
 
 	if (!MINIMAL_WOODY)
 	{
+		// Error before loading when used
+		// ./woody.out: 14: Syntax error: word unexpected (expecting ")")
+		// 		I think it's just because we dont uncrypt (Highly probable)
 		logging("\n*** %s: Cypher crypt zones", __func__);
 		crypt_zones(packer);
 	}

@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:13:17 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 21:35:12 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/26 09:48:26 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	update_arg_crypt_calls(t_dlist *inst, t_zone *zone)
 	{
 		if (((t_btc*)inst->data)->type == BTC_CALL_CYPHER)
 		{
-			((t_btc *)inst->data)->args->crypt_func_addr = (void *)((size_t)zone->phdr->p_vaddr + (size_t)zone->offset);
+			((t_btc *)inst->data)->args->crypt_func_addr = (void *)((size_t)zone->vaddr);
 		}
 		inst = inst->next;
 	}
