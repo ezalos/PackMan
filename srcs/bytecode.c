@@ -34,8 +34,8 @@ ssize_t		chirurgy(t_packer *packer)
 	if (FAILURE == (ret = solve_bytecodes(packer, packer->caves, blueprint, TRUE)))
 		return (FAILURE);
 
-	logging("\n*** %s: Entry Point: %ld [%lx]\n", __func__, ret, ret);
-	((Elf64_Ehdr *)packer->content)->e_entry = ret;
+	logging("\n*** %s: Entry Point: 0x%lx [%ld]\n", __func__, packer->new_e_entry, packer->new_e_entry);
+	((Elf64_Ehdr *)packer->content)->e_entry = packer->new_e_entry;
 
 	if (!MINIMAL_WOODY)
 	{

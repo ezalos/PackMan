@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/03/26 09:44:20 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/26 10:37:49 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 # include <unistd.h>
 # include <time.h>
 
-# define DEBUG		0
+# define DEBUG		2
 extern int debug_level;
 
 # define SUCCESS	0
@@ -102,6 +102,7 @@ typedef struct	s_packer
 	t_list			*to_crypt;  //list of program headers of segments we want to crypt
 	t_list			*caves; //list of zones we can inject code in, ordered by dec size
 	uint8_t			key[KEY_SIZE];
+	size_t			new_e_entry;
 	// t_stat		stat;
 
 	uint64_t		size;

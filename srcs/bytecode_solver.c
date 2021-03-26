@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/26 09:43:34 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/26 10:39:03 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,14 +116,14 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 		update_args(((t_btc *)inst->data), zone, ret);
 		write_btc(inst->data, zone, packer);
 		ret = zone->offset;
-		if (!inst->prev)
+		if (((t_btc*)inst->data)->type == BTC_DEF_BEGIN)
 		{
-			ret = zone->vaddr;
-			logging_recursive("Last return size %lx\n", ret);
+			packer->new_e_entry = zone->vaddr;
+			logging_recursive("New e_entry will be\t 0x%lx\n", packer->new_e_entry);
 		}
 	}
 	depth -= 1;
-	logging("\n");
+	logging_recursive("\n");
 	return (ret);
 }
 
@@ -137,7 +137,7 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 
 	// depth for aestethics 
 	depth += 1;
-	logging("\n");
+	logging_recursive("\n");
 	if (inst == NULL)
 	{
 		logging_recursive("Inst is NULL -> WE FOUND THE SOLUTION!!\n\n");
