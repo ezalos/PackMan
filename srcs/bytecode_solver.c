@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 23:51:28 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/26 09:43:34 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
 
 	dest = zone->offset + packer->content;
 	logging_recursive("%s:\t\t %s\n", __func__, btc_to_str(inst));
+	logging_recursive("VADDR:\t\t\t 0x%lx\n", zone->vaddr);
 	logging_recursive("Writing at offset:\t 0x%lx (%ld)\n", zone->offset, zone->offset);
 	logging_recursive("Btc localisation:\t [%lx - %lx]\n", zone->offset, zone->offset + inst->size);
 	logging_recursive("Size is:\t\t %zu\n", inst->size);
