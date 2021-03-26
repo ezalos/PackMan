@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   rc4.c                                              :+:      :+:    :+:   */
+/*   cypher_rc4.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/16 17:04:49 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/03/25 19:50:55 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/26 10:48:27 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,13 @@ void	init_key(uint8_t *key)
 {
 	size_t	i;
 
-	srand(clock());
+	srand(clock() / CLOCKS_PER_SEC);
 	i = -1;
 	while (++i < KEY_SIZE)
+	{
 		key[i] = rand();
+		logging("Key[%d] = %02hhx\n", i, key[i]);
+	}
 }
 
 void	schedule_key(uint8_t *permutations, uint8_t *key)

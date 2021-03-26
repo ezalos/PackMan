@@ -42,8 +42,9 @@ ssize_t		chirurgy(t_packer *packer)
 		// Error before loading when used
 		// ./woody.out: 14: Syntax error: word unexpected (expecting ")")
 		// 		I think it's just because we dont uncrypt (Highly probable)
-		logging("\n*** %s: Cypher crypt zones", __func__);
+		logging("\n*** %s: Cypher crypt zones\n", __func__);
 		crypt_zones(packer);
+		logging("\n*** %s: Cypher key is %016llx (in hex)\n", __func__, *(uint64_t*)packer->key);
 	}
 
 	return (SUCCESS);
