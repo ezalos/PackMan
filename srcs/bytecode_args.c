@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:13:17 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/28 20:44:30 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/28 20:45:55 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	update_args(t_packer *packer, t_btc *inst, t_zone *zone, ssize_t ret)
 	{
 		inst->args->jmp_init_perm = (uint32_t)((size_t)inst->args->crypt_func_init_perm_vaddr /*to*/) - (zone->vaddr /*from*/ + OFFSET_CALL_INIT_PERM /*instuction size*/);
 		inst->args->jmp_key_sched = (uint32_t)((size_t)inst->args->crypt_func_key_sched_vaddr /*to*/) - (zone->vaddr /*from*/ + OFFSET_CALL_KEY_SCHED /*instuction size*/);
-		inst->args->crypt_key = (size_t*)packer->key;
+		inst->args->crypt_key = (uint8_t*)packer->key;
 		// Nothing
 	}
 	else if (inst->type == BTC_CALL_CYPHER)
