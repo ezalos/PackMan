@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   gather.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/25 23:23:07 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 23:34:37 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/28 20:14:12 by rkirszba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int8_t		gather_all_infos(t_packer *packer)
 {
 	cave_gathering(packer);
 
-	packer->to_crypt = get_zones(packer, PT_LOAD, PF_R, &data_filler_zone_to_crypt);
+	packer->to_crypt = get_zones(packer, PT_LOAD, PF_X | PF_R, &data_filler_zone_to_crypt);
 	packer->caves = get_zones(packer, PT_LOAD, PF_X | PF_R, &data_filler_cave);
 
 	if (debug_level == 2)

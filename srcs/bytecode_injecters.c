@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   bytecode_injecters.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/17 19:29:02 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 22:22:37 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/28 20:22:34 by rkirszba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,9 +78,21 @@ void	inject_def_cypher_prepare(uint8_t *dest, void *args)
 		0x00, 
 		0xe8, 0xfc, 0xff, 0xff, 0xff          		//call   33 <btc_def_cypher_prepare+0x33>
 	};
+	uint8_t	*jmp_init_perm;
+	uint8_t	*jmp_key_sched;
 
-	ft_memcpy(payload + 0xe, ((t_btc_args *)args)->crypt_key, 0x4);
-	ft_memcpy(payload + 0x16, ((t_btc_args *)args)->crypt_key + 0x4, 0x4);
+	jmp_init_perm = (uint8_t *)(&((t_btc_args *)args)->jmp_init_perm);
+	jmp_key_sched = (uint8_t *)&((t_btc_args *)args)->jmp_key_sched;
+
+	logging_recursive("%s: Begin memcopy\n", __func__);
+	ft_memcpy(payload + 0xe, &((t_btc_args *)args)->crypt_key, 0x4);
+	logging_recursive("hello1\n");
+	ft_memcpy(payload + 0x16, &((t_btc_args *)args)->crypt_key + 0x4, 0x4);
+	logging_recursive("hello2\n");
+	ft_memcpy(payload + OFFSET_CALL_INIT_PERM, jmp_init_perm, sizeof(uint32_t));
+	logging_recursive("hello3\n");
+	ft_memcpy(payload + OFFSET_CALL_KEY_SCHED, jmp_key_sched, sizeof(uint32_t));
+	logging_recursive("hello4\n");
 	ft_memcpy(dest, payload, SIZE_DEF_CYPHER_PREPARE);
 }
 
@@ -103,16 +115,19 @@ void	inject_call_cypher(uint8_t *dest, void *args)
 	};
 	uint8_t *addr;
 	uint8_t *len;
+	uint8_t	*jmp_def_cypher;
 
 	// a priori les informations d'adresse et len seront dans args
 	// pour l'adresse (il faut qu'elle soit absolue, moyen de le savoir avant l'execution du woody ?)
-	addr = (uint8_t*)(&(((t_btc_args*)args)->crypt_addr));
-	len = (uint8_t *)(&(((t_btc_args *)args)->crypt_size));
-	
+	addr = (uint8_t*)(&(((t_btc_args*)args)->crypt_plaintext_vaddr));
+	len = (uint8_t *)(&(((t_btc_args *)args)->crypt_plaintext_size));
+	jmp_def_cypher = (uint8_t *)(&(((t_btc_args *)args)->jmp_def_cypher));
+
 	ft_memcpy(payload + 0x7, addr, 0x4); //adresse de la zone a decrypter 1st part
 	ft_memcpy(payload + 0xf, addr + 0x4, 0x4); //adresse de la zone a decrypter 2nd part
 	ft_memcpy(payload + 0x1b, len, 0x4); //longueur a decrypter (8octets) 1/2
 	ft_memcpy(payload + 0x23, len + 0x4, 0x4); // 2/2
+	ft_memcpy(payload + OFFSET_CALL_CYPHER, jmp_def_cypher, sizeof(uint32_t));
 
 	ft_memcpy(dest, payload, SIZE_CALL_CYPHER);
 }

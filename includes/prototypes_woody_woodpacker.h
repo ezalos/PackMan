@@ -2,7 +2,7 @@
 # define PROTOTYPES_WOODY_WOODPACKER_H
 
 int8_t		access_file(t_packer *packer, char *file);
-int8_t		blueprint_add(t_dlist **blueprint, int btc_type);
+t_dlist		*blueprint_add(t_dlist **blueprint, int btc_type);
 t_dlist		*blueprint_creation(t_packer *packer);
 t_dlist		*blueprint_minimal(void);
 char		*btc_to_str(t_btc *inst);
@@ -88,6 +88,7 @@ void		rbt_free_content(void **content);
 void		rbt_keep_content(void **content);
 int8_t		save_woody(t_packer *packer);
 void		schedule_key(uint8_t *permutations, uint8_t *key);
+void		set_call_cypher_args(t_btc *inst, t_zone *zone);
 ssize_t		solve_bytecodes(t_packer *packer,
 			t_list *zones,
 			t_dlist *inst,
@@ -100,8 +101,11 @@ uint8_t		test_endian(void);
 void		undo_update_zone(t_zone *zone, t_btc *inst);
 void		unit_test_alter(uint8_t *content, size_t len);
 void		unit_test_cypher(char *str, int len, char key);
-void		update_arg_crypt_calls(t_dlist *inst, t_zone *zone);
-void		update_args(t_btc *inst, t_zone *zone, ssize_t ret);
+void		update_arg_def_crypt_calls(t_dlist *inst, t_zone *zone);
+void		update_args(t_packer *packer,
+			t_btc *inst,
+			t_zone *zone,
+			ssize_t ret);
 void		update_zone(t_zone *zone, t_btc *inst);
 void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer);
 

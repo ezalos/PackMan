@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   bytecode_solver.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/26 10:39:03 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/28 20:24:02 by rkirszba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,8 @@ void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
 {
 	//TODO : todo
 	uint8_t		*dest;
-
+	
+	logging_recursive("Enter write btc\n");
 	dest = zone->offset + packer->content;
 	logging_recursive("%s:\t\t %s\n", __func__, btc_to_str(inst));
 	logging_recursive("VADDR:\t\t\t 0x%lx\n", zone->vaddr);
@@ -82,6 +83,7 @@ void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
 	inst->func_ptr(dest, inst->args);
 	zone->phdr->p_filesz += inst->size;
 	zone->phdr->p_memsz += inst->size;
+	logging_recursive("%s: END OF WRITE\n", __func__);
 	return;
 }
 
@@ -103,17 +105,15 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 	uint8_t	headless;
 	ssize_t ret;
 
-	if (((t_btc*)inst->data)->type == BTC_DEF_CYPHER)
-	{
-		update_arg_crypt_calls(inst, zone);
-	}
+	logging_recursive("%s\n", __func__);
+	update_arg_def_crypt_calls(inst, zone);
 	update_zone(zone, inst->data);
 	headless = is_btc_headless((t_btc *)inst->data);
 	ret = solve_bytecodes(packer, zones, inst->next, headless);
 	undo_update_zone(zone, ((t_btc *)inst->data));
 	if (ret != FAILURE)
 	{
-		update_args(((t_btc *)inst->data), zone, ret);
+		update_args(packer, ((t_btc *)inst->data), zone, ret);
 		write_btc(inst->data, zone, packer);
 		ret = zone->offset;
 		if (((t_btc*)inst->data)->type == BTC_DEF_BEGIN)
@@ -138,6 +138,7 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 	// depth for aestethics 
 	depth += 1;
 	logging_recursive("\n");
+	logging_recursive("%s\n", __func__);
 	if (inst == NULL)
 	{
 		logging_recursive("Inst is NULL -> WE FOUND THE SOLUTION!!\n\n");

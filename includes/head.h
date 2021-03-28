@@ -3,17 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   head.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/03/26 10:49:44 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/28 20:14:22 by rkirszba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HEAD_H
 # define HEAD_H
 
-# include <sys/mman.h>
 # include <sys/stat.h>
 # include <fcntl.h>
 # include <error.h>
@@ -26,8 +25,9 @@
 # include <sys/types.h>
 # include <unistd.h>
 # include <time.h>
+# include <sys/mman.h>
 
-# define DEBUG		0
+# define DEBUG		2
 extern int debug_level;
 
 # define SUCCESS	0
@@ -55,6 +55,10 @@ extern int debug_level;
 
 # define PERM_SIZE			0x100
 # define KEY_SIZE			0x8
+
+# define OFFSET_CALL_INIT_PERM	0x22
+# define OFFSET_CALL_KEY_SCHED	0x33
+# define OFFSET_CALL_CYPHER		0x32
 
 typedef struct	s_zone
 {
@@ -99,7 +103,7 @@ typedef struct	s_packer
 	t_zone			z_text;
 	t_rbt			*phdr_tree;
 	t_pheader		**phdr_array;
-	t_list			*to_crypt;  //list of program headers of segments we want to crypt
+	t_list			*to_crypt;  //list of t_zones we want to crypt
 	t_list			*caves; //list of zones we can inject code in, ordered by dec size
 	uint8_t			key[KEY_SIZE];
 	size_t			new_e_entry;
@@ -110,15 +114,21 @@ typedef struct	s_packer
 
 typedef struct	s_btc_args
 {
-	int		jump;
-	void	*mp_addr;
-	size_t	mp_len;
-	int		mp_prot;
-	void	*crypt_addr;
-	void	*crypt_func_addr;
-	size_t	crypt_size;
-	size_t	*crypt_key;
+	int			jump;
+	uint64_t		mp_addr;
+	size_t		mp_len;
+	int			mp_prot;
+	uint64_t	crypt_plaintext_vaddr;
+	uint64_t	crypt_func_def_vaddr;
+	uint64_t	crypt_func_init_perm_vaddr;
+	uint64_t	crypt_func_key_sched_vaddr;
+	uint32_t	jmp_init_perm; // vaddr def_init_perm - (vaddr def_cypher_prepare + OFFSET_CALL_INIT_PERM)
+	uint32_t	jmp_key_sched; // vaddr def_key_sched - (vaddr def_cypher_prepare + OFFSET_CALL_KEY_SCHED)
+	uint32_t	jmp_def_cypher; //vaddr def_cypher - (vaddr call_cypher + OFFSET_CALL_CYPHER)
+	size_t		crypt_plaintext_size;
+	size_t		*crypt_key;
 }				t_btc_args;
+
 
 typedef void (*t_write_func)(uint8_t *dest, void *args);
 

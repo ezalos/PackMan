@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_zones.c                                        :+:      :+:    :+:   */
+/*   gather_get_zones.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/15 17:54:59 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/03/25 21:11:14 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/28 19:59:35 by rkirszba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void			data_filler_zone_to_crypt(t_pheader *hdr, t_zone *zone)
 void			data_filler_cave(t_pheader *hdr, t_zone *zone)
 {
 	zone->offset = hdr->phdr->p_offset + hdr->phdr->p_filesz;
+	//TODO: vaddr keep count of alignement
 	zone->vaddr = hdr->phdr->p_vaddr + hdr->phdr->p_filesz; // hesitation avec + p_memsz
 	zone->size = hdr->available_size;
 	zone->phdr = hdr->phdr;
