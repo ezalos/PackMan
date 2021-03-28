@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/17 19:29:02 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/28 20:31:39 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/03/28 21:02:38 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,13 +81,19 @@ void	inject_def_cypher_prepare(uint8_t *dest, void *args)
 	uint8_t	*jmp_init_perm;
 	uint8_t	*jmp_key_sched;
 
+	logging_recursive("struct SCHEDULE: %x \n", ((t_btc_args *)args)->jmp_key_sched);
+	logging_recursive("struct INIT PERM: %x \n", ((t_btc_args *)args)->jmp_init_perm);
 	jmp_init_perm = (uint8_t *)(&((t_btc_args *)args)->jmp_init_perm);
 	jmp_key_sched = (uint8_t *)&((t_btc_args *)args)->jmp_key_sched;
 
 	logging_recursive("%s: Begin memcopy\n", __func__);
-	ft_memcpy(payload + 0xe, &((t_btc_args *)args)->crypt_key, 0x4);
+	logging("KEY IS: %llx\n", *(uint64_t*)((t_btc_args *)args)->crypt_key);
+	logging_recursive("SCHEDULE: %x \n", jmp_key_sched);
+	logging_recursive("INIT PERM: %x \n", jmp_init_perm);
+
+	ft_memcpy(payload + 0xe, ((t_btc_args *)args)->crypt_key, 0x4);
 	logging_recursive("hello1\n");
-	ft_memcpy(payload + 0x16, &((t_btc_args *)args)->crypt_key + 0x4, 0x4);
+	ft_memcpy(payload + 0x19, ((t_btc_args *)args)->crypt_key + 0x4, 0x4);
 	logging_recursive("hello2\n");
 	ft_memcpy(payload + OFFSET_CALL_INIT_PERM, jmp_init_perm, sizeof(uint32_t));
 	logging_recursive("hello3\n");
