@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   bytecode_solver.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/28 20:24:02 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/03/28 20:43:14 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 	uint8_t	headless;
 	ssize_t ret;
 
-	logging_recursive("%s\n", __func__);
+	logging_recursive("bytecode_inject\n");
 	update_arg_def_crypt_calls(inst, zone);
 	update_zone(zone, inst->data);
 	headless = is_btc_headless((t_btc *)inst->data);
@@ -122,8 +122,8 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 			logging_recursive("New e_entry will be\t 0x%lx\n", packer->new_e_entry);
 		}
 	}
+	logging_recursive("end bytecode_inject\n\n");
 	depth -= 1;
-	logging_recursive("\n");
 	return (ret);
 }
 
@@ -160,12 +160,10 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 			}
 			if (ret != FAILURE)
 			{
-				depth -= 1;
 				return (ret);
 			}
 			zone_list = zone_list->next;
 		}
-		depth -= 1;
 		return (FAILURE);
 	}
 	else
@@ -192,7 +190,6 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 			jmp = ft_dlist_cut_unsafe(jmp);
 			free_btc(jmp->data);
 			ft_dlist_free(jmp, NULL);
-			depth -= 1;
 			return (ret);
 		}
 	}

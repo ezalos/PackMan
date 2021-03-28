@@ -6,7 +6,7 @@
 /*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/03/28 20:14:22 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/03/28 20:42:38 by rkirszba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ typedef struct	s_btc_args
 	uint32_t	jmp_key_sched; // vaddr def_key_sched - (vaddr def_cypher_prepare + OFFSET_CALL_KEY_SCHED)
 	uint32_t	jmp_def_cypher; //vaddr def_cypher - (vaddr call_cypher + OFFSET_CALL_CYPHER)
 	size_t		crypt_plaintext_size;
-	size_t		*crypt_key;
+	uint8_t 	*crypt_key;
 }				t_btc_args;
 
 
