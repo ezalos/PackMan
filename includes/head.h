@@ -170,7 +170,7 @@ typedef struct	s_btc
 # define SIZE_DEF_CYPHER_PREPARE	55
 # define SIZE_CALL_CYPHER			58
 # define SIZE_DEF_WRITE				(55 + 4)		
-# define SIZE_DEF_END				(32 - 7)
+# define SIZE_DEF_END				(32 - 7) + 7
 # define SIZE_CALL_JMP				5
 # define SIZE_DEF_INIT_PERM			18
 # define SIZE_DEF_KEY_SCHED			53
