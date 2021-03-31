@@ -188,7 +188,7 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 				ret = bytecode_inject(packer, zones, zone, jmp);
 			}
 			jmp = ft_dlist_cut_unsafe(jmp);
-			free_btc(jmp->data);
+			free_btc(jmp->data);		// TODO: keep jump rights phdr ?
 			ft_dlist_free(jmp, NULL);
 			return (ret);
 		}
