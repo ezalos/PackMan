@@ -1,4 +1,5 @@
 *.o
+.gdb_history
 peda
 peda-session*
 libft/test.c
