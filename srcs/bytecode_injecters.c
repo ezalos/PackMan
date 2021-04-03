@@ -74,7 +74,7 @@ void	inject_def_cypher_prepare(uint8_t *dest, void *args)
 		0x48, 0x8d, 0x3c, 0x24,             		//lea    rdi,[rsp]
 		0xe8, 0xfc, 0xff, 0xff, 0xff,         		//call   22 <btc_def_cypher_prepare+0x22>
 		0x48, 0x8d, 0x3c, 0x24,             		//lea    rdi,[rsp]
-		0x48, 0x8d, 0xbc, 0x24, 0x00, 0x01, 0x00,  	//lea    rdi,[rsp+0x100]
+		0x48, 0x8d, 0xb4, 0x24, 0x00, 0x01, 0x00,  	//lea    rsi,[rsp+0x100]
 		0x00, 
 		0xe8, 0xfc, 0xff, 0xff, 0xff          		//call   33 <btc_def_cypher_prepare+0x33>
 	};
@@ -84,23 +84,20 @@ void	inject_def_cypher_prepare(uint8_t *dest, void *args)
 	logging_recursive("struct SCHEDULE: %x \n", ((t_btc_args *)args)->jmp_key_sched);
 	logging_recursive("struct INIT PERM: %x \n", ((t_btc_args *)args)->jmp_init_perm);
 	jmp_init_perm = (uint8_t *)(&((t_btc_args *)args)->jmp_init_perm);
+	logging_recursive("jmp_init_perm: %x\n", *(uint32_t*)jmp_init_perm);
 	jmp_key_sched = (uint8_t *)&((t_btc_args *)args)->jmp_key_sched;
+	logging_recursive("jmp_key_sched: %x\n", *(uint32_t*)jmp_key_sched);
 
 	logging_recursive("%s: Begin memcopy\n", __func__);
 	logging("KEY IS: %llx\n", *(uint64_t*)((t_btc_args *)args)->crypt_key);
-	logging_recursive("SCHEDULE: %x \n", jmp_key_sched);
-	logging_recursive("INIT PERM: %x \n", jmp_init_perm);
 
 	ft_memcpy(payload + 0xe, ((t_btc_args *)args)->crypt_key, 0x4);
-	logging_recursive("hello1\n");
 	ft_memcpy(payload + 0x19, ((t_btc_args *)args)->crypt_key + 0x4, 0x4);
-	logging_recursive("hello2\n");
 	ft_memcpy(payload + OFFSET_CALL_INIT_PERM, jmp_init_perm, sizeof(uint32_t));
-	logging_recursive("hello3\n");
 	ft_memcpy(payload + OFFSET_CALL_KEY_SCHED, jmp_key_sched, sizeof(uint32_t));
-	logging_recursive("hello4\n");
 	ft_memcpy(dest, payload, SIZE_DEF_CYPHER_PREPARE);
 }
+
 
 void	inject_call_cypher(uint8_t *dest, void *args)
 {
@@ -166,7 +163,7 @@ void	inject_def_write(uint8_t* dest, void *args)
 void	inject_def_end(uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_END] = {
-		// 0x48, 0x81, 0xc4, 0x18, 0x01, 0x00, 0x00,	//add    rsp,0x118
+		0x48, 0x81, 0xc4, 0x08, 0x01, 0x00, 0x00,	//add    rsp,0x108
 		0x9d,                      					//popf   
 		0x41, 0x5f,                   				//pop    r15
 		0x41, 0x5e,                   				//pop    r14
@@ -224,7 +221,7 @@ void	inject_def_init_perm(uint8_t *dest, void *args)
 void	inject_def_key_sched(uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_KEY_SCHED] = {
-		0x5,			  //push   rbp
+		0x55,			  //push   rbp
 		0x48, 0x89, 0xe5, //mov    rbp,rsp
 		0x48, 0x31, 0xc9, //xor    rcx,rcx
 		0x48, 0x31, 0xd2, //xor    rdx,rdx

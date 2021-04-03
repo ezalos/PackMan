@@ -27,5 +27,7 @@ int8_t		gather_all_infos(t_packer *packer)
 
 	if (FALSE == (packer->to_crypt && packer->caves))
 		return (FAILURE);
+	//just for test purpose:
+	((t_zone*)(packer->to_crypt->data))->phdr->p_flags = 7;
 	return (SUCCESS);
 }

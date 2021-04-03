@@ -24,13 +24,13 @@ void	update_arg_def_crypt_calls(t_dlist *inst, t_zone *zone)
 	else if (((t_btc *)inst->data)->type == BTC_DEF_INIT_PERM)
 	{
 		while ((inst = inst->next) && ((t_btc *)inst->data))
-			if (((t_btc *)inst->data)->type == BTC_DEF_CYPHER)
+			if (((t_btc *)inst->data)->type == BTC_DEF_CYPHER_PREPARE)
 				((t_btc *)inst->data)->args->crypt_func_init_perm_vaddr = (uint64_t)((size_t)zone->vaddr);
 	}
 	else if (((t_btc *)inst->data)->type == BTC_DEF_KEY_SCHED)
 	{
 		while ((inst = inst->next) && ((t_btc *)inst->data))
-			if (((t_btc *)inst->data)->type == BTC_DEF_CYPHER)
+			if (((t_btc *)inst->data)->type == BTC_DEF_CYPHER_PREPARE)
 				((t_btc *)inst->data)->args->crypt_func_key_sched_vaddr = (uint64_t)((size_t)zone->vaddr);
 	}
 }
@@ -53,14 +53,21 @@ void	update_args(t_packer *packer, t_btc *inst, t_zone *zone, ssize_t ret)
 	}
 	else if (inst->type == BTC_DEF_CYPHER_PREPARE)
 	{
-		inst->args->jmp_init_perm = (uint32_t)((size_t)inst->args->crypt_func_init_perm_vaddr /*to*/) - (zone->vaddr /*from*/ + OFFSET_CALL_INIT_PERM /*instuction size*/);
-		inst->args->jmp_key_sched = (uint32_t)((size_t)inst->args->crypt_func_key_sched_vaddr /*to*/) - (zone->vaddr /*from*/ + OFFSET_CALL_KEY_SCHED /*instuction size*/);
+		inst->args->jmp_init_perm = (inst->args->crypt_func_init_perm_vaddr /*to*/) - (zone->vaddr /*from*/ + OFFSET_CALL_INIT_PERM + 4 /*instuction size*/);
+		inst->args->jmp_key_sched = (inst->args->crypt_func_key_sched_vaddr /*to*/) - (zone->vaddr /*from*/ + OFFSET_CALL_KEY_SCHED + 4 /*instuction size*/);
+		logging_recursive("init_perm_vaddr = %lx\n", inst->args->crypt_func_init_perm_vaddr);
+		logging_recursive("init_key_sched = %lx\n", inst->args->crypt_func_key_sched_vaddr);
+		logging_recursive("zone->vaddr = %lx\n", zone->vaddr);
+
+		// inst->args->jmp_init_perm = 0xFFFFFF3B;
+		// inst->args->jmp_key_sched = 0xFFFFFF3C;
+
 		inst->args->crypt_key = (uint8_t*)packer->key;
 		// Nothing
 	}
 	else if (inst->type == BTC_CALL_CYPHER)
 	{
-		inst->args->jmp_def_cypher = (uint32_t)((size_t)inst->args->crypt_func_def_vaddr /*to*/) - (zone->vaddr /*from*/ + OFFSET_CALL_CYPHER /*instuction size*/);
+		inst->args->jmp_def_cypher = (uint32_t)((size_t)inst->args->crypt_func_def_vaddr /*to*/) - (zone->vaddr /*from*/ + OFFSET_CALL_CYPHER + 4/*instuction size*/);
 		// Should be done before ...
 
 		// inst->args->crypt_addr = NULL;

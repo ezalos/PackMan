@@ -89,15 +89,15 @@ void	crypt_zones(t_packer *packer)
 	t_list		*to_crypt;
 	t_zone		*zone;
 
-	init_permutations(permutations);//asm
-	init_key(packer->key);
-	schedule_key(permutations, packer->key);//asm
+	init_permutations_asm(permutations);//asm
+	// init_key(packer->key);
+	schedule_key_asm(permutations, packer->key);//asm
 	content = (uint8_t*)(packer->content);
 	to_crypt = packer->to_crypt;
 	while (to_crypt)
 	{
 		zone = (t_zone*)(to_crypt->data);
-		crypt_zone(content + zone->offset, zone->size, permutations);//asm
+		crypt_zone_asm(content + zone->offset, zone->size, permutations);//asm
 		to_crypt = to_crypt->next;
 	}
 }
