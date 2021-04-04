@@ -36,7 +36,7 @@ test_ret()
 
 trap print_and_quit SEGV
 
-echo $yellow "TESTOR--> Launching program: $n" $reset
+echo $yellow "TESTOR--> $1 will be launched recursively $2 times" $reset
 
 ./woody_woodpacker $1
 
