@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/28 20:43:14 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/03 20:01:32 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,10 +178,10 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 		}
 		else
 		{
+			logging_recursive("Cannot write instruction, trying jump\n");
 			ret = FAILURE;
 			jmp = ft_dlist_new(create_btc(BTC_CALL_JMP));
 			ft_dlist_insert_next_wesh(inst, jmp);
-			logging_recursive("Cannot write instruction, trying jump\n");
 			if (can_i_write(zone, jmp->data))
 			{
 				logging_recursive("Jump ok\n");

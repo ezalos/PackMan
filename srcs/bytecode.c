@@ -19,6 +19,8 @@ ssize_t		chirurgy(t_packer *packer)
 	t_dlist	*blueprint;
 	ssize_t ret;
 
+	logging("\n*** %s: Init key: %016llx (in hex)\n", __func__, *(uint64_t *)packer->key);
+	init_key(packer->key);
 	logging("\n*** %s: Creating blueprint\n", __func__);
 	if (MINIMAL_WOODY)
 	{

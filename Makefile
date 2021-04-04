@@ -6,7 +6,7 @@
 #    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/20 16:46:57 by ezalos            #+#    #+#              #
-#    Updated: 2021/03/25 22:48:01 by ezalos           ###   ########.fr        #
+#    Updated: 2021/04/04 11:37:16 by ezalos           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -88,7 +88,7 @@ re : fclean
 ##						##
 ##########################
 
-SUPPORTED_COMMANDS := run tests
+SUPPORTED_COMMANDS := run tests recur
 SUPPORTS_MAKE_ARGS := $(findstring $(firstword $(MAKECMDGOALS)), $(SUPPORTED_COMMANDS))
 ifneq "$(SUPPORTS_MAKE_ARGS)" ""
   COMMAND_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -99,6 +99,9 @@ run: $(NAME)
 	rm -f $(PACKED)
 	./$(NAME) $(COMMAND_ARGS)
 	./$(PACKED)
+
+recur: $(NAME)
+	sh recursive_testor.sh $(COMMAND_ARGS)
 
 prototypes:
 	python3 .tmp/prototype_catcher.py srcs includes/prototypes_$(NAME).h $(NAME)

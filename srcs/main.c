@@ -22,8 +22,6 @@ int			main(int ac, char **av)
 	if (FAILURE == init(&packer, av))
 		return (EXIT_FAILURE);
 		
-	init_key(packer.key);
-
 	if (FAILURE == gather_all_infos(&packer))
 		return (EXIT_FAILURE);
 

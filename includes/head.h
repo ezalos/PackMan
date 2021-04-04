@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/03/28 20:45:57 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/03 20:09:23 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 # include <time.h>
 # include <sys/mman.h>
 
-# define DEBUG		2
+# define DEBUG		0
 extern int debug_level;
 
 # define SUCCESS	0
