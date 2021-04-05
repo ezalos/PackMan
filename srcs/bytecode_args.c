@@ -21,6 +21,13 @@ void	update_arg_def_crypt_calls(t_dlist *inst, t_zone *zone)
 			if (((t_btc *)inst->data)->type == BTC_CALL_CYPHER)
 				((t_btc *)inst->data)->args->crypt_func_def_vaddr = (uint64_t)((size_t)zone->vaddr);
 	}
+	else if (((t_btc *)inst->data)->type ==  BTC_DEF_FIND_ABS_VADDR)
+	{
+		((t_btc *)inst->data)->args->crypt_func_find_abs_vaddr_vaddr = (uint64_t)((size_t)zone->vaddr);
+		while ((inst = inst->next) && ((t_btc *)inst->data))
+			if (((t_btc *)inst->data)->type == BTC_CALL_CYPHER)
+				((t_btc *)inst->data)->args->crypt_func_find_abs_vaddr_vaddr = (uint64_t)((size_t)zone->vaddr);
+	}
 	else if (((t_btc *)inst->data)->type == BTC_DEF_INIT_PERM)
 	{
 		while ((inst = inst->next) && ((t_btc *)inst->data))
@@ -68,6 +75,8 @@ void	update_args(t_packer *packer, t_btc *inst, t_zone *zone, ssize_t ret)
 	else if (inst->type == BTC_CALL_CYPHER)
 	{
 		inst->args->jmp_def_cypher = (uint32_t)((size_t)inst->args->crypt_func_def_vaddr /*to*/) - (zone->vaddr /*from*/ + OFFSET_CALL_CYPHER + 4/*instuction size*/);
+		
+		inst->args->jmp_find_abs_addr = (uint32_t)((size_t)inst->args->crypt_func_find_abs_vaddr_vaddr /*to*/) - (zone->vaddr /*from*/ + OFFSET_CALL_FIND_ABS_ADDR + 4/*instuction size*/);
 		// Should be done before ...
 
 		// inst->args->crypt_addr = NULL;

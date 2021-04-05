@@ -107,6 +107,8 @@ void	inject_call_cypher(uint8_t *dest, void *args)
 		0xc7, 0x44, 0x24, 0x04, 0xff, 0xff, 0xff,   //mov    DWORD PTR [rsp+0x4],0xffffffff
 		0xff, 
 		0x48, 0x8b, 0x3c, 0x24,             		//mov    rdi,QWORD PTR [rsp]
+		0xe8, 0xfc, 0xff, 0xff, 0xff,          		//call   18 <btc_call_cypher+0x18>
+		0x48, 0x89, 0xc7,                			//mov    rdi,rax
 		0xc7, 0x44, 0x24, 0x08, 0xff, 0xff, 0xff,   //mov    DWORD PTR [rsp+0x8],0xffffffff
 		0xff, 
 		0xc7, 0x44, 0x24, 0x0c, 0xff, 0xff, 0xff,   //mov    DWORD PTR [rsp+0xc],0xffffffff
@@ -119,19 +121,21 @@ void	inject_call_cypher(uint8_t *dest, void *args)
 	uint8_t *addr;
 	uint8_t *len;
 	uint8_t	*jmp_def_cypher;
+	uint8_t	*jmp_find_abs_addr;
 
 	// a priori les informations d'adresse et len seront dans args
 	// pour l'adresse (il faut qu'elle soit absolue, moyen de le savoir avant l'execution du woody ?)
 	addr = (uint8_t*)(&(((t_btc_args*)args)->crypt_plaintext_vaddr));
 	len = (uint8_t *)(&(((t_btc_args *)args)->crypt_plaintext_size));
 	jmp_def_cypher = (uint8_t *)(&(((t_btc_args *)args)->jmp_def_cypher));
+	jmp_find_abs_addr = (uint8_t *)(&(((t_btc_args *)args)->jmp_find_abs_addr));
 
 	ft_memcpy(payload + 0x7, addr, 0x4); //adresse de la zone a decrypter 1st part
 	ft_memcpy(payload + 0xf, addr + 0x4, 0x4); //adresse de la zone a decrypter 2nd part
-	ft_memcpy(payload + 0x1b, len, 0x4); //longueur a decrypter (8octets) 1/2
-	ft_memcpy(payload + 0x23, len + 0x4, 0x4); // 2/2
+	ft_memcpy(payload + 0x23, len, 0x4); //longueur a decrypter (8octets) 1/2
+	ft_memcpy(payload + 0x2b, len + 0x4, 0x4); // 2/2
+	ft_memcpy(payload + OFFSET_CALL_FIND_ABS_ADDR, jmp_find_abs_addr, sizeof(uint32_t));
 	ft_memcpy(payload + OFFSET_CALL_CYPHER, jmp_def_cypher, sizeof(uint32_t));
-
 	ft_memcpy(dest, payload, SIZE_CALL_CYPHER);
 }
 
@@ -281,4 +285,29 @@ void	inject_def_cypher(uint8_t *dest, void *args)
 
 	(void)args;
 	ft_memcpy(dest, payload, SIZE_DEF_CYPHER);
+}
+
+void	inject_def_find_abs_vaddr(uint8_t *dest, void *args)
+{
+	uint8_t payload[SIZE_DEF_FIND_ABS_VADDR] = {
+		0x55,                      					//push   rbp
+		0x48, 0x89, 0xe5,                			//mov    rbp,rsp
+		0x48, 0x8d, 0x0d, 0xf5, 0xff, 0xff, 0xff,  	//lea    rcx,[rip+0xfffffffffffffff5]        # 0 <btc_def_find_abs_vaddr>
+		0x48, 0x83, 0xec, 0x08,             		//sub    rsp,0x8
+		0xc7, 0x04, 0x24, 0xdd, 0xcc, 0xbb, 0xaa,   // mov    DWORD PTR [rsp],0xaabbccdd
+		0xc7, 0x44, 0x24, 0x04, 0xff, 0xee, 0xdd,   // mov    DWORD PTR [rsp+0x4],0xccddeeff
+		0xcc, 
+		0x48, 0x2b, 0x0c, 0x24,             		//sub    rcx,QWORD PTR [rsp]
+		0x48, 0x89, 0xf8,                			//mov    rax,rdi
+		0x48, 0x01, 0xc8,                			//add    rax,rcx
+		0x48, 0x83, 0xc4, 0x08,             		//add    rsp,0x8
+		0xc9,                      					//leave  
+		0xc3,                     					//ret   
+	};
+	uint8_t *addr;
+
+	addr = (uint8_t*)(&(((t_btc_args*)args)->crypt_func_find_abs_vaddr_vaddr));
+	ft_memcpy(payload + 0x12, addr, 0x4); //adresse de la zone a decrypter 1st part
+	ft_memcpy(payload + 0x1a, addr + 0x4, 0x4); //adresse de la zone a decrypter 2nd part
+	ft_memcpy(dest, payload, SIZE_DEF_FIND_ABS_VADDR);
 }

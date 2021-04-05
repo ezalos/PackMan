@@ -54,6 +54,7 @@ void		inject_def_end(uint8_t *dest, void *args);
 void		inject_def_init_perm(uint8_t *dest, void *args);
 void		inject_def_key_sched(uint8_t *dest, void *args);
 void		inject_def_write(uint8_t* dest, void *args);
+void		inject_def_find_abs_vaddr(uint8_t *dest, void *args);
 uint8_t		is_btc_headless(t_btc *btc);
 uint8_t		is_phdr_contained(Elf64_Phdr *a, Elf64_Phdr *b);
 uint8_t		is_phdr_overlap(Elf64_Phdr *a, Elf64_Phdr *b);

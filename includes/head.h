@@ -27,7 +27,7 @@
 # include <time.h>
 # include <sys/mman.h>
 
-# define DEBUG		0
+# define DEBUG		2
 extern int debug_level;
 
 # define SUCCESS	0
@@ -58,7 +58,8 @@ extern int debug_level;
 
 # define OFFSET_CALL_INIT_PERM	0x22
 # define OFFSET_CALL_KEY_SCHED	0x33
-# define OFFSET_CALL_CYPHER		0x32
+# define OFFSET_CALL_CYPHER		(0x32 + 8)
+# define OFFSET_CALL_FIND_ABS_ADDR 0x18
 
 typedef struct	s_zone
 {
@@ -122,9 +123,11 @@ typedef struct	s_btc_args
 	uint64_t	crypt_func_def_vaddr;
 	uint64_t	crypt_func_init_perm_vaddr;
 	uint64_t	crypt_func_key_sched_vaddr;
+	uint64_t	crypt_func_find_abs_vaddr_vaddr;
 	uint32_t	jmp_init_perm; // vaddr def_init_perm - (vaddr def_cypher_prepare + OFFSET_CALL_INIT_PERM)
 	uint32_t	jmp_key_sched; // vaddr def_key_sched - (vaddr def_cypher_prepare + OFFSET_CALL_KEY_SCHED)
 	uint32_t	jmp_def_cypher; //vaddr def_cypher - (vaddr call_cypher + OFFSET_CALL_CYPHER)
+	uint32_t	jmp_find_abs_addr; //vaddr find_abs_addr - (vaddr call_cyper + OFFSET_CALL_FIND_ABS_ADDR)
 	size_t		crypt_plaintext_size;
 	uint8_t 	*crypt_key;
 }				t_btc_args;
@@ -151,7 +154,7 @@ typedef struct	s_btc
 **	BYTECODE LIBRARY
 */
 
-# define BYTECODE_LIB_LEN 			10
+# define BYTECODE_LIB_LEN 			11
 
 # define BTC_DEF_BEGIN				0
 # define BTC_CALL_MPROTECT			1
@@ -163,18 +166,20 @@ typedef struct	s_btc
 # define BTC_DEF_INIT_PERM			7
 # define BTC_DEF_KEY_SCHED			8
 # define BTC_DEF_CYPHER				9
+# define BTC_DEF_FIND_ABS_VADDR		10
 
 
 # define SIZE_DEF_BEGIN				25
 # define SIZE_CALL_MPROTECT			64
 # define SIZE_DEF_CYPHER_PREPARE	55
-# define SIZE_CALL_CYPHER			58
+# define SIZE_CALL_CYPHER			(58 + 8)
 # define SIZE_DEF_WRITE				(55 + 4)		
 # define SIZE_DEF_END				(32 - 7) + 7
 # define SIZE_CALL_JMP				5
 # define SIZE_DEF_INIT_PERM			18
 # define SIZE_DEF_KEY_SCHED			53
 # define SIZE_DEF_CYPHER			61
+# define SIZE_DEF_FIND_ABS_VADDR	46
 
 
 

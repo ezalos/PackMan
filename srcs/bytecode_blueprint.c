@@ -56,6 +56,7 @@ t_dlist		*blueprint_creation(t_packer *packer)
 	// (void)packer;
 	to_crypt = packer->to_crypt;
 	blueprint = NULL;
+	blueprint_add(&blueprint, BTC_DEF_FIND_ABS_VADDR);
 	blueprint_add(&blueprint, BTC_DEF_INIT_PERM);
 	blueprint_add(&blueprint, BTC_DEF_KEY_SCHED);
 	blueprint_add(&blueprint, BTC_DEF_CYPHER);

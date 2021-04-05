@@ -72,5 +72,11 @@ t_btc bytecode_lib[BYTECODE_LIB_LEN] = {
 		SIZE_DEF_CYPHER,
 		inject_def_cypher,
 		NULL,
+	},
+	{
+		BTC_DEF_FIND_ABS_VADDR,
+		SIZE_DEF_FIND_ABS_VADDR,
+		inject_def_find_abs_vaddr,
+		NULL,
 	}
 };
