@@ -17,5 +17,5 @@ btc_def_find_abs_vaddr:
 
 	add rsp, 0x8
 
-	leave
-	ret
+	leave								; mov rsp rbp + pop rbp
+	ret									; pop rip
