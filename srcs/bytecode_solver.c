@@ -284,6 +284,14 @@ size_t update_args_and_write_btc(t_packer *packer, t_dlist *inst, t_zone *zone, 
 	return (zone->offset);
 }
 
+void handle_first_def(t_packer *packer, t_zone *zone, t_dlist *inst)
+{
+	if (((t_btc*)inst->data)->type == BTC_DEF_BEGIN) // TODO : put outside of algo
+	{
+		packer->new_e_entry = zone->vaddr;
+		logging_recursive("New e_entry will be\t 0x%lx\n", packer->new_e_entry);
+	}
+}
 
 ssize_t	sexy_place_bytecode(t_packer *packer, t_list *zones, t_dlist *inst)
 {
@@ -294,6 +302,7 @@ ssize_t	sexy_place_bytecode(t_packer *packer, t_list *zones, t_dlist *inst)
 	logging_recursive("\n");
 	logging_recursive("%s\n", __func__);
 
+	depth += 1;
 	if (is_over_place_bytecode(inst))
 		return get_entrypoint_from_packer(packer);
 
@@ -303,22 +312,18 @@ ssize_t	sexy_place_bytecode(t_packer *packer, t_list *zones, t_dlist *inst)
 	{
 		zone = zone_list->data;
 		logging_recursive("Current offset:\t %zu\n", zone->offset);
-		if (can_i_write(zone, inst))
+		if (can_i_write(zone, inst->data))
 		{
 			logging_recursive("We can write.\n");
 			do_update_down(inst, zone);
-			ret = sexy_place_bytecodes(packer, zones, inst->next);
+			ret = sexy_place_bytecode(packer, zones, inst->next);
+			undo_update_up(inst, zone);
 			if (ret != FAILURE)
 			{
-				if (((t_btc*)inst->data)->type == BTC_DEF_BEGIN) // TODO : put outside of algo
-				{
-					packer->new_e_entry = zone->vaddr;
-					logging_recursive("New e_entry will be\t 0x%lx\n", packer->new_e_entry);
-				}
+				handle_first_def(packer, zone, inst);
+				depth -= 1;
 				return (update_args_and_write_btc(packer, inst, zone, ret));
 			}
-			else
-				undo_update_up(inst, zone);
 		}
 		if (!is_currently_headless(inst) && ((t_btc *)inst->data)->type == BTC_CALL_JMP)
 			break;
@@ -329,15 +334,17 @@ ssize_t	sexy_place_bytecode(t_packer *packer, t_list *zones, t_dlist *inst)
 	{
 		insert_jmp_in_inst_list(inst);
 		inst = inst->prev;
-		print("should be btc jump %s\n", btc_to_str(((t_btc *)inst->data)));
 		logging_recursive("Can't write tring jump");
-		if (can_i_write(zone, inst))
+		if (can_i_write(zone, inst->data))
 		{
 			logging_recursive("We can write.\n");
 			do_update_down(inst, zone);
-			ret = sexy_place_bytecodes(packer, zones, inst->next);
+			ret = sexy_place_bytecode(packer, zones, inst->next);
 			if (ret != FAILURE)
+			{
+				depth -= 1;
 				return (update_args_and_write_btc(packer, inst, zone, ret));
+			}
 			else
 			{
 				undo_update_up(inst, zone);

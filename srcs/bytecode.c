@@ -33,7 +33,7 @@ ssize_t		chirurgy(t_packer *packer)
 		blueprint = blueprint_creation(packer);
 	}
 	logging("\n*** %s: Solving injection\n", __func__);
-	if (FAILURE == (ret = solve_bytecodes(packer, packer->caves, blueprint, TRUE)))
+	if (FAILURE == (ret = sexy_place_bytecode(packer, packer->caves, blueprint)))
 		return (FAILURE);
 
 	logging("\n*** %s: Entry Point: 0x%lx [%ld]\n", __func__, packer->new_e_entry, packer->new_e_entry);
