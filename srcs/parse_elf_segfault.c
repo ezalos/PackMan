@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/25 22:28:24 by ezalos            #+#    #+#             */
-/*   Updated: 2021/04/14 17:14:53 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/14 17:49:07 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,11 @@ uint8_t		parse_elf_check_phdr(t_packer *packer)
 				dprintf(2, "ERROR: Phdr %d has memsize < filesize\n",
 						get_program_header_index(packer, phdr));
 				return (FALSE);
-				ii = i - 1;
+				ii = -1;
 				while (packer->phdr_array[++ii])
 				{
+					if (i == ii)
+						continue;
 					phdr_bis = packer->phdr_array[ii]->phdr;
 					if (phdr_bis->p_type == PT_LOAD)
 					{
