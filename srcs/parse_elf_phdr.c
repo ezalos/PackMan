@@ -50,7 +50,7 @@ t_rbt	*construct_rbt_phdr(t_packer *packer)
 	phdr = get_program_header(packer, i);
 	while (phdr)
 	{
-		if (phdr->p_type & PT_LOAD || TRUE)
+		if (phdr->p_type == PT_LOAD || TRUE)
 		{
 			hdr = NULL;
 			node = NULL;

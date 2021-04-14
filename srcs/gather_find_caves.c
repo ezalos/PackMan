@@ -110,7 +110,7 @@ void		print_cave_phdr(t_packer *packer, Elf64_Phdr *a)
 {
 	if (!a)
 		return ;
-	printf("%s%d%s", (a->p_type & PT_LOAD) ? _GREEN : _RED, get_program_header_index(packer, a), _RESET);
+	printf("%s%d%s", (a->p_type == PT_LOAD) ? _GREEN : _RED, get_program_header_index(packer, a), _RESET);
 }
 
 t_pheader	*find_t_pheader_from_phdr(t_packer *packer, Elf64_Phdr *a)

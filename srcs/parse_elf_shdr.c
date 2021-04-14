@@ -90,7 +90,7 @@ t_pheader	*get_rbt_phdr_from_shdr(t_rbt *root, Elf64_Shdr *shdr)
 		tmp = shdr->sh_addralign;
 		if (tmp == 0)
 			tmp = 1;
-		if (shdr->sh_type & PT_LOAD && FALSE)
+		if (shdr->sh_type & PT_LOAD && FALSE) // a modifier
 		{
 			if (hdr->phdr->p_vaddr <= shdr->sh_addr + tmp - (shdr->sh_addr % tmp))
 			{

@@ -26,7 +26,7 @@ void 	parse_print(t_packer *packer)
 	while (packer->phdr_array[++i_p])
 	{
 		phdr = packer->phdr_array[i_p]->phdr;
-		printf("%sPhdr %2d [%2d]%s\t%sLoad: %s%s\n", _GREEN, i_p, get_program_header_index(packer, packer->phdr_array[i_p]->phdr), _RESET, _YELLOW, phdr->p_type & PT_LOAD ? "True" : "False", _RESET);
+		printf("%sPhdr %2d [%2d]%s\t%sLoad: %s%s\n", _GREEN, i_p, get_program_header_index(packer, packer->phdr_array[i_p]->phdr), _RESET, _YELLOW, phdr->p_type == PT_LOAD ? "True" : "False", _RESET);
 		printf("Start 0x%lx\tSegment size   %ld\n", phdr->p_offset, phdr->p_filesz);
 		printf("End   0x%lx\t%sAvailable size %d%s\n", phdr->p_filesz + phdr->p_offset, _CYAN, packer->phdr_array[i_p]->available_size, _RESET);
 		if (!packer->phdr_array[i_p]->shdr_array)
