@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/25 22:28:24 by ezalos            #+#    #+#             */
-/*   Updated: 2021/04/14 17:11:01 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/14 17:14:53 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,11 +62,26 @@ uint8_t		parse_elf_check_phdr(t_packer *packer)
 					if (phdr_bis->p_type == PT_LOAD)
 					{
 						if (is_phdr_contained(phdr, phdr_bis))
+						{
+							dprintf(2, "ERROR: is_phdr_contained between %d and %d\n",
+									get_program_header_index(packer, phdr),
+									get_program_header_index(packer, phdr_bis));
 							return (FALSE);
+						}
 						if (is_phdr_superposed(phdr, phdr_bis))
+						{
+							dprintf(2, "ERROR: is_phdr_superposed between %d and %d\n",
+									get_program_header_index(packer, phdr),
+									get_program_header_index(packer, phdr_bis));
 							return (FALSE);
+						}
 						if (is_phdr_overlap(phdr, phdr_bis))
+						{
+							dprintf(2, "ERROR: is_phdr_overlap between %d and %d\n",
+									get_program_header_index(packer, phdr),
+									get_program_header_index(packer, phdr_bis));
 							return (FALSE);
+						}
 					}
 				}
 			}
