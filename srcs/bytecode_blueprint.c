@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/28 20:12:38 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/28 20:31:37 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/14 16:43:19 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,19 @@ t_dlist		*blueprint_creation(t_packer *packer)
 	blueprint_add(&blueprint, BTC_DEF_END);
 	blueprint_add(&blueprint, BTC_CALL_JMP);
 	return (blueprint);
+}
+
+size_t		get_blueprint_inject_size(t_dlist *blueprint)
+{
+	size_t	size;
+
+	size = 0;
+	while (blueprint)
+	{
+		size += ((t_btc *)blueprint->data)->size;
+		blueprint = blueprint->next;
+	}
+	return (size);
 }
 
 // TODOS
