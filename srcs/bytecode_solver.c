@@ -97,8 +97,55 @@ uint8_t		is_btc_headless(t_btc *btc)
 		return (TRUE);
 	if (btc->type == BTC_DEF_CYPHER)
 		return (TRUE);
+	if (btc->type == BTC_DEF_FIND_ABS_VADDR)
+		return (TRUE);		
 	return (FALSE);
 }
+
+
+int	is_over_place_bytecode(t_dlist *inst)
+{
+	if (inst == NULL)
+	{
+		logging_recursive("Inst is NULL -> WE FOUND THE SOLUTION!!\n\n");
+		depth -= 1;
+		return (TRUE);
+	}
+	return (FALSE);
+}
+
+
+Elf64_Addr get_entrypoint_from_packer(t_packer *packer)
+{
+	return (((Elf64_Ehdr *)packer->content)->e_entry);
+}
+
+
+t_btc	*get_previous_inst_btc(t_dlist *inst)
+{
+	if (inst->prev == NULL)
+	{
+		return (NULL);
+	}
+	else
+	{
+		return (((t_btc *)inst->prev->data));
+	}
+}
+
+
+int	is_currently_headless(t_dlist *inst)
+{
+	if (get_previous_inst_btc(inst) == NULL || is_btc_headless(get_previous_inst_btc(inst)))
+	{
+		return (TRUE);
+	}
+	else
+	{
+		return (FALSE);
+	}
+}
+
 
 ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist *inst)
 {
@@ -116,7 +163,7 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 		update_args(packer, ((t_btc *)inst->data), zone, ret);
 		write_btc(inst->data, zone, packer);
 		ret = zone->offset;
-		if (((t_btc*)inst->data)->type == BTC_DEF_BEGIN)
+		if (((t_btc*)inst->data)->type == BTC_DEF_BEGIN) // TODO : put outside of algo
 		{
 			packer->new_e_entry = zone->vaddr;
 			logging_recursive("New e_entry will be\t 0x%lx\n", packer->new_e_entry);
@@ -193,4 +240,111 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 			return (ret);
 		}
 	}
+}
+
+void	do_update_down(t_dlist *inst,t_zone *zone)
+{
+	logging_recursive("updating zone and crypt call args");
+	update_arg_def_crypt_calls(inst, zone);
+	update_zone(zone, inst->data);
+	// ? validate order update_zone update_args here
+}
+
+void	undo_update_up(t_dlist *inst,t_zone *zone)
+{
+	logging_recursive("undoing update zone");
+	undo_update_zone(zone, ((t_btc *)inst->data));
+	// TODO : Undo update crypt calls ?
+}
+
+
+// if (((t_btc*)inst->data)->type == BTC_DEF_BEGIN) // TODO : put outside of algo
+// {
+// 	packer->new_e_entry = zone->vaddr;
+// 	logging_recursive("New e_entry will be\t 0x%lx\n", packer->new_e_entry);
+// }
+
+void insert_jmp_in_inst_list(t_dlist *inst)
+{
+	ft_dlist_insert_next(NULL, inst->prev, ft_dlist_new(create_btc(BTC_CALL_JMP)));
+	// TODO : Check this insert
+}
+
+void remove_jump_from_list(t_dlist *inst)
+{
+	inst->next->prev = inst->prev;
+	inst->prev->next = inst->next;
+	// ! FREE THE JUMP
+}
+
+size_t update_args_and_write_btc(t_packer *packer, t_dlist *inst, t_zone *zone, ssize_t ret)
+{
+	update_args(packer, ((t_btc *)inst->data), zone, ret);
+	write_btc(inst->data, zone, packer);
+	return (zone->offset);
+}
+
+
+ssize_t	sexy_place_bytecode(t_packer *packer, t_list *zones, t_dlist *inst)
+{
+	t_list	*zone_list = zones;
+	t_zone	*zone;
+	ssize_t ret;
+
+	logging_recursive("\n");
+	logging_recursive("%s\n", __func__);
+
+	if (is_over_place_bytecode(inst))
+		return get_entrypoint_from_packer(packer);
+
+	logging_recursive("Trying to place\t %s with headless : %d \n", btc_to_str(((t_btc *)inst->data)),  is_currently_headless(inst));
+
+	while (zone_list != NULL)
+	{
+		zone = zone_list->data;
+		logging_recursive("Current offset:\t %zu\n", zone->offset);
+		if (can_i_write(zone, inst))
+		{
+			logging_recursive("We can write.\n");
+			do_update_down(inst, zone);
+			ret = sexy_place_bytecodes(packer, zones, inst->next);
+			if (ret != FAILURE)
+			{
+				if (((t_btc*)inst->data)->type == BTC_DEF_BEGIN) // TODO : put outside of algo
+				{
+					packer->new_e_entry = zone->vaddr;
+					logging_recursive("New e_entry will be\t 0x%lx\n", packer->new_e_entry);
+				}
+				return (update_args_and_write_btc(packer, inst, zone, ret));
+			}
+			else
+				undo_update_up(inst, zone);
+		}
+		if (!is_currently_headless(inst) && ((t_btc *)inst->data)->type == BTC_CALL_JMP)
+			break;
+		else if (is_currently_headless(inst))
+			zone_list = zone_list->next;
+	}
+	if (!is_currently_headless(inst) && ((t_btc *)inst->data)->type != BTC_CALL_JMP && inst->prev != NULL)
+	{
+		insert_jmp_in_inst_list(inst);
+		inst = inst->prev;
+		print("should be btc jump %s\n", btc_to_str(((t_btc *)inst->data)));
+		logging_recursive("Can't write tring jump");
+		if (can_i_write(zone, inst))
+		{
+			logging_recursive("We can write.\n");
+			do_update_down(inst, zone);
+			ret = sexy_place_bytecodes(packer, zones, inst->next);
+			if (ret != FAILURE)
+				return (update_args_and_write_btc(packer, inst, zone, ret));
+			else
+			{
+				undo_update_up(inst, zone);
+				remove_jump_from_list(inst);
+				inst = inst->next; // ? Useless but pretty
+			}
+		}
+	}
+	return (FAILURE);
 }
