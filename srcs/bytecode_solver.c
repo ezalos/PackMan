@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/04/03 20:01:32 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/15 17:43:33 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,8 @@ void		undo_update_zone(t_zone *zone, t_btc *inst)
 uint8_t		can_i_write(t_zone *zone, t_btc *inst)
 {
 	logging_recursive("%s:\t %zu <= %zu ?\n", __func__, inst->size, zone->size);
+
+	// if (packer->strategy == START_LOADABLE)
 
 	return (inst->size <= zone->size);
 }

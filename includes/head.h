@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/04/03 20:09:23 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/15 17:42:14 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 # include <sys/mman.h>
 
 # define DEBUG		2
+
 extern int debug_level;
 
 # define SUCCESS	0
@@ -35,6 +36,8 @@ extern int debug_level;
 
 # define TRUE		1
 # define FALSE		0
+
+# define STATIC_KEY FALSE
 
 /*
 **	ERROR MANAGEMENT
@@ -116,7 +119,7 @@ typedef struct	s_packer
 typedef struct	s_btc_args
 {
 	int			jump;
-	uint64_t		mp_addr;
+	uint64_t	mp_addr;
 	size_t		mp_len;
 	int			mp_prot;
 	uint64_t	crypt_plaintext_vaddr;
@@ -226,8 +229,8 @@ Elf64_Phdr 	*get_program_header(t_packer *packer, uint32_t index);
 void 		browse_file(t_packer *packer);
 int8_t		print_error(char *self_path, char *error);
 int8_t		print_usage(char *self_path);
-t_list		*get_zones(t_packer *packer, uint8_t type, uint8_t flags,
-			void (*data_filler)(t_pheader*, t_zone*));
+// t_list		*get_zones(t_packer *packer, uint8_t type, uint8_t flags,
+// 			void (*data_filler)(t_pheader*, t_zone*));
 void		data_filler_cave(t_pheader *hdr, t_zone *zone);
 void		data_filler_zone_to_crypt(t_pheader *hdr, t_zone *zone);
 void		crypt_zones(t_packer *packer);

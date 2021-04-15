@@ -35,11 +35,12 @@ void		free_btc(t_btc *btc);
 int			ft_memcmp(const void *s1, const void *s2, size_t n);
 void		*ft_memset(void *str, int c, size_t n);
 int8_t		gather_all_infos(t_packer *packer);
+size_t		get_blueprint_inject_size(t_dlist *blueprint);
 Elf64_Phdr	*get_phdr_from_array(t_packer *packer, int i);
 int 		get_program_header_index(t_packer *packer, Elf64_Phdr *phdr);
 t_pheader	*get_rbt_phdr_from_shdr(t_rbt *root, Elf64_Shdr *shdr);
 int			get_section_header_index(t_packer *packer, Elf64_Shdr *shdr);
-t_list		*get_zones(t_packer *packer, uint8_t type, uint8_t flags,
+t_list		*get_zones(t_packer *packer, Elf64_Word type, Elf64_Word flags,
 			void (*data_filler)(t_pheader*, t_zone*));
 int8_t		init(t_packer *packer, char **av);
 void		init_key(uint8_t *key);
@@ -51,10 +52,10 @@ void		inject_def_begin(uint8_t *dest, void *args);
 void		inject_def_cypher(uint8_t *dest, void *args);
 void		inject_def_cypher_prepare(uint8_t *dest, void *args);
 void		inject_def_end(uint8_t *dest, void *args);
+void		inject_def_find_abs_vaddr(uint8_t *dest, void *args);
 void		inject_def_init_perm(uint8_t *dest, void *args);
 void		inject_def_key_sched(uint8_t *dest, void *args);
 void		inject_def_write(uint8_t* dest, void *args);
-void		inject_def_find_abs_vaddr(uint8_t *dest, void *args);
 uint8_t		is_btc_headless(t_btc *btc);
 uint8_t		is_phdr_contained(Elf64_Phdr *a, Elf64_Phdr *b);
 uint8_t		is_phdr_overlap(Elf64_Phdr *a, Elf64_Phdr *b);
@@ -109,5 +110,6 @@ void		update_args(t_packer *packer,
 			ssize_t ret);
 void		update_zone(t_zone *zone, t_btc *inst);
 void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer);
+void		zones_add_rights(t_list *zone, Elf64_Word rights);
 
 #endif

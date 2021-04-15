@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/15 17:54:59 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/03/28 20:31:35 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/15 17:30:14 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static t_list	*create_zone(t_pheader *hdr, void (*data_filler)(t_pheader*, t_zon
 	return (node);
 }
 
-t_list			*get_zones(t_packer *packer, uint8_t type, uint8_t flags,
+t_list			*get_zones(t_packer *packer, Elf64_Word type, Elf64_Word flags,
 	void (*data_filler)(t_pheader*, t_zone*))
 {
 	uint8_t		i;
