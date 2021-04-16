@@ -10,7 +10,7 @@ ssize_t		bytecode_inject(t_packer *packer,
 			t_list *zones,
 			t_zone *zone,
 			t_dlist *inst);
-uint8_t		can_i_write(t_packer *packer, t_list *zone_list, t_btc *inst);
+uint8_t		can_i_write(t_packer *packer, t_zone *zone, t_btc *inst);
 void		cave_gathering(t_packer *packer);
 void		cave_gathering_phdr(t_packer *packer);
 void		change_endian(void *data, int size);
@@ -79,9 +79,8 @@ void 		parse_print(t_packer *packer);
 void		phdr_print_tree(t_packer *packer, t_rbt *root);
 long long	phdr_space_between(Elf64_Phdr *a, Elf64_Phdr *b);
 long long	phdr_space_between_ends(Elf64_Phdr *a, Elf64_Phdr *b);
-int8_t		prepare_last_segment_strategy(t_packer *packer,
+void		prepare_last_segment_strategy(t_packer *packer,
 			size_t size_blueprints);
-void		print_btc_name(t_btc *inst);
 void		print_cave_gathering_legend(void);
 void		print_cave_phdr(t_packer *packer, Elf64_Phdr *a);
 void		print_cave_size(Elf64_Phdr *a, Elf64_Phdr *b, t_packer *packer);
@@ -89,6 +88,7 @@ int8_t		print_error(char *self_path, char *error);
 int			print_phdr_contain(t_packer *packer, int i);
 void		print_spaces(int nb);
 int8_t		print_usage(char *self_path);
+void		print_zone(t_zone *zone);
 void		print_zones(t_list *zones);
 void		rbt_free_content(void **content);
 void		rbt_keep_content(void **content);
@@ -115,6 +115,7 @@ void		update_args(t_packer *packer,
 void		update_phdr_addr(t_packer *packer, int64_t offset);
 void		update_zone(t_zone *zone, t_btc *inst);
 void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer);
-void		zones_add_rights(t_list *zone, Elf64_Word rights);
+void		zones_add_rights_to_crypt(t_list *zone, Elf64_Word rights);
+void		zones_add_rights_to_used_caves(t_list *zone, Elf64_Word rights);
 
 #endif

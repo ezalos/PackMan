@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   last_segment_strategy.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/14 16:36:22 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/04/14 16:36:22 by rkirszba         ###   ########.fr       */
+/*   Updated: 2021/04/16 17:52:28 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,24 +60,25 @@ void		extend_file(t_packer *packer, size_t extension)
 		exit(EXIT_FAILURE);
 	}
 	ft_memcpy(new_content, packer->content, packer->size);
-	update_phdr_addr(packer, (int64_t(new->content - content));
+	// TODO check order of substraction
+	update_phdr_addr(packer, (int64_t)((size_t)new_content - (size_t)packer->content));
 	//TODO munmap
 	packer->content = new_content;
 	packer->size += extension;
 }
 
-int8_t		prepare_last_segment_strategy(t_packer *packer,
+void		prepare_last_segment_strategy(t_packer *packer,
 	size_t size_blueprints)
 {
 	t_zone	*zone;
 	
 	if (!(zone = get_last_zone(packer->caves)))
-		return (FAILURE);
+		return ;
 	
 	zone->size = packer->size - zone->offset;
 	if (zone->offset > packer->size)
 	{
-		extend_file(packer, (zone_offset - packer->size) + size_blueprints)
+		extend_file(packer, (zone->offset - packer->size) + size_blueprints);
 		zone->size = size_blueprints;
 	}
 	else if (size_blueprints > zone->size)
@@ -99,11 +100,11 @@ int8_t		prepare_last_segment_strategy(t_packer *packer,
 	// 	zone->size = reamining_size;
 
 		// fin alternative
-	if (zone->phdr->filesz < zone->phdr->memsz)
+	if (zone->phdr->p_filesz < zone->phdr->p_memsz)
 	{
-		ft_bzero(packer->content + zone->phdr->offset + zone->phdr->filesz,
-			zone->phdr->memsz - zone->phdr->filesz);
-		zone->phdr->filesz = zone->phdr->memsz;
+		ft_bzero(packer->content + zone->phdr->p_offset + zone->phdr->p_filesz,
+				 zone->phdr->p_memsz - zone->phdr->p_filesz);
+		zone->phdr->p_filesz = zone->phdr->p_memsz;
 	}
-
+	zone->last = TRUE;
 }

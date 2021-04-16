@@ -82,34 +82,15 @@ void	debug_recursive(const char* fmt, ...)
 
 void	log_btc_name(t_btc *inst)
 {
-	if (inst->type == BTC_CALL_JMP)
-		logging("BTC_CALL_JMP\n");
-	else if (inst->type == BTC_CALL_MPROTECT)
-		logging("BTC_CALL_MPROTECT\n");
-	else if (inst->type == BTC_CALL_CYPHER)
-		logging("BTC_CALL_CYPHER\n");
-	else if (inst->type == BTC_DEF_WRITE)
-		logging("BTC_DEF_WRITE\n");
-	else if (inst->type == BTC_DEF_CYPHER)
-		logging("BTC_DEF_CYPHER\n");
-	else if (inst->type == BTC_DEF_INIT_PERM)
-		logging("BTC_DEF_INIT_PERM\n");
-	else if (inst->type == BTC_DEF_KEY_SCHED)
-		logging("BTC_DEF_KEY_SCHED\n");
-	else if (inst->type == BTC_DEF_BEGIN)
-		logging("BTC_DEF_BEGIN\n");
-	else if (inst->type == BTC_DEF_CYPHER_PREPARE)
-		logging("BTC_DEF_CYPHER_PREPARE\n");
-	else if (inst->type == BTC_DEF_END)
-		logging("BTC_DEF_END\n");
-	else
-		dprintf(2, "Error: Unknown btc type\n");
+	logging(btc_to_str(inst));
 }
 
 char	*btc_to_str(t_btc *inst)
 {
 	if (inst->type == BTC_CALL_JMP)
-		return("BTC_CALL_JMP");
+		return ("BTC_CALL_JMP");
+	else if (inst->type == BTC_DEF_FIND_ABS_VADDR)
+		return ("BTC_DEF_FIND_ABS_VADDR");
 	else if (inst->type == BTC_CALL_MPROTECT)
 		return("BTC_CALL_MPROTECT");
 	else if (inst->type == BTC_CALL_CYPHER)

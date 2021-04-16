@@ -31,8 +31,10 @@ ssize_t		chirurgy(t_packer *packer)
 	}
 	logging("\n*** %s: Solving injection\n", __func__);
 
+	packer->strategy = 0;
 	while (packer->strategy < NB_STRAT)
 	{
+		logging("\n*** %s: SOLVE BYTECODE: trying start %d\n", __func__, packer->strategy);
 		if (packer->strategy == STRAT_LOADABLE_LAST_SEGMENT)
 		{
 			size_blueprints = get_blueprint_inject_size(blueprint);
@@ -45,6 +47,8 @@ ssize_t		chirurgy(t_packer *packer)
 	}
 	if (ret == FAILURE)
 		return (FAILURE);
+
+	zones_add_rights_to_used_caves(packer->caves, PF_X);
 
 	logging("\n*** %s: Entry Point: 0x%lx [%ld]\n", __func__, packer->new_e_entry, packer->new_e_entry);
 	((Elf64_Ehdr *)packer->content)->e_entry = packer->new_e_entry;

@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/04/16 16:34:00 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/16 17:52:10 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ typedef struct	s_zone
 	uint64_t	vaddr;
 	size_t		size;
 	uint8_t		used;
+	uint8_t		last;
 	Elf64_Phdr	*phdr;
 }				t_zone;
 
