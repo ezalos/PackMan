@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cave_gathering.c                                   :+:      :+:    :+:   */
+/*   gather_find_caves.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/10 21:17:59 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/18 10:51:05 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/15 17:24:45 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,24 +86,32 @@ uint8_t		is_phdr_overlap(Elf64_Phdr *a, Elf64_Phdr *b)
 
 long long	phdr_space_between(Elf64_Phdr *a, Elf64_Phdr *b)
 {
-	long long a_end;
-	long long b_start;
+	long long	a_end;
+	long long	b_start;
+	long long	size;
 
 	if (!b || !a)
 		return 0;
 
+	size = 0;
 	b_start = b->p_offset;
-	a_end = a->p_offset + a->p_filesz;
-
-	return b_start - a_end;
+	a_end = a->p_offset + a->p_memsz;
+	if (b_start >= a_end)
+		size = b_start - a_end;
+	return size;
 }
 
 long long	phdr_space_between_ends(Elf64_Phdr *a, Elf64_Phdr *b)
 {
+	long long	size;
+
+	// a is last contained & b is parent
 	if (!b || !a)
 		return 0;
-
-	return ((b->p_offset + b->p_filesz) - (a->p_offset + a->p_filesz));
+	size = 0;
+	if ((b->p_offset + b->p_memsz) >= (a->p_offset + a->p_memsz))
+		size = (b->p_offset + b->p_memsz) - (a->p_offset + a->p_memsz);
+	return size;
 }
 
 void		print_cave_phdr(t_packer *packer, Elf64_Phdr *a)
@@ -141,22 +149,9 @@ void		print_cave_size(Elf64_Phdr *a, Elf64_Phdr *b, t_packer *packer)
 		return;
 	if (is_phdr_contained(b, a))
 	{
+		// a is last contained & b is parent
 		color = _MAGENTA;
 		size = phdr_space_between_ends(a, b);
-		// if (a->p_offset == b->p_offset)
-		// {
-		// 	if (a->p_filesz > b->p_filesz)
-		// 		quest = b;
-		// 	else
-		// 		quest = a;
-		// }
-		// else
-		// {
-		// 	if (a->p_offset > b->p_offset)
-		// 		quest = a;
-		// 	else
-		// 		quest = b;
-		// }
 		find_t_pheader_from_phdr(packer,  a)->available_size = -size;
 	}
 	else

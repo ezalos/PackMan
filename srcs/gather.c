@@ -6,11 +6,21 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/25 23:23:07 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/28 20:31:36 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/15 17:41:14 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
+
+void		zones_add_rights(t_list *zone, Elf64_Word rights)
+{
+	while (zone)
+	{
+		((t_zone*)zone->data)->phdr->p_flags |= rights;
+		zone = zone->next;
+	}
+}
+
 
 int8_t		gather_all_infos(t_packer *packer)
 {
@@ -24,6 +34,8 @@ int8_t		gather_all_infos(t_packer *packer)
 		print_zones(packer->to_crypt);
 		print_zones(packer->caves);
 	}
+
+	zones_add_rights(packer->to_crypt, PF_W);
 
 	if (FALSE == (packer->to_crypt && packer->caves))
 		return (FAILURE);
