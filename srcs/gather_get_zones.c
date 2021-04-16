@@ -22,9 +22,11 @@ void			data_filler_zone_to_crypt(t_pheader *hdr, t_zone *zone)
 
 void			data_filler_cave(t_pheader *hdr, t_zone *zone)
 {
-	zone->offset = hdr->phdr->p_offset + hdr->phdr->p_filesz;
+	// zone->offset = hdr->phdr->p_offset + hdr->phdr->p_filesz;
+	zone->offset = hdr->phdr->p_offset + hdr->phdr->p_memsz;
 	//TODO: vaddr keep count of alignement
-	zone->vaddr = hdr->phdr->p_vaddr + hdr->phdr->p_filesz; // hesitation avec + p_memsz
+	// zone->vaddr = hdr->phdr->p_vaddr + hdr->phdr->p_filesz; // hesitation avec + p_memsz
+	zone->vaddr = hdr->phdr->p_vaddr + hdr->phdr->p_memsz; // hesitation avec + p_memsz
 	zone->size = hdr->available_size;
 	zone->phdr = hdr->phdr;
 }
@@ -64,7 +66,7 @@ t_list			*get_zones(t_packer *packer, uint8_t type, uint8_t flags,
 			if (!(zone = create_zone(hdr, data_filler)))
 			{
 				print_error(packer->self_path, strerror(errno));
-				//fonction qui free tout
+				//TODO: fonction qui free tout
 				exit(EXIT_FAILURE);
 			}
 			ft_list_append(&zones, zone);
