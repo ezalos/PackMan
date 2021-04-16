@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/04/15 17:43:33 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/16 16:49:10 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,13 +60,31 @@ void		undo_update_zone(t_zone *zone, t_btc *inst)
 
 }
 
-uint8_t		can_i_write(t_zone *zone, t_btc *inst)
+uint8_t		can_i_write(t_packer *packer, t_list *zone_list, t_btc *inst)
 {
+	t_zone *zone;
+	uint8_t		valid_zone;
+
+	zone = zone_list->data;
+	valid_zone = FALSE;
 	logging_recursive("%s:\t %zu <= %zu ?\n", __func__, inst->size, zone->size);
+	if (packer->strategy == STRAT_LOADABLE_EXECUTE)
+	{
+		if (zone->phdr->p_type == PT_LOAD && zone->phdr->p_flags & PF_X)
+			valid_zone = TRUE;
+	}
+	else if (packer->strategy == STRAT_LOADABLE)
+	{
+		if (zone->phdr->p_type == PT_LOAD)
+			valid_zone = TRUE;
+	}
+	else if (packer->strategy == STRAT_LOADABLE_LAST_SEGMENT)
+	{
+		if (NULL == zone_list->next)
+			valid_zone = TRUE;
+	}
 
-	// if (packer->strategy == START_LOADABLE)
-
-	return (inst->size <= zone->size);
+	return ((TRUE == valid_zone) && (inst->size <= zone->size));
 }
 
 void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
@@ -117,6 +135,7 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 	{
 		update_args(packer, ((t_btc *)inst->data), zone, ret);
 		write_btc(inst->data, zone, packer);
+		zone->used = TRUE;
 		ret = zone->offset;
 		if (((t_btc*)inst->data)->type == BTC_DEF_BEGIN)
 		{
@@ -155,7 +174,7 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 		{
 			zone = zone_list->data;
 			logging_recursive("Try at offset\t %zu\n", zone->offset);
-			if (can_i_write(zone, inst->data))
+			if (can_i_write(packer, zone_list, inst->data))
 			{
 				logging_recursive("We can write\n");
 				ret = bytecode_inject(packer, zones, zone, inst);
@@ -173,7 +192,7 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 		logging_recursive("Headless\t FALSE\n");
 		zone = zone_list->data;
 		logging_recursive("Current offset:\t %zu\n", zone->offset);
-		if (can_i_write(zone, inst->data))
+		if (can_i_write(packer, zone_list, inst->data))
 		{
 			logging_recursive("We can write.\n");
 			return (bytecode_inject(packer, zones, zone, inst));
@@ -184,7 +203,7 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 			ret = FAILURE;
 			jmp = ft_dlist_new(create_btc(BTC_CALL_JMP));
 			ft_dlist_insert_next_wesh(inst, jmp);
-			if (can_i_write(zone, jmp->data))
+			if (can_i_write(packer, zone_list, jmp->data))
 			{
 				logging_recursive("Jump ok\n");
 				ret = bytecode_inject(packer, zones, zone, jmp);

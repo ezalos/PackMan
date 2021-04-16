@@ -10,7 +10,7 @@ ssize_t		bytecode_inject(t_packer *packer,
 			t_list *zones,
 			t_zone *zone,
 			t_dlist *inst);
-uint8_t		can_i_write(t_zone *zone, t_btc *inst);
+uint8_t		can_i_write(t_packer *packer, t_list *zone_list, t_btc *inst);
 void		cave_gathering(t_packer *packer);
 void		cave_gathering_phdr(t_packer *packer);
 void		change_endian(void *data, int size);
@@ -30,12 +30,14 @@ void		data_filler_cave(t_pheader *hdr, t_zone *zone);
 void		data_filler_zone_to_crypt(t_pheader *hdr, t_zone *zone);
 void		debug(const char* fmt, ...);
 void		debug_recursive(const char* fmt, ...);
+void		extend_file(t_packer *packer, size_t extension);
 t_pheader	*find_t_pheader_from_phdr(t_packer *packer, Elf64_Phdr *a);
 void		free_btc(t_btc *btc);
 int			ft_memcmp(const void *s1, const void *s2, size_t n);
 void		*ft_memset(void *str, int c, size_t n);
 int8_t		gather_all_infos(t_packer *packer);
 size_t		get_blueprint_inject_size(t_dlist *blueprint);
+t_zone		*get_last_zone(t_list *caves);
 Elf64_Phdr	*get_phdr_from_array(t_packer *packer, int i);
 int 		get_program_header_index(t_packer *packer, Elf64_Phdr *phdr);
 t_pheader	*get_rbt_phdr_from_shdr(t_rbt *root, Elf64_Shdr *shdr);
@@ -77,6 +79,8 @@ void 		parse_print(t_packer *packer);
 void		phdr_print_tree(t_packer *packer, t_rbt *root);
 long long	phdr_space_between(Elf64_Phdr *a, Elf64_Phdr *b);
 long long	phdr_space_between_ends(Elf64_Phdr *a, Elf64_Phdr *b);
+int8_t		prepare_last_segment_strategy(t_packer *packer,
+			size_t size_blueprints);
 void		print_btc_name(t_btc *inst);
 void		print_cave_gathering_legend(void);
 void		print_cave_phdr(t_packer *packer, Elf64_Phdr *a);
@@ -108,6 +112,7 @@ void		update_args(t_packer *packer,
 			t_btc *inst,
 			t_zone *zone,
 			ssize_t ret);
+void		update_phdr_addr(t_packer *packer, int64_t offset);
 void		update_zone(t_zone *zone, t_btc *inst);
 void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer);
 void		zones_add_rights(t_list *zone, Elf64_Word rights);

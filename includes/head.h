@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/04/15 17:42:14 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/16 16:34:00 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ typedef struct	s_zone
 	size_t		offset;
 	uint64_t	vaddr;
 	size_t		size;
+	uint8_t		used;
 	Elf64_Phdr	*phdr;
 }				t_zone;
 
@@ -185,7 +186,11 @@ typedef struct	s_btc
 # define SIZE_DEF_CYPHER			61
 # define SIZE_DEF_FIND_ABS_VADDR	46
 
-
+# define MINIMAL_WOODY					FALSE
+# define NB_STRAT						3 // a mettre dans .h
+# define STRAT_LOADABLE_EXECUTE			0
+# define STRAT_LOADABLE					1
+# define STRAT_LOADABLE_LAST_SEGMENT	2
 
 extern t_btc bytecode_lib[BYTECODE_LIB_LEN];
 

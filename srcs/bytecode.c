@@ -12,12 +12,6 @@
 
 #include "head.h"
 
-#define		MINIMAL_WOODY	FALSE
-#define		NB_STRAT 3 // a mettre dans .h
-#define		STRAT_LOADABLE_EXECUTE 0
-#define		STRAT_LOADABLE 1
-#define		STRAT_LOADABLE_LAST_SEGMENT 2
-
 ssize_t		chirurgy(t_packer *packer)
 {
 	t_dlist	*blueprint;
