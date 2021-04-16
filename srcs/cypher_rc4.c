@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/16 17:04:49 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/03/26 10:48:27 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/15 17:42:36 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,10 @@ void	init_key(uint8_t *key)
 {
 	size_t	i;
 
-	srand(clock() / CLOCKS_PER_SEC);
+	if (STATIC_KEY)
+		srand(0);
+	else
+		srand(time(NULL) + (size_t)key);
 	i = -1;
 	while (++i < KEY_SIZE)
 	{

@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/15 17:54:59 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/03/28 20:31:35 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/15 17:30:14 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,11 @@ void			data_filler_zone_to_crypt(t_pheader *hdr, t_zone *zone)
 
 void			data_filler_cave(t_pheader *hdr, t_zone *zone)
 {
-	zone->offset = hdr->phdr->p_offset + hdr->phdr->p_filesz;
+	// zone->offset = hdr->phdr->p_offset + hdr->phdr->p_filesz;
+	zone->offset = hdr->phdr->p_offset + hdr->phdr->p_memsz;
 	//TODO: vaddr keep count of alignement
-	zone->vaddr = hdr->phdr->p_vaddr + hdr->phdr->p_filesz; // hesitation avec + p_memsz
+	// zone->vaddr = hdr->phdr->p_vaddr + hdr->phdr->p_filesz; // hesitation avec + p_memsz
+	zone->vaddr = hdr->phdr->p_vaddr + hdr->phdr->p_memsz; // hesitation avec + p_memsz
 	zone->size = hdr->available_size;
 	zone->phdr = hdr->phdr;
 }
@@ -46,7 +48,7 @@ static t_list	*create_zone(t_pheader *hdr, void (*data_filler)(t_pheader*, t_zon
 	return (node);
 }
 
-t_list			*get_zones(t_packer *packer, uint8_t type, uint8_t flags,
+t_list			*get_zones(t_packer *packer, Elf64_Word type, Elf64_Word flags,
 	void (*data_filler)(t_pheader*, t_zone*))
 {
 	uint8_t		i;
@@ -64,7 +66,7 @@ t_list			*get_zones(t_packer *packer, uint8_t type, uint8_t flags,
 			if (!(zone = create_zone(hdr, data_filler)))
 			{
 				print_error(packer->self_path, strerror(errno));
-				//fonction qui free tout
+				//TODO: fonction qui free tout
 				exit(EXIT_FAILURE);
 			}
 			ft_list_append(&zones, zone);

@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/04/03 20:09:23 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/16 17:52:10 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 # include <sys/mman.h>
 
 # define DEBUG		2
+
 extern int debug_level;
 
 # define SUCCESS	0
@@ -35,6 +36,8 @@ extern int debug_level;
 
 # define TRUE		1
 # define FALSE		0
+
+# define STATIC_KEY FALSE
 
 /*
 **	ERROR MANAGEMENT
@@ -66,6 +69,8 @@ typedef struct	s_zone
 	size_t		offset;
 	uint64_t	vaddr;
 	size_t		size;
+	uint8_t		used;
+	uint8_t		last;
 	Elf64_Phdr	*phdr;
 }				t_zone;
 
@@ -108,6 +113,7 @@ typedef struct	s_packer
 	t_list			*caves; //list of zones we can inject code in, ordered by dec size
 	uint8_t			key[KEY_SIZE];
 	size_t			new_e_entry;
+	uint8_t			strategy;
 	// t_stat		stat;
 
 	uint64_t		size;
@@ -116,7 +122,7 @@ typedef struct	s_packer
 typedef struct	s_btc_args
 {
 	int			jump;
-	uint64_t		mp_addr;
+	uint64_t	mp_addr;
 	size_t		mp_len;
 	int			mp_prot;
 	uint64_t	crypt_plaintext_vaddr;
@@ -181,7 +187,11 @@ typedef struct	s_btc
 # define SIZE_DEF_CYPHER			61
 # define SIZE_DEF_FIND_ABS_VADDR	46
 
-
+# define MINIMAL_WOODY					FALSE
+# define NB_STRAT						3 // a mettre dans .h
+# define STRAT_LOADABLE_EXECUTE			0
+# define STRAT_LOADABLE					1
+# define STRAT_LOADABLE_LAST_SEGMENT	2
 
 extern t_btc bytecode_lib[BYTECODE_LIB_LEN];
 
@@ -226,8 +236,8 @@ Elf64_Phdr 	*get_program_header(t_packer *packer, uint32_t index);
 void 		browse_file(t_packer *packer);
 int8_t		print_error(char *self_path, char *error);
 int8_t		print_usage(char *self_path);
-t_list		*get_zones(t_packer *packer, uint8_t type, uint8_t flags,
-			void (*data_filler)(t_pheader*, t_zone*));
+// t_list		*get_zones(t_packer *packer, uint8_t type, uint8_t flags,
+// 			void (*data_filler)(t_pheader*, t_zone*));
 void		data_filler_cave(t_pheader *hdr, t_zone *zone);
 void		data_filler_zone_to_crypt(t_pheader *hdr, t_zone *zone);
 void		crypt_zones(t_packer *packer);

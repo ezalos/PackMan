@@ -12,11 +12,10 @@
 
 #include "head.h"
 
-#define		MINIMAL_WOODY	FALSE
-
 ssize_t		chirurgy(t_packer *packer)
 {
 	t_dlist	*blueprint;
+	size_t	size_blueprints;
 	ssize_t ret;
 
 	logging("\n*** %s: Init key: %016llx (in hex)\n", __func__, *(uint64_t *)packer->key);
@@ -24,17 +23,32 @@ ssize_t		chirurgy(t_packer *packer)
 	logging("\n*** %s: Creating blueprint\n", __func__);
 	if (MINIMAL_WOODY)
 	{
-		//NO Segfault in woody
 		blueprint = blueprint_minimal();
 	}
 	else
 	{
-		//Segfault in woody
 		blueprint = blueprint_creation(packer);
 	}
 	logging("\n*** %s: Solving injection\n", __func__);
-	if (FAILURE == (ret = sexy_place_bytecode(packer, packer->caves, blueprint)))
+
+	packer->strategy = 0;
+	while (packer->strategy < NB_STRAT)
+	{
+		logging("\n*** %s: SOLVE BYTECODE: trying start %d\n", __func__, packer->strategy);
+		if (packer->strategy == STRAT_LOADABLE_LAST_SEGMENT)
+		{
+			size_blueprints = get_blueprint_inject_size(blueprint);
+			prepare_last_segment_strategy(packer, size_blueprints);
+		}
+
+		if (FAILURE != (ret = solve_bytecodes(packer, packer->caves, blueprint, TRUE)))
+			break ;
+		packer->strategy += 1;
+	}
+	if (ret == FAILURE)
 		return (FAILURE);
+
+	zones_add_rights_to_used_caves(packer->caves, PF_X);
 
 	logging("\n*** %s: Entry Point: 0x%lx [%ld]\n", __func__, packer->new_e_entry, packer->new_e_entry);
 	((Elf64_Ehdr *)packer->content)->e_entry = packer->new_e_entry;

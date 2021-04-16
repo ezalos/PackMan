@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/04/03 20:01:32 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/16 18:14:56 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,57 +14,67 @@
 
 int depth = -1;
 
-void		print_btc_name(t_btc *inst)
-{
-	if (inst->type == BTC_CALL_JMP)
-		printf("BTC_CALL_JMP\n");
-	else if (inst->type == BTC_CALL_MPROTECT)
-		printf("BTC_CALL_MPROTECT\n");
-	else if (inst->type == BTC_CALL_CYPHER)
-		printf("BTC_CALL_CYPHER\n");
-	else if (inst->type == BTC_DEF_WRITE)
-		printf("BTC_DEF_WRITE\n");
-	else if (inst->type == BTC_DEF_CYPHER)
-		printf("BTC_DEF_CYPHER\n");
-	else if (inst->type == BTC_DEF_INIT_PERM)
-		printf("BTC_DEF_INIT_PERM\n");
-	else if (inst->type == BTC_DEF_KEY_SCHED)
-		printf("BTC_DEF_KEY_SCHED\n");
-	else if (inst->type == BTC_DEF_BEGIN)
-		printf("BTC_DEF_BEGIN\n");
-	else if (inst->type == BTC_DEF_CYPHER_PREPARE)
-		printf("BTC_DEF_CYPHER_PREPARE\n");
-	else if (inst->type == BTC_DEF_END)
-		printf("BTC_DEF_END\n");
-	else
-		dprintf(2, "Error: Unknown btc type\n");
-}
-
 void		update_zone(t_zone *zone, t_btc *inst)
 {
 	// printed boundary is included
-	debug_recursive("Updating zone:\t %zu->%zu ", zone->offset, zone->offset + zone->size);
+	debug_recursive("%s: zone: %p, inst %p\n", __func__, zone, inst);
+	debug_recursive("%s: Updating zone:\t %zu->%zu\n", __func__, zone->offset, zone->offset + inst->size);
 	zone->offset += inst->size;
 	zone->vaddr += inst->size;
 	zone->size -= inst->size;
-	debug("to %zu->%zu\n", zone->offset, zone->offset + zone->size);
+	// debug("to %zu->%zu\n", zone->offset, zone->offset + inst->size);
 }
 
 void		undo_update_zone(t_zone *zone, t_btc *inst)
 {
-	debug_recursive("Updating zone (undo):\t %zu->%zu ", zone->offset, zone->offset + zone->size);
+	debug_recursive("%s: Updating zone (undo):\t %zu->%zu\n", __func__, zone->offset, zone->offset + inst->size);
 	zone->offset -= inst->size;
 	zone->vaddr -= inst->size;
 	zone->size += inst->size;
-	debug("to %zu->%zu\n", zone->offset, zone->offset + zone->size);
+	// debug("to %zu->%zu\n", zone->offset, zone->offset + inst->size);
 
 }
 
-uint8_t		can_i_write(t_zone *zone, t_btc *inst)
+uint8_t		can_i_write(t_packer *packer, t_zone *zone, t_btc *inst)
 {
-	logging_recursive("%s:\t %zu <= %zu ?\n", __func__, inst->size, zone->size);
+	// t_zone		*zone;
+	uint8_t		valid_zone;
 
-	return (inst->size <= zone->size);
+	// zone = zone_list->data;
+	valid_zone = FALSE;
+	logging_recursive("%s:\t %zu <= %zu ?\n", __func__, inst->size, zone->size);
+	// print_zone(zone);
+	logging_recursive("%s:\tLoad %hhd Exec %hhd Last %hhd\n", __func__, (zone->phdr->p_type == PT_LOAD), (zone->phdr->p_flags & PF_X), (TRUE == zone->last));
+	if (packer->strategy == STRAT_LOADABLE_EXECUTE)
+	{
+		logging_recursive("%s:\tSTRAT_LOADABLE_EXECUTE\n", __func__);
+		if ((zone->phdr->p_type == PT_LOAD) && (zone->phdr->p_flags & PF_X))
+		{
+			valid_zone = TRUE;
+		}
+	}
+	else if (packer->strategy == STRAT_LOADABLE)
+	{
+		logging_recursive("%s:\tSTRAT_LOADABLE\n", __func__);
+		if (zone->phdr->p_type == PT_LOAD)
+		{
+			valid_zone = TRUE;
+		}
+	}
+	else if (packer->strategy == STRAT_LOADABLE_LAST_SEGMENT)
+	{
+		logging_recursive("%s:\tSTRAT_LOADABLE_LAST_SEGMENT\n", __func__);
+		if (TRUE == zone->last)
+		{
+			valid_zone = TRUE;
+		}
+	}
+	else
+	{
+		logging_recursive("%s:\tERROR: UNKNOWN STRAT\n", __func__);
+	}
+
+	return ((TRUE == valid_zone) && (inst->size <= zone->size));
 }
 
 void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
@@ -94,6 +104,8 @@ uint8_t		is_btc_headless(t_btc *btc)
 	if (btc->type == BTC_DEF_INIT_PERM)
 		return (TRUE);
 	if (btc->type == BTC_DEF_KEY_SCHED)
+		return (TRUE);
+	if (btc->type == BTC_DEF_FIND_ABS_VADDR)
 		return (TRUE);
 	if (btc->type == BTC_DEF_CYPHER)
 		return (TRUE);
@@ -152,7 +164,7 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 	uint8_t	headless;
 	ssize_t ret;
 
-	logging_recursive("bytecode_inject\n");
+	logging_recursive("%s\n", __func__);
 	update_arg_def_crypt_calls(inst, zone);
 	update_zone(zone, inst->data);
 	headless = is_btc_headless((t_btc *)inst->data);
@@ -162,14 +174,15 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 	{
 		update_args(packer, ((t_btc *)inst->data), zone, ret);
 		write_btc(inst->data, zone, packer);
+		zone->used = TRUE;
 		ret = zone->offset;
 		if (((t_btc*)inst->data)->type == BTC_DEF_BEGIN) // TODO : put outside of algo
 		{
 			packer->new_e_entry = zone->vaddr;
-			logging_recursive("New e_entry will be\t 0x%lx\n", packer->new_e_entry);
+			logging_recursive("%s: New e_entry will be\t 0x%lx\n", __func__, packer->new_e_entry);
 		}
 	}
-	logging_recursive("end bytecode_inject\n\n");
+	logging_recursive("%s: end bytecode_inject\n\n", __func__);
 	depth -= 1;
 	return (ret);
 }
@@ -198,9 +211,10 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 		logging_recursive("Headless\t TRUE\n");
 		while (zone_list != NULL)
 		{
+			ret = FAILURE;
 			zone = zone_list->data;
 			logging_recursive("Try at offset\t %zu\n", zone->offset);
-			if (can_i_write(zone, inst->data))
+			if (can_i_write(packer, zone, inst->data))
 			{
 				logging_recursive("We can write\n");
 				ret = bytecode_inject(packer, zones, zone, inst);
@@ -216,9 +230,10 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 	else
 	{
 		logging_recursive("Headless\t FALSE\n");
+		// ICI EST LE BUG Zone lorsque headless, ne devrait pas estre le premier element mais l'element choisi a l'etape precedente
 		zone = zone_list->data;
 		logging_recursive("Current offset:\t %zu\n", zone->offset);
-		if (can_i_write(zone, inst->data))
+		if (can_i_write(packer, zone, inst->data))
 		{
 			logging_recursive("We can write.\n");
 			return (bytecode_inject(packer, zones, zone, inst));
@@ -229,7 +244,7 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 			ret = FAILURE;
 			jmp = ft_dlist_new(create_btc(BTC_CALL_JMP));
 			ft_dlist_insert_next_wesh(inst, jmp);
-			if (can_i_write(zone, jmp->data))
+			if (can_i_write(packer, zone, jmp->data))
 			{
 				logging_recursive("Jump ok\n");
 				ret = bytecode_inject(packer, zones, zone, jmp);
