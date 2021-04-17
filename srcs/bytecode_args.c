@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:13:17 by ezalos            #+#    #+#             */
-/*   Updated: 2021/04/03 19:06:40 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/17 00:22:40 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 
 void	update_arg_def_crypt_calls(t_dlist *inst, t_zone *zone)
 {
-	logging_recursive("%s\n", __func__);
+	logging_recursive("%s: inst: %p\tzone: %p\n", __func__, inst, zone);
+	logging_recursive("%s:\t%s\n", __func__, btc_to_str(((t_btc *)inst->data)));
+
 	if (((t_btc *)inst->data)->type == BTC_DEF_CYPHER)
 	{
 		while ((inst = inst->next) && ((t_btc *)inst->data))
@@ -25,8 +27,16 @@ void	update_arg_def_crypt_calls(t_dlist *inst, t_zone *zone)
 	{
 		((t_btc *)inst->data)->args->crypt_func_find_abs_vaddr_vaddr = (uint64_t)((size_t)zone->vaddr);
 		while ((inst = inst->next) && ((t_btc *)inst->data))
+		{
+			logging_recursive("%s: inst: %p\n", __func__, inst->data);
+			logging_recursive("%s: inst: %s\n", __func__, btc_to_str(((t_btc *)inst->data)));
 			if (((t_btc *)inst->data)->type == BTC_CALL_CYPHER)
+			{
+				logging_recursive("%s: closer\n", __func__);
 				((t_btc *)inst->data)->args->crypt_func_find_abs_vaddr_vaddr = (uint64_t)((size_t)zone->vaddr);
+			}
+			logging_recursive("%s: end\n", __func__);
+		}
 	}
 	else if (((t_btc *)inst->data)->type == BTC_DEF_INIT_PERM)
 	{

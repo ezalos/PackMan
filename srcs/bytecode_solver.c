@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/04/16 18:14:56 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/17 01:52:42 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void		update_zone(t_zone *zone, t_btc *inst)
 {
 	// printed boundary is included
 	debug_recursive("%s: zone: %p, inst %p\n", __func__, zone, inst);
-	debug_recursive("%s: Updating zone:\t %zu->%zu\n", __func__, zone->offset, zone->offset + inst->size);
+	debug_recursive("%s: Updating zone:\t%s %zu->%zu\n", __func__, btc_to_str(inst), zone->offset, zone->offset + inst->size);
 	zone->offset += inst->size;
 	zone->vaddr += inst->size;
 	zone->size -= inst->size;
@@ -27,7 +27,7 @@ void		update_zone(t_zone *zone, t_btc *inst)
 
 void		undo_update_zone(t_zone *zone, t_btc *inst)
 {
-	debug_recursive("%s: Updating zone (undo):\t %zu->%zu\n", __func__, zone->offset, zone->offset + inst->size);
+	debug_recursive("%s: Updating zone (undo):\t%s %zu->%zu\n", __func__, btc_to_str(inst), zone->offset, zone->offset + inst->size);
 	zone->offset -= inst->size;
 	zone->vaddr -= inst->size;
 	zone->size += inst->size;
@@ -74,7 +74,7 @@ uint8_t		can_i_write(t_packer *packer, t_zone *zone, t_btc *inst)
 		logging_recursive("%s:\tERROR: UNKNOWN STRAT\n", __func__);
 	}
 
-	return ((TRUE == valid_zone) && (inst->size <= zone->size));
+	return ((TRUE == valid_zone) && (inst->size)<= zone->size);
 }
 
 void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
@@ -140,10 +140,24 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 	return (ret);
 }
 
+void		print_dlist(t_dlist *dl)
+{
+	t_dlist *prev_n = NULL;
+	t_dlist *next_p = NULL;
+
+	printf("%p\n", dl);
+	if (dl->prev)
+		prev_n = dl->prev->next;
+	if (dl->next)
+		next_p = dl->next->prev;
+	printf("\t %p  -> %p -> [%p]\n", prev_n, dl, dl->next);
+	printf("\t[%p] <- %p <-  %p \n", dl->prev, dl, next_p);
+}
+
 // depth is used for pretty printing
 ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int headless)
 {
-	t_list	*zone_list = zones;
+	t_list	*zone_list = packer->caves;
 	t_zone	*zone;
 	ssize_t ret;
 	t_dlist	*jmp;
@@ -170,7 +184,7 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 			if (can_i_write(packer, zone, inst->data))
 			{
 				logging_recursive("We can write\n");
-				ret = bytecode_inject(packer, zones, zone, inst);
+				ret = bytecode_inject(packer, zone_list, zone, inst);
 			}
 			if (ret != FAILURE)
 			{
@@ -184,7 +198,7 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 	{
 		logging_recursive("Headless\t FALSE\n");
 		// ICI EST LE BUG Zone lorsque headless, ne devrait pas estre le premier element mais l'element choisi a l'etape precedente
-		zone = zone_list->data;
+		zone = zones->data;
 		logging_recursive("Current offset:\t %zu\n", zone->offset);
 		if (can_i_write(packer, zone, inst->data))
 		{
@@ -195,16 +209,35 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 		{
 			logging_recursive("Cannot write instruction, trying jump\n");
 			ret = FAILURE;
+			// logging_recursive("Bef\n");
+			// print_dlist(inst);
+			// print_dlist(inst->prev);
 			jmp = ft_dlist_new(create_btc(BTC_CALL_JMP));
-			ft_dlist_insert_next_wesh(inst, jmp);
+			ft_dlist_insert_next_wesh(inst->prev, jmp);
+			// logging_recursive("Jump\n");
+			// print_dlist(jmp->prev);
+			// print_dlist(jmp);
+			// print_dlist(jmp->next);
 			if (can_i_write(packer, zone, jmp->data))
 			{
 				logging_recursive("Jump ok\n");
 				ret = bytecode_inject(packer, zones, zone, jmp);
+				// print_dlist(jmp->prev);
+				// print_dlist(jmp);
+				// print_dlist(jmp->next);
 			}
-			jmp = ft_dlist_cut_unsafe(jmp);
-			free_btc(jmp->data);		// TODO: keep jump rights phdr ?
-			ft_dlist_free(jmp, NULL);
+			if (ret == FAILURE)
+			{
+				logging_recursive("Removing jump\n");
+				// print_dlist(jmp);
+				jmp = ft_dlist_cut_unsafe(jmp);
+				free_btc(jmp->data);		// TODO: keep jump rights phdr ?
+				// print_dlist(jmp);
+				free(jmp);
+			}
+			// logging_recursive("Aft\n");
+			// print_dlist(inst);
+			// print_dlist(inst->prev);
 			return (ret);
 		}
 	}
