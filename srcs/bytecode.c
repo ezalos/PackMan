@@ -38,7 +38,10 @@ ssize_t		chirurgy(t_packer *packer)
 		if (packer->strategy == STRAT_LOADABLE_LAST_SEGMENT)
 		{
 			size_blueprints = get_blueprint_inject_size(blueprint);
+			logging("size_blueprints = %lu\n", size_blueprints);
+			logging("content address before prepare_last_segment = %p\n", packer->content);
 			prepare_last_segment_strategy(packer, size_blueprints);
+			logging("content address  after prepare_last_segment = %p\n", packer->content);
 		}
 
 		if (FAILURE != (ret = solve_bytecodes(packer, packer->caves, blueprint, TRUE)))

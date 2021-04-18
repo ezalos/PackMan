@@ -36,11 +36,15 @@ void		update_phdr_addr(t_packer *packer, int64_t offset)
 	t_list	*curs;
 	t_zone	*zone;
 
+	logging("offset to the new content address = %ld\n", offset);
+
 	curs = packer->caves;
 	while (curs)
 	{
 		zone = (t_zone*)(curs->data);
-		zone->phdr += offset;
+		logging("zone phdr before = %p\n", zone->phdr);
+		zone->phdr = (Elf64_Phdr*)((size_t)zone->phdr + offset);
+		logging("zone phdr  after = %p\n", zone->phdr);
 		curs = curs->next;
 	}
 }
@@ -49,17 +53,23 @@ void		extend_file(t_packer *packer, size_t extension)
 {
 	uint8_t	*new_content;
 
+	logging("Size before extension = %lu\n", packer->size);
+	logging("Extension = %lu\n", extension);
 	if ((new_content = (uint8_t *)mmap(0,
 				(size_t)packer->size + extension,
 				PROT_READ | PROT_WRITE,
-				MAP_PRIVATE,
+				MAP_ANONYMOUS | MAP_PRIVATE,
 				-1,
 				0)) == MAP_FAILED)
 	{
+		logging("mmap failed\n");
+		logging("%s", strerror(errno));
 		//TODO appel fonction erreur + free
 		exit(EXIT_FAILURE);
 	}
+	logging("content address  after mmap = %p\n", new_content);
 	ft_memcpy(new_content, packer->content, packer->size);
+	logging("Copy done\n");
 	// TODO check order of substraction
 	update_phdr_addr(packer, (int64_t)((size_t)new_content - (size_t)packer->content));
 	//TODO munmap
@@ -72,17 +82,22 @@ void		prepare_last_segment_strategy(t_packer *packer,
 {
 	t_zone	*zone;
 	
+	logging("In prepare_last_segment\n");
+	((Elf64_Ehdr*)packer->content)->e_shnum = 0;
+	((Elf64_Ehdr*)packer->content)->e_shstrndx = 0;
+	((Elf64_Ehdr*)packer->content)->e_shoff = 0;
 	if (!(zone = get_last_zone(packer->caves)))
 		return ;
-	
 	zone->size = packer->size - zone->offset;
 	if (zone->offset > packer->size)
 	{
+		logging("offset beyond EOF\n");
 		extend_file(packer, (zone->offset - packer->size) + size_blueprints);
 		zone->size = size_blueprints;
 	}
 	else if (size_blueprints > zone->size)
 	{
+		logging("not enough space for blueprints\n");
 		extend_file(packer, size_blueprints - zone->size);
 		zone->size = size_blueprints;
 	}
@@ -102,8 +117,10 @@ void		prepare_last_segment_strategy(t_packer *packer,
 		// fin alternative
 	if (zone->phdr->p_filesz < zone->phdr->p_memsz)
 	{
+		logging("before padding with 0s\n");
 		ft_bzero(packer->content + zone->phdr->p_offset + zone->phdr->p_filesz,
 				 zone->phdr->p_memsz - zone->phdr->p_filesz);
+		logging("padding done\n");
 		zone->phdr->p_filesz = zone->phdr->p_memsz;
 	}
 	zone->last = TRUE;

@@ -15,6 +15,7 @@ void		cave_gathering(t_packer *packer);
 void		cave_gathering_phdr(t_packer *packer);
 void		change_endian(void *data, int size);
 int8_t		check_elf_header(t_packer *packer);
+int8_t		check_sacred_memory_size(t_packer *packer);
 ssize_t		chirurgy(t_packer *packer);
 t_rbt		*construct_rbt_phdr(t_packer *packer);
 void		construct_rbt_shdr(t_packer *packer);

@@ -113,6 +113,7 @@ typedef struct	s_packer
 	t_list			*caves; //list of zones we can inject code in, ordered by dec size
 	uint8_t			key[KEY_SIZE];
 	size_t			new_e_entry;
+	size_t			sacred_memory_size;
 	uint8_t			strategy;
 	// t_stat		stat;
 

@@ -52,6 +52,16 @@ int8_t		check_elf_header(t_packer *packer)
 	return (SUCCESS);
 }
 
+int8_t		check_sacred_memory_size(t_packer *packer)
+{
+	packer->sacred_memory_size
+		= sizeof(Elf64_Phdr) * ((Elf64_Ehdr *)packer->content)->e_phnum
+			+ ((Elf64_Ehdr *)packer->content)->e_phoff;
+	if (packer->sacred_memory_size > packer->size)
+		return (print_error(packer->self_path, FILE_FORMAT_ERROR));
+	return (SUCCESS);
+}
+
 int8_t		init(t_packer *packer, char **av)
 {
 
@@ -61,6 +71,9 @@ int8_t		init(t_packer *packer, char **av)
 		return (FAILURE);
 	if (FAILURE == check_elf_header(packer))
 		return (FAILURE);
+	if (FAILURE == check_sacred_memory_size(packer))
+		return (FAILURE);
+	logging("**SACRED MEMORY SIZE = %lu\n", packer->sacred_memory_size);	
 	if (FAILURE == parse_elf(packer))
 		return (FAILURE);
 	return (SUCCESS);

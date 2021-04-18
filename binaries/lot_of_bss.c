@@ -38,4 +38,18 @@ static long a6;
 int	main(void)
 {
 	printf("Hello World !\n");
+	printf("%lu\n", a);
+	printf("%lu\n", b);
+	printf("%lu\n", c);
+	printf("%lu\n", d);
+	printf("%lu\n", r);
+	printf("%lu\n", p);
+	printf("%lu\n", a);
+	printf("%lu\n", z);
+	printf("%lu\n", a1);
+	printf("%lu\n", a2);
+	printf("%lu\n", a3);
+	printf("%lu\n", a4);
+	printf("%lu\n", a5);
+	printf("%lu\n", a6);
 }

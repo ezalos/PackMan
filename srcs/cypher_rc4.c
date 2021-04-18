@@ -100,6 +100,7 @@ void	crypt_zones(t_packer *packer)
 	while (to_crypt)
 	{
 		zone = (t_zone*)(to_crypt->data);
+		logging("%s:\nzone offset = %lu\nzone size = %lu\n", __func__, zone->offset, zone->size);
 		crypt_zone_asm(content + zone->offset, zone->size, permutations);//asm
 		to_crypt = to_crypt->next;
 	}
