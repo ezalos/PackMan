@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 23:50:57 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/01 18:40:56 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/01 18:56:16 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,21 +50,20 @@ t_rbt	*construct_rbt_phdr(t_packer *packer)
 	phdr = get_program_header(packer, i);
 	while (phdr)
 	{
-		if (phdr->p_type == PT_LOAD || TRUE)
+		hdr = NULL;
+		node = NULL;
+		if (SUCCESS == create_rbt_phdr(&node, &hdr, phdr))
 		{
-			hdr = NULL;
-			node = NULL;
-			if (SUCCESS == create_rbt_phdr(&node, &hdr, phdr))
-			{
-				root = tree_insert_func_ll(root, node, hdr, t_rbt_compare_phdr);
-			}
-			else
-			{
-				print_error(packer->self_path, MALLOC_ERROR);
-				tree_free(root, rbt_free_content);
-				root = NULL;
-				exit(EXIT_FAILURE);
-			}
+			root = tree_insert_func_ll(root, node, hdr, t_rbt_compare_phdr);
+		}
+		else
+		{
+			print_error(packer->self_path, MALLOC_ERROR);
+			// When malloc error, we do not free as internal malloc error might be in cause.
+			// We let the kernel take care of restuting the memory
+			// As good faith, you will see in the free all in main that we already implemented all that's needed
+			root = NULL;
+			exit(EXIT_FAILURE);
 		}
 		i++;
 		phdr = get_program_header(packer, i);

@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/04/22 00:07:54 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/01 18:51:32 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ extern int debug_level;
 **	ERROR MANAGEMENT
 */
 
+# define NO_PHDR_IN_BINARY			"The file does not possess any phdr"
 # define FILE_NOT_ELF_ERROR			"The file is not of type ELF"
 # define FILE_NOT_64_ERROR			"The file architecture is not x86_64"
 # define FILE_BIG_ENDIAN_ERROR		"The file is big endian"

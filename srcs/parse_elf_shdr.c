@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 23:56:07 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/10 19:07:31 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/01 19:02:19 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,15 @@ void		construct_rbt_shdr(t_packer *packer)
 			else
 			{
 				print_error(packer->self_path, MALLOC_ERROR);
-				tree_free(parent->shdr_tree, rbt_free_content);
+				// When malloc error, we do not free as internal malloc error might be in cause.
+				// We let the kernel take care of restuting the memory
+				// As good faith, you will see in the free all in main that we already implemented all that's needed 
 				exit(EXIT_FAILURE);
 			}
 		}
 		else
 		{
-			printf("Shdr %2d is orphan:\t%s\n", i, get_sec_name(packer, shdr));
+			logging("Shdr %2d is orphan:\t%s\n", i, get_sec_name(packer, shdr));
 		}
 		shdr = get_section_header(packer, ++i);
 	}
@@ -90,14 +92,6 @@ t_pheader	*get_rbt_phdr_from_shdr(t_rbt *root, Elf64_Shdr *shdr)
 		tmp = shdr->sh_addralign;
 		if (tmp == 0)
 			tmp = 1;
-		if (shdr->sh_type & PT_LOAD && FALSE) // a modifier
-		{
-			if (hdr->phdr->p_vaddr <= shdr->sh_addr + tmp - (shdr->sh_addr % tmp))
-			{
-				if (hdr->phdr->p_vaddr + hdr->phdr->p_memsz >= shdr->sh_addr + tmp - (shdr->sh_addr % tmp) + shdr->sh_size)
-					return (hdr);
-			}
-		}
 		if (hdr->phdr->p_offset <= shdr->sh_offset)
 		{
 			if (hdr->phdr->p_offset + hdr->phdr->p_filesz >= shdr->sh_offset + shdr->sh_size)
