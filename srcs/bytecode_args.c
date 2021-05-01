@@ -117,9 +117,9 @@ void	update_args(t_packer *packer, t_btc *inst, t_zone *zone, ssize_t ret)
 	{
 		// Nothing
 	}
-	else
-	{
-		dprintf(2, "Error: Unknown btc type\n");
-	}
+	// else
+	// {
+	// 	dprintf(2, "Error: Unknown btc type\n");
+	// }
 	return;
 }

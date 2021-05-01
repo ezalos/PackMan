@@ -56,7 +56,7 @@ int8_t	parse_elf(t_packer *packer)
 		logging("\n*** %s: Checking file memory referenced by phdr & shdr\n", __func__);
 		if (FALSE == parse_elf_check_phdr(packer))
 		{
-			dprintf(2, "ERROR: Corrupted binary\n");
+			print_error(packer->self_path, FILE_FORMAT_ERROR);
 			return (FAILURE);
 		}
 		return (SUCCESS);

@@ -40,8 +40,7 @@ void		update_phdr_addr(t_packer *packer, int64_t offset)
 	while (curs)
 	{
 		zone = (t_zone*)(curs->data);
-		zone->phdr += offset;
-		curs = curs->next;
+		zone->phdr = (Elf64_Phdr*)((size_t)zone->phdr + offset);
 	}
 }
 
@@ -52,15 +51,14 @@ void		extend_file(t_packer *packer, size_t extension)
 	if ((new_content = (uint8_t *)mmap(0,
 				(size_t)packer->size + extension,
 				PROT_READ | PROT_WRITE,
-				MAP_PRIVATE,
+				MAP_ANONYMOUS | MAP_PRIVATE,
 				-1,
 				0)) == MAP_FAILED)
 	{
-		//TODO appel fonction erreur + free
+		print_error(packer->self_path, strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 	ft_memcpy(new_content, packer->content, packer->size);
-	// TODO check order of substraction
 	update_phdr_addr(packer, (int64_t)((size_t)new_content - (size_t)packer->content));
 	//TODO munmap
 	packer->content = new_content;
@@ -72,9 +70,11 @@ void		prepare_last_segment_strategy(t_packer *packer,
 {
 	t_zone	*zone;
 	
+	((Elf64_Ehdr*)packer->content)->e_shnum = 0;
+	((Elf64_Ehdr*)packer->content)->e_shstrndx = 0;
+	((Elf64_Ehdr*)packer->content)->e_shoff = 0;
 	if (!(zone = get_last_zone(packer->caves)))
 		return ;
-	
 	zone->size = packer->size - zone->offset;
 	if (zone->offset > packer->size)
 	{
@@ -86,20 +86,6 @@ void		prepare_last_segment_strategy(t_packer *packer,
 		extend_file(packer, size_blueprints - zone->size);
 		zone->size = size_blueprints;
 	}
-	
-	// alternative si on est surs qu'il y a un type int128_t
-
-	// int128_t	remaining_size;
-	// remaining_size = packer->size - zone->offset;
-	// if (size_blueprints > remaining_size)
-	// {
-	// 	extend_file(packer, size_blueprints - remaining_size);
-	// 	zone->size = size_blueprints;
-	// }
-	// else
-	// 	zone->size = reamining_size;
-
-		// fin alternative
 	if (zone->phdr->p_filesz < zone->phdr->p_memsz)
 	{
 		ft_bzero(packer->content + zone->phdr->p_offset + zone->phdr->p_filesz,

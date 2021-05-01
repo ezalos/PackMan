@@ -23,8 +23,9 @@ uint8_t		parse_elf_check_shdr(t_packer *packer, t_pheader *t_pheader)
 		shdr = t_pheader->shdr_array[i]->shdr;
 		if (shdr->sh_offset + shdr->sh_size > packer->size)
 		{
-			dprintf(2, "ERROR: shdr %d refernce memory out of file\n", \
-					get_section_header_index(packer, shdr));
+			// dprintf(2, "ERROR: shdr %d refernce memory out of file\n",
+			// 		get_section_header_index(packer, shdr));
+			print_error(packer->self_path, FILE_FORMAT_ERROR);
 			return (FALSE);
 		}
 	}
@@ -44,16 +45,18 @@ uint8_t		parse_elf_check_phdr(t_packer *packer)
 		phdr = packer->phdr_array[i]->phdr;
 		if (phdr->p_filesz + phdr->p_offset > packer->size)
 		{
-			dprintf(2, "ERROR: Phdr %d refernce memory out of file\n", \
-					get_program_header_index(packer, phdr));
+			// dprintf(2, "ERROR: Phdr %d refernce memory out of file\n",
+			// 		get_program_header_index(packer, phdr));
+			print_error(packer->self_path, FILE_FORMAT_ERROR);
 			return (FALSE);
 		}
 		if (phdr->p_type == PT_LOAD)
 		{
 			if (phdr->p_memsz < phdr->p_filesz)
 			{
-				dprintf(2, "ERROR: Phdr %d has memsize < filesize\n",
-						get_program_header_index(packer, phdr));
+				// dprintf(2, "ERROR: Phdr %d has memsize < filesize\n",
+				// 		get_program_header_index(packer, phdr));
+				print_error(packer->self_path, FILE_FORMAT_ERROR);
 				return (FALSE);
 				// could be done with:
 				// ii = i;
@@ -68,21 +71,25 @@ uint8_t		parse_elf_check_phdr(t_packer *packer)
 					{
 						if (is_phdr_contained(phdr, phdr_bis))
 						{
-							dprintf(2, "ERROR: is_phdr_contained between %d and %d\n",
+							//TODO: reformuler les erreurs
+							print_error(packer->self_path,
+									"is_phdr_contained between %d and %d",
 									get_program_header_index(packer, phdr),
 									get_program_header_index(packer, phdr_bis));
 							return (FALSE);
 						}
 						if (is_phdr_superposed(phdr, phdr_bis))
 						{
-							dprintf(2, "ERROR: is_phdr_superposed between %d and %d\n",
+							print_error(packer->self_path,
+									"is_phdr_superposed between %d and %d",
 									get_program_header_index(packer, phdr),
 									get_program_header_index(packer, phdr_bis));
 							return (FALSE);
 						}
 						if (is_phdr_overlap(phdr, phdr_bis))
 						{
-							dprintf(2, "ERROR: is_phdr_overlap between %d and %d\n",
+							print_error(packer->self_path,
+									"is_phdr_overlap between %d and %d\n",
 									get_program_header_index(packer, phdr),
 									get_program_header_index(packer, phdr_bis));
 							return (FALSE);

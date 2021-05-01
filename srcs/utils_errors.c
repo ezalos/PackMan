@@ -12,9 +12,15 @@
 
 #include "head.h"
 
-int8_t	print_error(char *self_path, char *error)
+int8_t	print_error(char *self_path, const char *fmt, ...)
 {
-	dprintf(2, "%s: error: %s.\n", self_path, error);
+	va_list	args;
+
+	dprintf(2, "%s: error: ", self_path);
+	va_start(args, fmt);
+    dprintf(2, fmt, args);
+    va_end(args);
+	dprintf(2, "\n");
 	return (FAILURE);
 }
 
