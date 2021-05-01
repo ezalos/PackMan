@@ -86,7 +86,7 @@ void		print_cave_gathering_legend(void);
 void		print_cave_phdr(t_packer *packer, Elf64_Phdr *a);
 void		print_cave_size(Elf64_Phdr *a, Elf64_Phdr *b, t_packer *packer);
 void		print_dlist(t_dlist *dl);
-int8_t		print_error(char *self_path, char *error);
+int8_t		print_error(char *self_path, const char *fmt, ...);
 int			print_phdr_contain(t_packer *packer, int i);
 void		print_spaces(int nb);
 int8_t		print_usage(char *self_path);

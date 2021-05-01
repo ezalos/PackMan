@@ -26,6 +26,7 @@
 # include <unistd.h>
 # include <time.h>
 # include <sys/mman.h>
+# include <stdarg.h>
 
 # define DEBUG		2
 
@@ -235,7 +236,6 @@ char 		*get_sec_name(t_packer *packer, Elf64_Shdr *shdr);
 Elf64_Shdr 	*get_section_header(t_packer *packer, uint32_t index);
 Elf64_Phdr 	*get_program_header(t_packer *packer, uint32_t index);
 void 		browse_file(t_packer *packer);
-int8_t		print_error(char *self_path, char *error);
 int8_t		print_usage(char *self_path);
 // t_list		*get_zones(t_packer *packer, uint8_t type, uint8_t flags,
 // 			void (*data_filler)(t_pheader*, t_zone*));
