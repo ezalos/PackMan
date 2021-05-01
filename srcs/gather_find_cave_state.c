@@ -6,152 +6,155 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 22:34:42 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/01 17:55:05 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/01 23:56:44 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
 
-//TODO: remove print, return size
-void print_cave_size_dos(Elf64_Phdr *a, Elf64_Phdr *b, t_packer *packer)
-{
-
-	long long size;
-	char *color;
-
-	if (!a || !b)
-		return;
-	if (is_phdr_contained(b, a))
-	{
-		// a is last contained & b is parent
-		color = _MAGENTA;
-		size = phdr_space_between_ends(a, b);
-		find_t_pheader_from_phdr(packer, a)->available_size = -size;
-	}
-	else
-	{
-		color = _BLUE;
-		size = phdr_space_between(a, b);
-		find_t_pheader_from_phdr(packer, a)->available_size = size;
-	}
-	printf("->%s%lld%s", color, size, _RESET);
-}
-
-uint8_t	next_state(t_packer *packer, t_state *st)
+uint8_t		next_state(t_packer *packer, t_state *st)
 {
 	st->curr = get_phdr_from_array(packer, st->index++);
 	st->next = get_phdr_from_array(packer, st->index);
 	if (st->curr)
 		return (TRUE);
-	st->end = TRUE;
 	return (FALSE);
 }
 
-uint8_t		case_next_overlap(t_packer *packer, t_state *st)
+uint8_t		case_exit_parent(t_state *st)
 {
-	// Case : (CURR /!\ NEXT)
-	// TODO: remove depth check
-	if (st->depth == 0 && is_phdr_overlap(st->curr, st->next))
+	if (st->depth > 0 && (!st->next || !is_phdr_contained(st->parent[st->depth], st->next)))
 	{
-		st->error = TRUE;
+		return (TRUE);
+	}
+	return (FALSE);
+}
 
-		// Print
+void	print_state_machine(t_packer *packer, t_state *st)
+{
+	if (FALSE == packer->print_phdr_gather)
+		return ;
+	if (st->loop == TRUE || st->state == NORMAL)
+	{
+		if (st->loop == TRUE)
+			printf("%s]%s", _YELLOW, _RESET);
+		else
+			print_cave_phdr(packer, st->curr);
+		if (st->depth == 0 && NULL == st->next)
+			printf("->%s%s%s", _BLUE, "..." /*∞♾∞*/, _RESET);
+		else
+			printf("->%s%lu%s", st->exit_parent ? _MAGENTA : _BLUE, st->size, _RESET);
+		if (st->next && !st->exit_parent)
+		{
+			printf(", ");
+			// if (st->depth == 0)
+			// 	printf("\n");
+		}
+	}
+	else if (st->state == OVERLAPPED)
+	{
 		printf("(");
 		print_cave_phdr(packer, st->curr);
 		printf("%s/!\\%s ", _YELLOW, _RESET);
 		print_cave_phdr(packer, st->next);
 		printf(")");
-		return (TRUE);
 	}
-	return (FALSE);
-}
-
-uint8_t		case_next_supperposed(t_packer *packer, t_state *st)
-{
-	if (is_phdr_superposed(st->curr, st->next))
+	else if (st->state == SUPERPOSED)
 	{
-		// Print
 		print_cave_phdr(packer, st->curr);
 		printf(" %s==%s ", _YELLOW, _RESET);
-		return (TRUE);
 	}
-	return (FALSE);
-}
-
-uint8_t		case_next_contained(t_packer *packer, t_state *st)
-{
-	if (is_phdr_contained(st->curr, st->next))
+	else if (st->state == CONTAINED)
 	{
-		st->depth += 1;
-		// TODO
-		// if (st.depth >= CAVE_GATHER_MAX_PARENT)
-		// 	pbm
-		st->parent[st->depth] = st->curr;
-
-		// Print
 		print_cave_phdr(packer, st->curr);
 		printf("%s[%s", _YELLOW, _RESET);
-		return (TRUE);
 	}
-	return (FALSE);
 }
 
-uint8_t		case_next_is_not_contained_anymore(t_packer *packer, t_state *st)
+void	calcul_size(t_packer *packer, t_state *st)
 {
-	if (st->depth > 0 && (!st->next || !is_phdr_contained(st->parent[st->depth], st->next)))
+	Elf64_Phdr	*ph;
+	// Cases between A and B:
+	//		Normal:		A[ ] -> x,	B[ ]
+	//		Before:		A[			B[ ] -> X	]
+	//		After:		A[ C[ ]  ] ->	B[ ]
+
+	if (st->exit_parent == FALSE)
+	// This size is printed in blue
 	{
-		// Print
-		printf("%s]%s", _YELLOW, _RESET);
-		print_cave_size_dos(st->parent[st->depth], st->next, packer);
-		if (st->next)
-			printf(", ");
-
-		st->depth--;
-		return (TRUE);
+		if (st->loop)
+			st->depth++;
+		if (st->depth == 0 
+		|| (is_phdr_contained(st->parent[st->depth], st->curr)
+		&& is_phdr_contained(st->parent[st->depth], st->next)))
+		// NOMRAL
+		{
+			ph = st->curr;
+		}
+		else
+		// AFTER
+		{
+			ph = st->parent[st->depth];
+		}
+		if (st->loop)
+			st->depth--;
+		st->size = phdr_space_between(ph, st->next);
+		find_t_pheader_from_phdr(packer, ph)->available_size = st->size;
 	}
-	return (FALSE);
+	else if (st->exit_parent == TRUE)
+	// This size is printed in magenta
+	// BEFORE
+	{
+		st->size = phdr_space_between_ends(st->parent[st->depth], st->curr);
+		find_t_pheader_from_phdr(packer, st->parent[st->depth])->available_size = st->size;
+	}
 }
-
 
 void	not_a_state_machine(t_packer *packer)
 {
-	t_state		st;
+	t_state		state;
+	t_state		*st = &state;
 
-	ft_memset(&st, 0, sizeof(t_state));
-	printf("\n-----------------------\n");
-	printf("  PHDR CAVE GATHERING  \n");
-	printf("-----------------------\n\n");
-	next_state(packer, &st);
-	while (st.curr)
+	ft_memset(st, 0, sizeof(t_state));
+	if (TRUE == packer->print_phdr_gather)
+		print_cave_gathering_title();
+	while (next_state(packer, st))
 	{
-		if (case_next_overlap(packer, &st))
+		st->loop = FALSE;
+		st->exit_parent = case_exit_parent(st);
+		if (is_phdr_overlap(st->curr, st->next))
 		{
-			;
+			st->error = TRUE;
+			st->state = OVERLAPPED;
 		}
-		else if (case_next_supperposed(packer, &st))
+		else if (is_phdr_superposed(st->curr, st->next))
 		{
-			;
+			st->state = SUPERPOSED;
 		}
-		else if (case_next_contained(packer, &st))
+		else if (is_phdr_contained(st->curr, st->next))
 		{
-			;
+			st->depth += 1;
+			//if (st.depth >= CAVE_GATHER_MAX_PARENT)
+			//	TODO
+			st->parent[st->depth] = st->curr;
+			st->state = CONTAINED;
 		}
 		else
 		{
-			print_cave_phdr(packer, st.curr);
-			print_cave_size_dos(st.curr, st.next, packer);
-			if (st.next)
-				printf(", ");
+			calcul_size(packer, st);
+			st->state = NORMAL;
 		}
-		while (case_next_is_not_contained_anymore(packer, &st))
+		print_state_machine(packer, st);
+		st->loop = TRUE;
+		while (st->exit_parent)
 		{
-			;
+			st->depth--;
+			st->exit_parent = case_exit_parent(st);
+			calcul_size(packer, st);
+			print_state_machine(packer, st);
 		}
-
-		next_state(packer, &st);
 	}
-	printf("\n\n");
-	print_cave_gathering_legend();
-	printf("\n");
+	if (TRUE == packer->print_phdr_gather)
+		print_cave_gathering_legend();
 }
 

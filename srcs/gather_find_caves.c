@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/10 21:17:59 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/01 18:00:33 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/01 22:52:59 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 //			if a < next_start:
 //				break;
 //		segment.cave_size = next_start - a; 
+
+// a[	b[]	]
 
 uint8_t		is_phdr_contained(Elf64_Phdr *a, Elf64_Phdr *b)
 {
@@ -101,11 +103,11 @@ long long	phdr_space_between(Elf64_Phdr *a, Elf64_Phdr *b)
 	return size;
 }
 
-long long	phdr_space_between_ends(Elf64_Phdr *a, Elf64_Phdr *b)
+long long	phdr_space_between_ends(Elf64_Phdr *b, Elf64_Phdr *a)
 {
 	long long	size;
 
-	// a is last contained & b is parent
+	// b is last contained & a is parent
 	if (!b || !a)
 		return 0;
 	size = 0;
@@ -149,7 +151,7 @@ void		print_cave_size(Elf64_Phdr *a, Elf64_Phdr *b, t_packer *packer)
 	{
 		// a is last contained & b is parent
 		color = _MAGENTA;
-		size = phdr_space_between_ends(a, b);
+		size = phdr_space_between_ends(b, a);
 		find_t_pheader_from_phdr(packer,  a)->available_size = -size;
 	}
 	else
@@ -210,6 +212,7 @@ int		print_phdr_contain(t_packer *packer, int i)
 
 void		print_cave_gathering_legend(void)
 {
+	printf("\n\n");
 	printf("Legend: \n");
 	printf("\tLOAD:        \t%sTRUE %sFALSE%s\n", _GREEN, _RED, _RESET);
 	printf("\t%sn%sb%s:         \tposition of phdr in header declaration order\n", _GREEN, _RED, _RESET);
@@ -218,6 +221,13 @@ void		print_cave_gathering_legend(void)
 	printf("\tnb %s/!\\%s nb:\tOverlap of phdr\n", _YELLOW, _RESET);
 	printf("\tnb %s==%s nb:    \tPhdr are superposed\n", _YELLOW, _RESET);
 	printf("\tnb %s[%snb%s]%s:     \tPhdr is contained\n", _YELLOW, _RESET, _YELLOW, _RESET);
+	printf("\n");
+}
+void		print_cave_gathering_title(void)
+{
+	printf("\n-----------------------\n");
+	printf("  PHDR CAVE GATHERING  \n");
+	printf("-----------------------\n\n");
 }
 
 void		cave_gathering_phdr(t_packer *packer)
@@ -226,9 +236,7 @@ void		cave_gathering_phdr(t_packer *packer)
 	Elf64_Phdr	*next;
 	int			i;
 
-	printf("\n-----------------------\n");
-	printf("  PHDR CAVE GATHERING  \n");
-	printf("-----------------------\n\n");
+	print_cave_gathering_title();
 	i = -1;
 	while ((curr = get_phdr_from_array(packer, ++i)))
 	{
@@ -266,16 +274,14 @@ void		cave_gathering_phdr(t_packer *packer)
 			}
 		}
 	}
-	printf("\n\n");
 	print_cave_gathering_legend();
-	printf("\n");
 }
 
 void	cave_gathering(t_packer *packer)
 {
 	//TODO: return error
-	// not_a_state_machine(packer);
+	not_a_state_machine(packer);
 	// Assumption packer->phdr_array is sorted by ascending offset, and then by descending filesize.
 	cave_gathering_phdr(packer);
-	// exit(0);
+	exit(0);
 }

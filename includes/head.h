@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/05/01 18:51:32 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/01 23:54:54 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ extern int debug_level;
 typedef enum	e_state
 {
 	// Working = 1,
-	NONE,
+	NORMAL,
 	OVERLAPPED,
 	SUPERPOSED,
 	CONTAINED,
@@ -86,7 +86,9 @@ typedef struct	s_state
 	uint32_t	index;
 	t_estate	state;
 	uint8_t		error;
-	uint8_t		end;
+	uint8_t		exit_parent;
+	uint8_t		loop;
+	size_t		size;
 }				t_state;
 
 typedef struct	s_zone
@@ -140,6 +142,7 @@ typedef struct	s_packer
 	size_t			new_e_entry;
 	size_t			sacred_memory_size;
 	uint8_t			strategy;
+	uint8_t			print_phdr_gather;
 	// t_stat		stat;
 
 	uint64_t		size;
