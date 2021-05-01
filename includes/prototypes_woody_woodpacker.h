@@ -72,6 +72,8 @@ void		logging_recursive(const char* fmt, ...);
 void		logging_set_level(int level);
 int			main(int ac, char **av);
 void		make_array_of_arrays(t_packer *packer);
+uint8_t		next_state(t_packer *packer, t_state *st);
+void		not_a_state_machine(t_packer *packer);
 int8_t		parse_elf(t_packer *packer);
 uint8_t		parse_elf_check_phdr(t_packer *packer);
 uint8_t		parse_elf_check_shdr(t_packer *packer, t_pheader *t_pheader);
@@ -84,6 +86,7 @@ void		prepare_last_segment_strategy(t_packer *packer,
 void		print_cave_gathering_legend(void);
 void		print_cave_phdr(t_packer *packer, Elf64_Phdr *a);
 void		print_cave_size(Elf64_Phdr *a, Elf64_Phdr *b, t_packer *packer);
+void		print_cave_size_dos(Elf64_Phdr *a, Elf64_Phdr *b, t_packer *packer);
 void		print_dlist(t_dlist *dl);
 int8_t		print_error(char *self_path, char *error);
 int			print_phdr_contain(t_packer *packer, int i);

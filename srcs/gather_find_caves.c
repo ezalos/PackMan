@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/10 21:17:59 by ezalos            #+#    #+#             */
-/*   Updated: 2021/04/15 17:24:45 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/01 17:49:08 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,9 +142,7 @@ void		print_cave_size(Elf64_Phdr *a, Elf64_Phdr *b, t_packer *packer)
 
 	long long	size;
 	char		*color;
-	Elf64_Phdr	*quest;
 
-	(void)quest;
 	if (!a || !b)
 		return;
 	if (is_phdr_contained(b, a))
@@ -277,4 +275,7 @@ void	cave_gathering(t_packer *packer)
 {
 	// Assumption packer->phdr_array is sorted by ascending offset, and then by descending filesize.
 	cave_gathering_phdr(packer);
+	//TODO: return error
+	not_a_state_machine(packer);
+	exit(0);
 }

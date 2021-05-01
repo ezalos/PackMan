@@ -6,7 +6,7 @@
 /*   By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/18 15:14:47 by ezalos            #+#    #+#             */
-/*   Updated: 2021/02/18 17:35:1 by erkirsabl        ###   ########.fr       */
+/*   Updated: 2021/04/19 19:19:49 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ ssize_t		chirurgy(t_packer *packer)
 	}
 	logging("\n*** %s: Solving injection\n", __func__);
 
-	packer->strategy = 0;
+	packer->strategy = 2;
 	while (packer->strategy < NB_STRAT)
 	{
 		logging("\n*** %s: SOLVE BYTECODE: trying start %d\n", __func__, packer->strategy);

@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/04/16 17:52:10 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/04/22 00:07:54 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,29 @@ extern int debug_level;
 # define OFFSET_CALL_KEY_SCHED	0x33
 # define OFFSET_CALL_CYPHER		(0x32 + 8)
 # define OFFSET_CALL_FIND_ABS_ADDR 0x18
+
+typedef enum	e_state
+{
+	// Working = 1,
+	NONE,
+	OVERLAPPED,
+	SUPERPOSED,
+	CONTAINED,
+}				t_estate;
+
+# define CAVE_GATHER_MAX_PARENT	100
+
+typedef struct	s_state
+{
+	Elf64_Phdr	*parent[CAVE_GATHER_MAX_PARENT];
+	Elf64_Phdr	*curr;
+	Elf64_Phdr	*next;
+	uint32_t	depth;
+	uint32_t	index;
+	t_estate	state;
+	uint8_t		error;
+	uint8_t		end;
+}				t_state;
 
 typedef struct	s_zone
 {
