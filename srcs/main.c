@@ -19,6 +19,7 @@ int			main(int ac, char **av)
 	if (ac < 2)
 		return (print_usage(av[0]));
 
+	packer.print_phdr_gather = TRUE;
 	//TODO: Free all at end && waterfall of if not failure
 	if (FAILURE == init(&packer, av))
 		return (EXIT_FAILURE);
