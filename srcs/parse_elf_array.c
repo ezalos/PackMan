@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/10 21:19:30 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/11 11:59:52 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/01 19:07:23 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,9 @@ void	make_array_of_arrays(t_packer *packer)
 				exit(EXIT_FAILURE);
 			}
 		}
-		tree_free(packer->phdr_array[i]->shdr_tree, rbt_keep_content);
+		// TODO: why rbt_keep_content ? -> might make a leak
+		// might need to become : rbt_free_content has been put in place
+		tree_free(packer->phdr_array[i]->shdr_tree, rbt_free_content);
 		packer->phdr_array[i]->shdr_tree = NULL;
 	}
 }
