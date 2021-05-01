@@ -18,7 +18,7 @@ void	make_array_of_arrays(t_packer *packer)
 
 	if (NULL == (packer->phdr_array = (t_pheader **)tree_to_array(packer->phdr_tree)))
 	{
-		printf("ERROR: Tree_to_array phdr\n");
+		print_error(packer->self_path, MALLOC_ERROR);
 		exit(EXIT_FAILURE);
 	}
 	tree_free(packer->phdr_tree, rbt_keep_content);
@@ -32,7 +32,7 @@ void	make_array_of_arrays(t_packer *packer)
 		{
 			if (packer->phdr_array[i]->shdr_tree)
 			{
-				printf("ERROR: Tree_to_array shdr\n");
+				print_error(packer->self_path, MALLOC_ERROR);
 				exit(EXIT_FAILURE);
 			}
 		}
