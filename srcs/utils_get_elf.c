@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/16 17:12:56 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/01 21:30:38 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/02 00:07:14 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,3 +72,25 @@ Elf64_Phdr *get_program_header(t_packer *packer, uint32_t index)
     return phdr;
 }
 
+Elf64_Phdr	*get_phdr_from_array(t_packer *packer, int i)
+{
+	if (packer->phdr_array[i])
+		return packer->phdr_array[i]->phdr;
+	return NULL;
+}
+
+t_pheader	*find_t_pheader_from_phdr(t_packer *packer, Elf64_Phdr *a)
+{
+	t_pheader	*the_choosen_one;
+	int i;
+
+	the_choosen_one = NULL;
+	if (packer->phdr_array)
+	{
+		i = -1;
+		while (packer->phdr_array[++i])
+			if (packer->phdr_array[i]->phdr == a)
+				the_choosen_one = packer->phdr_array[i];
+	}
+	return (the_choosen_one);
+}

@@ -11,10 +11,10 @@ ssize_t		bytecode_inject(t_packer *packer,
 			t_zone *zone,
 			t_dlist *inst);
 void		calcul_size(t_packer *packer, t_state *st);
+void		calcul_size(t_packer *packer, t_state *st);
 uint8_t		can_i_write(t_packer *packer, t_zone *zone, t_btc *inst);
 uint8_t		case_exit_parent(t_state *st);
-void		cave_gathering(t_packer *packer);
-void		cave_gathering_phdr(t_packer *packer);
+uint8_t		cave_gathering(t_packer *packer);
 void		change_endian(void *data, int size);
 int8_t		check_elf_header(t_packer *packer);
 int8_t		check_sacred_memory_size(t_packer *packer);
@@ -79,7 +79,6 @@ void		logging_set_level(int level);
 int			main(int ac, char **av);
 void		make_array_of_arrays(t_packer *packer);
 uint8_t		next_state(t_packer *packer, t_state *st);
-void		not_a_state_machine(t_packer *packer);
 int8_t		parse_elf(t_packer *packer);
 uint8_t		parse_elf_check_phdr(t_packer *packer);
 uint8_t		parse_elf_check_shdr(t_packer *packer, t_pheader *t_pheader);
@@ -92,10 +91,8 @@ void		prepare_last_segment_strategy(t_packer *packer,
 void		print_cave_gathering_legend(void);
 void		print_cave_gathering_title(void);
 void		print_cave_phdr(t_packer *packer, Elf64_Phdr *a);
-void		print_cave_size(Elf64_Phdr *a, Elf64_Phdr *b, t_packer *packer);
 void		print_dlist(t_dlist *dl);
 int8_t		print_error(char *self_path, const char *fmt, ...);
-int			print_phdr_contain(t_packer *packer, int i);
 void		print_spaces(int nb);
 void		print_state_machine(t_packer *packer, t_state *st);
 int8_t		print_usage(char *self_path);
