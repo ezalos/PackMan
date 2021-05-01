@@ -19,6 +19,7 @@ int			main(int ac, char **av)
 	if (ac < 2)
 		return (print_usage(av[0]));
 
+	//TODO: Free all at end && waterfall of if not failure
 	if (FAILURE == init(&packer, av))
 		return (EXIT_FAILURE);
 		
@@ -31,7 +32,16 @@ int			main(int ac, char **av)
 	if (FAILURE == save_woody(&packer))
 		return (EXIT_FAILURE);
 
-	// TODO unmap
-
 	return (EXIT_SUCCESS);
 }
+
+
+// TODO a free:
+// btc + btc_args (free_btc)
+// caves
+// to_crypt
+// **phdr_array
+// **shdr_array
+// a l'interieur du t_pheader, le sheader tree
+// *phdr_tree ??
+// munmap

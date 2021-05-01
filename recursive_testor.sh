@@ -30,6 +30,7 @@ test_ret()
 		echo $yellow "TESTOR--> Normal ret" $reset
 	else
 		echo $yellow "TESTOR--> Weird, ret_val is unexpected" $reset
+		exit
 	fi
 
 }

@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/19 16:13:04 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 23:35:21 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/01 18:27:55 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,11 @@ void 	parse_print(t_packer *packer)
 
 int8_t	parse_elf(t_packer *packer)
 {
+	if (is_secure_access(packer->size, ((Elf64_Ehdr *)packer->content)->e_shoff, sizeof(Elf64_Shdr) * ((Elf64_Ehdr *)packer->content)->e_shnum))
+	{
+		print_error(packer->self_path, FILE_FORMAT_ERROR);
+		return (FAILURE);
+	}
 	logging("*** %s Constructing phdr tree\n", __func__);
 	packer->phdr_tree = construct_rbt_phdr(packer);
 	if (packer->phdr_tree)

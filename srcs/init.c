@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/25 23:16:07 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 23:16:19 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/01 18:40:58 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,10 @@ int8_t		access_file(t_packer *packer, char *file)
 	if ((fd = open(file, O_RDONLY)) < 0)
 		return (print_error(packer->self_path, strerror(errno)));
 	if ((size = lseek(fd, 0L, SEEK_END)) == -1)
+	{
+		close(fd);
 		return (print_error(packer->self_path, strerror(errno)));
+	}
 	packer->size = size;
 	if ((packer->content = (uint8_t *)mmap(0,
 				(size_t)packer->size,
@@ -69,6 +72,7 @@ int8_t		init(t_packer *packer, char **av)
 	packer->out = NAME_OUT_PACKER;
 	if (FAILURE == access_file(packer, av[1]))
 		return (FAILURE);
+	// munmap
 	if (FAILURE == check_elf_header(packer))
 		return (FAILURE);
 	if (FAILURE == check_sacred_memory_size(packer))

@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_elf.c                                          :+:      :+:    :+:   */
+/*   utils_get_elf.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/16 17:12:56 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/08 13:50:28 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/01 18:40:57 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
 
-char *get_sec_name(t_packer *packer, Elf64_Shdr *shdr)
+char		*get_sec_name(t_packer *packer, Elf64_Shdr *shdr)
 {
     Elf64_Ehdr *elf;
     Elf64_Shdr *shdr_tab;
@@ -26,7 +26,7 @@ char *get_sec_name(t_packer *packer, Elf64_Shdr *shdr)
     return NULL;
 }
 
-Elf64_Shdr *get_section_header(t_packer *packer, uint32_t index)
+Elf64_Shdr	*get_section_header(t_packer *packer, uint32_t index)
 {
     Elf64_Ehdr *elf;
     Elf64_Shdr *shdr;

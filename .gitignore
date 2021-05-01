@@ -4,6 +4,5 @@ peda
 peda-session*
 libft/test.c
 woody_woodpacker
-*.out
 checksec.sh
 dump*

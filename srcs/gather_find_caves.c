@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/10 21:17:59 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/01 17:49:08 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/01 18:00:33 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -273,9 +273,9 @@ void		cave_gathering_phdr(t_packer *packer)
 
 void	cave_gathering(t_packer *packer)
 {
+	//TODO: return error
+	// not_a_state_machine(packer);
 	// Assumption packer->phdr_array is sorted by ascending offset, and then by descending filesize.
 	cave_gathering_phdr(packer);
-	//TODO: return error
-	not_a_state_machine(packer);
-	exit(0);
+	// exit(0);
 }

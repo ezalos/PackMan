@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/14 16:36:22 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/04/16 17:52:28 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/01 18:10:46 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void		update_phdr_addr(t_packer *packer, int64_t offset)
 	{
 		zone = (t_zone*)(curs->data);
 		zone->phdr = (Elf64_Phdr*)((size_t)zone->phdr + offset);
+		curs = curs->next;
 	}
 }
 
