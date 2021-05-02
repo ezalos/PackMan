@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/05/01 23:54:54 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/02 10:17:15 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,17 @@ extern int debug_level;
 **	ERROR MANAGEMENT
 */
 
-# define NO_PHDR_IN_BINARY			"The file does not possess any phdr"
-# define FILE_NOT_ELF_ERROR			"The file is not of type ELF"
-# define FILE_NOT_64_ERROR			"The file architecture is not x86_64"
-# define FILE_BIG_ENDIAN_ERROR		"The file is big endian"
-# define FILE_NOT_EXECUTABLE_ERROR	"The file is not executable"
-# define FILE_FORMAT_ERROR			"The file is malformed or truncated"
+# define NO_PHDR_IN_BINARY					"The file does not possess any phdr"
+# define FILE_NOT_ELF_ERROR					"The file is not of type ELF"
+# define FILE_NOT_64_ERROR					"The file architecture is not x86_64"
+# define FILE_BIG_ENDIAN_ERROR				"The file is big endian"
+# define FILE_NOT_EXECUTABLE_ERROR			"The file is not executable"
+# define FILE_FORMAT_ERROR					"The file is malformed or truncated"
+# define SEGMENT_CONTENT_OUTSIDE_FILE		"Phdr n*%d has file_size out of file"
+# define SEGMENT_MEMSIZE_SMALLER_FILE_SIZE	"Phdr n*%d has file_size > mem_size"
+# define LOADABLE_SEGMENT_CONTAINS_LOAD		"Phdr loadable segment %d contains loadable segment %d"
+# define LOADABLE_SEGMENT_SUPERPOSED		"Phdr %d and %d are superposed" 
+# define LOADABLE_SEGMENT_OVERLAP			"Phdr %d and %d overlap each other" 
 
 # define MALLOC_ERROR				"Malloc returned NULL"
 
