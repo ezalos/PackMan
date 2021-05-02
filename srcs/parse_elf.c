@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/19 16:13:04 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/01 21:30:29 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/02 10:29:50 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,9 +60,6 @@ int8_t	parse_elf(t_packer *packer)
 	make_array_of_arrays(packer);
 	logging("\n*** %s: Checking file memory referenced by phdr & shdr\n", __func__);
 	if (FALSE == parse_elf_check_phdr(packer))
-	{
-		print_error(packer->self_path, FILE_FORMAT_ERROR);
 		return (FAILURE);
-	}
 	return (SUCCESS);
 }

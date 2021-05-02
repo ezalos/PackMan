@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/25 22:28:24 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/02 10:20:22 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/02 10:29:37 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,9 @@ uint8_t		parse_elf_check_shdr(t_packer *packer, t_pheader *t_pheader)
 	while (t_pheader->shdr_array && t_pheader->shdr_array[++i])
 	{
 		shdr = t_pheader->shdr_array[i]->shdr;
-		if (shdr->sh_offset + shdr->sh_size > packer->size)
+		if (FALSE == is_secure_access(packer->size, shdr->sh_offset, shdr->sh_size))
 		{
-			// dprintf(2, "ERROR: shdr %d refernce memory out of file\n",
-			// 		get_section_header_index(packer, shdr));
-			print_error(packer->self_path, FILE_FORMAT_ERROR);
+			print_error(packer->self_path, SECTION_CONTENT_OUTSIDE_FILE, get_section_header_index(packer, shdr));
 			return (FALSE);
 		}
 	}
@@ -72,7 +70,7 @@ uint8_t		parse_elf_check_phdr(t_packer *packer)
 	while (packer->phdr_array && packer->phdr_array[++i])
 	{
 		phdr = packer->phdr_array[i]->phdr;
-		if (phdr->p_filesz + phdr->p_offset > packer->size)
+		if (FALSE == is_secure_access(packer->size, phdr->p_offset, phdr->p_filesz))
 		{
 			print_error(packer->self_path, SEGMENT_CONTENT_OUTSIDE_FILE, get_program_header_index(packer, phdr));
 			return (FALSE);
