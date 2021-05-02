@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   gather_find_cave_state.c                           :+:      :+:    :+:   */
+/*   gather_find_caves.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 22:34:42 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/02 00:08:25 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/02 10:39:26 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,10 @@ uint8_t		cave_gathering(t_packer *packer)
 		if (is_phdr_overlap(st->curr, st->next))
 		{
 			st->error = TRUE;
+			print_error(packer->self_path,
+					LOADABLE_SEGMENT_SUPERPOSED,
+					get_program_header_index(packer, st->curr),
+					get_program_header_index(packer, st->next));
 			st->state = OVERLAPPED;
 		}
 		else if (is_phdr_superposed(st->curr, st->next))
@@ -54,8 +58,12 @@ uint8_t		cave_gathering(t_packer *packer)
 		else if (is_phdr_contained(st->curr, st->next))
 		{
 			st->depth += 1;
-			//if (st.depth >= CAVE_GATHER_MAX_PARENT)
-			//	TODO
+			if (st->depth >= CAVE_GATHER_MAX_PARENT)
+			{
+				st->error = TRUE;
+				print_error(packer->self_path, LIMIT_PHDR_RECURSIVE_CONTAIN, st->depth);
+				return (st->error);
+			}
 			st->parent[st->depth] = st->curr;
 			st->state = CONTAINED;
 		}

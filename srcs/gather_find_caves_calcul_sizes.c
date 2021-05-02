@@ -6,39 +6,44 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/10 21:17:59 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/02 00:07:10 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/02 11:28:28 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
 
-long long		phdr_space_between(Elf64_Phdr *a, Elf64_Phdr *b)
+size_t		phdr_space_between(Elf64_Phdr *a, Elf64_Phdr *b)
 {
-	long long	a_end;
-	long long	b_start;
-	long long	size;
+	size_t		a_end;
+	size_t		b_start;
+	size_t		size;
 
 	if (!b || !a)
 		return 0;
 
 	size = 0;
-	b_start = b->p_offset;
-	a_end = a->p_offset + a->p_memsz;
+	b_start = b->p_vaddr;
+	a_end = a->p_vaddr + a->p_memsz;
 	if (b_start >= a_end)
 		size = b_start - a_end;
 	return size;
 }
 
-long long		phdr_space_between_ends(Elf64_Phdr *b, Elf64_Phdr *a)
+size_t		phdr_space_between_ends(Elf64_Phdr *b, Elf64_Phdr *a)
 {
-	long long	size;
+	size_t		size;
 
 	// b is last contained & a is parent
+	//		A[			B[ ] -> X	]
+	// B] should be smaller than A]
+	// A] - B] > 0
+	// SIZE = A] - B]
+	
 	if (!b || !a)
 		return 0;
 	size = 0;
-	if ((b->p_offset + b->p_memsz) >= (a->p_offset + a->p_memsz))
-		size = (b->p_offset + b->p_memsz) - (a->p_offset + a->p_memsz);
+	if ((b->p_offset + b->p_memsz) <= (a->p_offset + a->p_memsz))
+		size = (a->p_offset + a->p_memsz) - (b->p_offset + b->p_memsz);
 	return size;
 }
 
@@ -74,9 +79,11 @@ void	calcul_size(t_packer *packer, t_state *st)
 	}
 	else if (st->exit_parent == TRUE)
 	// This size is printed in magenta
+	// We are not in the loop
 	// BEFORE
 	{
-		st->size = phdr_space_between_ends(st->parent[st->depth], st->curr);
+		// Could have been interesting to also get the negative size.
+		st->size = phdr_space_between_ends(st->curr, st->parent[st->depth]);
 		find_t_pheader_from_phdr(packer, st->parent[st->depth])->available_size = st->size;
 	}
 }

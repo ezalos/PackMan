@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/05/02 10:26:50 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/02 10:37:05 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ extern int debug_level;
 # define LOADABLE_SEGMENT_SUPERPOSED		"Phdr %d and %d are superposed" 
 # define LOADABLE_SEGMENT_OVERLAP			"Phdr %d and %d overlap each other" 
 # define SECTION_CONTENT_OUTSIDE_FILE		"Shdr %d references memory out of file"
+# define LIMIT_PHDR_RECURSIVE_CONTAIN		"File contains too many recursively contained phdr, stopping at : %d"
 
 # define MALLOC_ERROR				"Malloc returned NULL"
 
@@ -81,7 +82,7 @@ typedef enum	e_state
 	CONTAINED,
 }				t_estate;
 
-# define CAVE_GATHER_MAX_PARENT	100
+# define CAVE_GATHER_MAX_PARENT	10000
 
 typedef struct	s_state
 {
