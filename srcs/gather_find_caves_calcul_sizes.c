@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/10 21:17:59 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/02 11:28:28 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/02 11:29:26 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ size_t		phdr_space_between(Elf64_Phdr *a, Elf64_Phdr *b)
 		return 0;
 
 	size = 0;
-	b_start = b->p_vaddr;
-	a_end = a->p_vaddr + a->p_memsz;
+	b_start = b->p_offset;
+	a_end = a->p_offset + a->p_memsz;
 	if (b_start >= a_end)
 		size = b_start - a_end;
 	return size;
