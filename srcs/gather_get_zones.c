@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/15 17:54:59 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/04/15 17:30:14 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/03 18:50:35 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,13 @@ void			data_filler_zone_to_crypt(t_pheader *hdr, t_zone *zone)
 	zone->offset = hdr->phdr->p_offset;
 	zone->vaddr = hdr->phdr->p_vaddr;
 	zone->size = hdr->phdr->p_filesz;
-	zone->phdr = hdr->phdr; // probablement inutile dans le cas des zones a crypter
+	zone->phdr = hdr->phdr;
 }
 
 void			data_filler_cave(t_pheader *hdr, t_zone *zone)
 {
-	// zone->offset = hdr->phdr->p_offset + hdr->phdr->p_filesz;
 	zone->offset = hdr->phdr->p_offset + hdr->phdr->p_memsz;
-	//TODO: vaddr keep count of alignement
-	// zone->vaddr = hdr->phdr->p_vaddr + hdr->phdr->p_filesz; // hesitation avec + p_memsz
-	zone->vaddr = hdr->phdr->p_vaddr + hdr->phdr->p_memsz; // hesitation avec + p_memsz
+	zone->vaddr = hdr->phdr->p_vaddr + hdr->phdr->p_memsz;
 	zone->size = hdr->available_size;
 	zone->phdr = hdr->phdr;
 }
