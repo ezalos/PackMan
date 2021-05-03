@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/28 20:12:38 by ezalos            #+#    #+#             */
-/*   Updated: 2021/04/14 16:43:19 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/03 19:35:35 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,45 +35,40 @@ void		set_call_cypher_args(t_btc *inst, t_zone *zone)
 	inst->args->crypt_plaintext_size = zone->size;
 }
 
-t_dlist		*blueprint_minimal(void)
-{
-	t_dlist *blueprint;
-
-	blueprint = NULL;
-	blueprint_add(&blueprint, BTC_DEF_BEGIN);
-	blueprint_add(&blueprint, BTC_DEF_WRITE);
-	blueprint_add(&blueprint, BTC_DEF_END);
-	blueprint_add(&blueprint, BTC_CALL_JMP);
-	return (blueprint);
-}
-
 t_dlist		*blueprint_creation(t_packer *packer)
 {
 	t_dlist *blueprint;
 	t_dlist	*inst;
 	t_list	*to_crypt;
 
-	// (void)packer;
 	to_crypt = packer->to_crypt;
 	blueprint = NULL;
-	blueprint_add(&blueprint, BTC_DEF_FIND_ABS_VADDR);
-	blueprint_add(&blueprint, BTC_DEF_INIT_PERM);
-	blueprint_add(&blueprint, BTC_DEF_KEY_SCHED);
-	blueprint_add(&blueprint, BTC_DEF_CYPHER);
-	blueprint_add(&blueprint, BTC_DEF_BEGIN);
-	// blueprint_add(&blueprint, BTC_CALL_MPROTECT);
-	blueprint_add(&blueprint, BTC_DEF_CYPHER_PREPARE);
+	if (NULL == blueprint_add(&blueprint, BTC_DEF_FIND_ABS_VADDR))
+		exit(FAILURE == print_error(packer->self_path, MALLOC_ERROR) ? EXIT_FAILURE : 0);
+	if (NULL == blueprint_add(&blueprint, BTC_DEF_INIT_PERM))
+		exit(FAILURE == print_error(packer->self_path, MALLOC_ERROR) ? EXIT_FAILURE : 0);
+	if (NULL == blueprint_add(&blueprint, BTC_DEF_KEY_SCHED))
+		exit(FAILURE == print_error(packer->self_path, MALLOC_ERROR) ? EXIT_FAILURE : 0);
+	if (NULL == blueprint_add(&blueprint, BTC_DEF_CYPHER))
+		exit(FAILURE == print_error(packer->self_path, MALLOC_ERROR) ? EXIT_FAILURE : 0);
+	if (NULL == blueprint_add(&blueprint, BTC_DEF_BEGIN))
+		exit(FAILURE == print_error(packer->self_path, MALLOC_ERROR) ? EXIT_FAILURE : 0);
+	if (NULL == blueprint_add(&blueprint, BTC_DEF_CYPHER_PREPARE))
+		exit(FAILURE == print_error(packer->self_path, MALLOC_ERROR) ? EXIT_FAILURE : 0);
 	while (to_crypt != NULL)
 	{
-		inst = blueprint_add(&blueprint, BTC_CALL_CYPHER);
+		if (NULL == (inst = blueprint_add(&blueprint, BTC_CALL_CYPHER)))
+			exit(FAILURE == print_error(packer->self_path, MALLOC_ERROR) ? EXIT_FAILURE : 0);
 		set_call_cypher_args(((t_btc *)inst->data), (t_zone *)to_crypt->data);
 		to_crypt = to_crypt->next;
-		//TODO remove line under
 		to_crypt = NULL;
 	}
-	blueprint_add(&blueprint, BTC_DEF_WRITE);
-	blueprint_add(&blueprint, BTC_DEF_END);
-	blueprint_add(&blueprint, BTC_CALL_JMP);
+	if (NULL == blueprint_add(&blueprint, BTC_DEF_WRITE))
+		exit(FAILURE == print_error(packer->self_path, MALLOC_ERROR) ? EXIT_FAILURE : 0);
+	if (NULL == blueprint_add(&blueprint, BTC_DEF_END))
+		exit(FAILURE == print_error(packer->self_path, MALLOC_ERROR) ? EXIT_FAILURE : 0);
+	if (NULL == blueprint_add(&blueprint, BTC_CALL_JMP))
+		exit(FAILURE == print_error(packer->self_path, MALLOC_ERROR) ? EXIT_FAILURE : 0);
 	return (blueprint);
 }
 

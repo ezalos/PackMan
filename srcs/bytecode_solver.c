@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/04/17 02:07:43 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/03 19:42:38 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,6 +212,7 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 			// logging_recursive("Bef\n");
 			// print_dlist(inst);
 			// print_dlist(inst->prev);
+			// TODO: malloc error
 			jmp = ft_dlist_new(create_btc(BTC_CALL_JMP));
 			ft_dlist_insert_next_wesh(inst->prev, jmp);
 			// logging_recursive("Jump\n");

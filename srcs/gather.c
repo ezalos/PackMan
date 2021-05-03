@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/25 23:23:07 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/03 18:57:24 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/03 19:16:23 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ void		zones_add_rights_to_used_caves(t_list *zone, Elf64_Word rights)
 		if (((t_zone *)zone->data)->used)
 			((t_zone *)zone->data)->phdr->p_flags |= rights;
 		zone = zone->next;
+		logging("Just added rights to cave\n");
 	}
 }
 
@@ -85,22 +86,12 @@ int8_t		gather_all_infos(t_packer *packer)
 
 	// packer->to_crypt->next = NULL;
 	respect_sacred_memory_size(packer, &(packer->to_crypt));
+	// We had rights now, because it imply the 3rd startegy
+	// when we neeed to reallocate a bigger memory size.
+	// Because we can reference same zone twice between caves and to_crypt
+	// And our method of memory reference update cant work if it is the
+	// So we need to not have to use to_crypt after new mmap, making
+	// rights update the right thing to do now. 
 	zones_add_rights_to_crypt(packer->to_crypt, PF_W);
-	//just for test purpose:
-	// t_list *curs;
-
-	// curs = packer->to_crypt;
-	// while (curs)
-	// {
-	// 	((t_zone*)(curs->data))->phdr->p_flags = 7;
-	// 	curs = curs->next;
-	// }
-	// curs = packer->caves;
-	// while (curs)
-	// {
-	// 	((t_zone*)(curs->data))->phdr->p_flags = 7;
-	// 	curs = curs->next;
-	// }
-	// ((t_zone*)(packer->to_crypt->data))->phdr->p_flags = 7;
 	return (SUCCESS);
 }

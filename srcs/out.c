@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/25 23:16:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 23:16:54 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/03 19:20:55 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ int8_t		save_woody(t_packer *packer)
 {
 	int fd;
 
+	// TODO: say the key
 	if (-1 == (fd = open(packer->out, O_WRONLY | O_CREAT, 0777)))
 		return (FAILURE);
 	if (write(fd, packer->content, packer->size) != (ssize_t)packer->size)
