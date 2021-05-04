@@ -12,7 +12,6 @@
 
 #include "head.h"
 
-// TODO: propagate malloc error
 t_dlist		*blueprint_add(t_dlist **blueprint, int btc_type)
 {
 	t_dlist *inst;
@@ -84,10 +83,3 @@ size_t		get_blueprint_inject_size(t_dlist *blueprint)
 	}
 	return (size);
 }
-
-// TODOS
-// 	Create 1 BTC_CALL_CYPHER by zone_to_crypt
-// 		Associate the newly created BTC_CALL_CYPHER args with his zone
-// 	Update args of DEF_CYPHER funcs when goign down recursive
-// 	Update payload with args
-
