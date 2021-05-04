@@ -76,11 +76,7 @@ void	update_args(t_packer *packer, t_btc *inst, t_zone *zone, ssize_t ret)
 		logging_recursive("init_key_sched = %lx\n", inst->args->crypt_func_key_sched_vaddr);
 		logging_recursive("zone->vaddr = %lx\n", zone->vaddr);
 
-		// inst->args->jmp_init_perm = 0xFFFFFF3B;
-		// inst->args->jmp_key_sched = 0xFFFFFF3C;
-
 		inst->args->crypt_key = (uint8_t*)packer->key;
-		// Nothing
 	}
 	else if (inst->type == BTC_CALL_CYPHER)
 	{
@@ -117,9 +113,5 @@ void	update_args(t_packer *packer, t_btc *inst, t_zone *zone, ssize_t ret)
 	{
 		// Nothing
 	}
-	// else
-	// {
-	// 	dprintf(2, "Error: Unknown btc type\n");
-	// }
 	return;
 }
