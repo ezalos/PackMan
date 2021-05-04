@@ -140,7 +140,7 @@ typedef struct	s_packer
 	char 			*self_path;
 	char 			*out;
 	uint8_t			*content;
-	t_zone			z_text;
+	t_zone			z_text; // TODO: what is it ? should we remove it ?
 	t_rbt			*phdr_tree;
 	t_pheader		**phdr_array;
 	t_list			*to_crypt;  //list of t_zones we want to crypt

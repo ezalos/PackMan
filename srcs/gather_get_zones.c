@@ -62,8 +62,7 @@ t_list			*get_zones(t_packer *packer, Elf64_Word type, Elf64_Word flags,
 		{
 			if (!(zone = create_zone(hdr, data_filler)))
 			{
-				print_error(packer->self_path, strerror(errno));
-				//TODO: fonction qui free tout
+				print_error(packer->self_path, MALLOC_ERROR);
 				exit(EXIT_FAILURE);
 			}
 			ft_list_append(&zones, zone);

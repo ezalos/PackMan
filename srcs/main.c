@@ -24,25 +24,13 @@ int			main(int ac, char **av)
 
 	ft_bzero(&packer, sizeof(t_packer));
 	packer.print_phdr_gather = TRUE;
-	//TODO: Free all at end && waterfall of if not failure
-	
 
 	if ((ret = init(&packer, av)) != FAILURE)
 		if ((ret = gather_all_infos(&packer)) != FAILURE)
 			if ((ret = chirurgy(&packer)) != FAILURE)
 				ret = save_woody(&packer);
 
+	free_all(&packer);
 
 	return (ret == FAILURE ? EXIT_FAILURE : EXIT_SUCCESS);
 }
-
-
-// TODO a free:
-// btc + btc_args (free_btc)
-// caves
-// to_crypt
-// **phdr_array
-// **shdr_array
-// a l'interieur du t_pheader, le sheader tree
-// *phdr_tree ??
-// munmap
