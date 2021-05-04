@@ -17,25 +17,23 @@
 int			main(int ac, char **av)
 {
 	t_packer	packer;
+	int			ret;
 
 	if (ac < 2)
 		return (print_usage(av[0]));
 
+	ft_bzero(&packer, sizeof(t_packer));
 	packer.print_phdr_gather = TRUE;
 	//TODO: Free all at end && waterfall of if not failure
-	if (FAILURE == init(&packer, av))
-		return (EXIT_FAILURE);
-		
-	if (FAILURE == gather_all_infos(&packer))
-		return (EXIT_FAILURE);
+	
 
-	if (FAILURE == chirurgy(&packer))
-		return (EXIT_FAILURE);
+	if ((ret = init(&packer, av)) != FAILURE)
+		if ((ret = gather_all_infos(&packer)) != FAILURE)
+			if ((ret = chirurgy(&packer)) != FAILURE)
+				ret = save_woody(&packer);
 
-	if (FAILURE == save_woody(&packer))
-		return (EXIT_FAILURE);
 
-	return (EXIT_SUCCESS);
+	return (ret == FAILURE ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
 

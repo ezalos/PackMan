@@ -16,10 +16,16 @@ int8_t		save_woody(t_packer *packer)
 {
 	int fd;
 
-	// TODO: say the key
 	if (-1 == (fd = open(packer->out, O_WRONLY | O_CREAT, 0777)))
+	{
+		print_error(packer->self_path, strerror(errno));
 		return (FAILURE);
+	}
 	if (write(fd, packer->content, packer->size) != (ssize_t)packer->size)
+	{
+		print_error(packer->self_path, strerror(errno));
 		return (FAILURE);
+	}
+	printf("key_value: %zx\n", *(uint64_t*)(&(packer->key)));
 	return (SUCCESS);
 }
