@@ -30,9 +30,6 @@ void		update_phdr_addr(t_packer *packer, int64_t offset)
 	// attention faire tres attention aux duplications !
 	// si on ne s'occupe que des caves, il faut update les droits des zones to_crypt auparavant
 
-	//TODO: dans l'optique de mofifs ulterieures, mettre a jour t_pheader
-
-
 	t_list	*curs;
 	t_zone	*zone;
 
@@ -47,7 +44,7 @@ void		update_phdr_addr(t_packer *packer, int64_t offset)
 
 void		extend_file(t_packer *packer, size_t extension)
 {
-	uint8_t	*new_content;
+	uint8_t		*new_content;
 
 	if ((new_content = (uint8_t *)mmap(0,
 				(size_t)packer->size + extension,
@@ -61,7 +58,11 @@ void		extend_file(t_packer *packer, size_t extension)
 	}
 	ft_memcpy(new_content, packer->content, packer->size);
 	update_phdr_addr(packer, (int64_t)((size_t)new_content - (size_t)packer->content));
-	//TODO munmap
+	if (munmap(packer->content, packer->size) == -1)
+	{
+		print_error(packer->self_path, strerror(errno));
+		exit(EXIT_FAILURE);
+	}
 	packer->content = new_content;
 	packer->size += extension;
 }
