@@ -12,8 +12,6 @@
 
 #include "head.h"
 
-// TODO: gestion des arguments -> getenv
-
 int			main(int ac, char **av)
 {
 	t_packer	packer;
