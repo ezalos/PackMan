@@ -55,6 +55,8 @@ extern int debug_level;
 # define LOADABLE_SEGMENT_CONTAINS_LOAD		"Phdr loadable segment %d contains loadable segment %d"
 # define LOADABLE_SEGMENT_SUPERPOSED		"Phdr %d and %d are superposed" 
 # define LOADABLE_SEGMENT_OVERLAP			"Phdr %d and %d overlap each other" 
+# define NO_EXECUTABLE_SEGMENT				"The file does not contain any loadable executable segment"
+# define NO_LOADABLE_SEGMENT				"The file does not contain any loadable segment"
 # define SECTION_CONTENT_OUTSIDE_FILE		"Shdr %d references memory out of file"
 # define LIMIT_PHDR_RECURSIVE_CONTAIN		"File contains too many recursively contained phdr, stopping at : %d"
 

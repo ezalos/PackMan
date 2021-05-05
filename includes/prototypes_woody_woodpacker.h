@@ -39,6 +39,7 @@ void		debug_recursive(const char* fmt, ...);
 void		extend_file(t_packer *packer, size_t extension);
 t_pheader	*find_t_pheader_from_phdr(t_packer *packer, Elf64_Phdr *a);
 void		free_all(t_packer *packer);
+void		free_data(void *data);
 void		free_btc(t_btc *btc);
 int			ft_memcmp(const void *s1, const void *s2, size_t n);
 void		*ft_memset(void *str, int c, size_t n);

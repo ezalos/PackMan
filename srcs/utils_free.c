@@ -12,7 +12,7 @@
 
 #include "head.h"
 
-static void	free_data(void *data)
+void		free_data(void *data)
 {
 	free(data);
 }
@@ -46,7 +46,7 @@ static void free_phdr_array(t_pheader **phdr_array)
 	free(phdr_array);
 }
 
-void	free_all(t_packer *packer)
+void		free_all(t_packer *packer)
 {
 	ft_list_free(packer->caves, &free_data);
 	ft_list_free(packer->to_crypt, &free_data);
