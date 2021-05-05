@@ -65,14 +65,25 @@ int8_t		check_sacred_memory_size(t_packer *packer)
 	return (SUCCESS);
 }
 
+void		get_conf(t_packer *packer)
+{
+	char	*env;
+	//TODO Louis: faire les confs
+	//getenv renvoie NULL si rien dans l'env, sinon renvoie char *str (qu'il ne faut pas free)
+	env = getenv("EXAMPLE_ENV");
+	if (env && !ft_strcmp(env, "conf"))
+		packer->example_env = 1;
+
+}
+
+
 int8_t		init(t_packer *packer, char **av)
 {
-
+	ft_bzero(packer, sizeof(t_packer));
 	packer->self_path = av[0];
 	packer->out = NAME_OUT_PACKER;
 	if (FAILURE == access_file(packer, av[1]))
 		return (FAILURE);
-	// munmap
 	if (FAILURE == check_elf_header(packer))
 		return (FAILURE);
 	if (FAILURE == check_sacred_memory_size(packer))

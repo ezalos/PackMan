@@ -22,8 +22,7 @@ int			main(int ac, char **av)
 	if (ac < 2)
 		return (print_usage(av[0]));
 
-	ft_bzero(&packer, sizeof(t_packer));
-	packer.print_phdr_gather = TRUE;
+	// packer.print_phdr_gather = TRUE; ==> TODO: a mettre dans la fonction utilisant getenv()
 
 	if ((ret = init(&packer, av)) != FAILURE)
 		if ((ret = gather_all_infos(&packer)) != FAILURE)

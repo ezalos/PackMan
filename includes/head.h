@@ -152,6 +152,7 @@ typedef struct	s_packer
 	size_t			sacred_memory_size;
 	uint8_t			strategy;
 	uint8_t			print_phdr_gather;
+	uint8_t			example_env; //TODO: remove it
 	// t_stat		stat;
 
 	uint64_t		size;
