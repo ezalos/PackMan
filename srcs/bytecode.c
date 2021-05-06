@@ -41,8 +41,13 @@ ssize_t		chirurgy(t_packer *packer)
 		}
 
 		if (FAILURE != (ret = solve_bytecodes(packer, packer->caves, blueprint, TRUE)))
+		{
+			logging("Successful strategy: %d\n", packer->strategy);
 			break ;
+		}
 		packer->strategy += 1;
+		if (packer->strategy == 1)
+			packer->strategy += 1;
 	}
 
 	ft_dlist_free(blueprint, &free_btc);

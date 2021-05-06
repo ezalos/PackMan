@@ -14,7 +14,7 @@
 
 int8_t	is_secure_access(uint64_t file_size, uint64_t offset, uint64_t access_size)
 {
-	if (offset + access_size < offset || offset + access_size >= file_size)
+	if (offset + access_size < offset || offset + access_size > file_size)
 		return (FALSE);
 	return (TRUE);
 }
