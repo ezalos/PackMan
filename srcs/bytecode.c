@@ -14,8 +14,6 @@
 
 // TODO: clean logging + clean algo ?
 
-// TODO: free les blueprints
-
 ssize_t		chirurgy(t_packer *packer)
 {
 	t_dlist	*blueprint;
@@ -46,6 +44,9 @@ ssize_t		chirurgy(t_packer *packer)
 			break ;
 		packer->strategy += 1;
 	}
+
+	ft_dlist_free(blueprint, &free_btc);
+
 	if (ret == FAILURE)
 		return (FAILURE);
 

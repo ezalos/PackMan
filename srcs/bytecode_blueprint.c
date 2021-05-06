@@ -12,6 +12,22 @@
 
 #include "head.h"
 
+t_btc	*create_btc(int type)
+{
+	t_btc *btc;
+	if (!(btc = malloc(sizeof(t_btc))))
+		return (NULL);
+	ft_memset(btc, 0, sizeof(t_btc));
+	ft_memcpy(btc, &bytecode_lib[type], sizeof(t_btc));
+	if (!(btc->args = malloc(sizeof(t_btc_args))))
+	{
+		free(btc);
+		return (NULL);
+	}
+	ft_memset(btc->args, 0, sizeof(t_btc_args));
+	return (btc);
+}
+
 t_dlist		*blueprint_add(t_dlist **blueprint, int btc_type)
 {
 	t_dlist *inst;
