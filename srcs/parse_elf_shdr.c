@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 23:56:07 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/01 21:30:28 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/06 18:01:50 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,7 @@ t_pheader	*get_rbt_phdr_from_shdr(t_rbt *root, Elf64_Shdr *shdr)
 	int i = 0;
 	int tmp = i;
 
-	//TODO: Algorithm complexity is really bad, bc this function is called for every shdr
 	// Average complexity is O(n) = (Nb_shdr)^(log(Nb_phdr) * (Nb_phdr / 2))
-	// printf("T_2_A: %p\n", tree_to_array(root));
 	node = tree_get_node_th(root, &tmp);
 	while (node)
 	{

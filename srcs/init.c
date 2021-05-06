@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/25 23:16:07 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/01 21:30:26 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/06 17:58:02 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,12 +68,24 @@ int8_t		check_sacred_memory_size(t_packer *packer)
 void		get_conf(t_packer *packer)
 {
 	char	*env;
-	//TODO Louis: faire les confs
+	
 	//getenv renvoie NULL si rien dans l'env, sinon renvoie char *str (qu'il ne faut pas free)
-	env = getenv("EXAMPLE_ENV");
-	if (env && !ft_strcmp(env, "conf"))
-		packer->example_env = 1;
-
+	// printf("%s\n", __func__);
+	env = getenv("WOODY_LOG");
+	// printf("env: %s\n", env);
+	if (env)
+	{
+		if (!ft_strcmp(env, "1"))
+			logging_set_level(1);
+		else if (!ft_strcmp(env, "2"))
+			logging_set_level(2);
+		else
+			logging_set_level(0);
+	}
+	env = getenv("WOODY_PHDR");
+	if (env)
+		packer->print_phdr_gather = TRUE;
+	// exit(0);
 }
 
 
@@ -82,6 +94,7 @@ int8_t		init(t_packer *packer, char **av)
 	ft_bzero(packer, sizeof(t_packer));
 	packer->self_path = av[0];
 	packer->out = NAME_OUT_PACKER;
+	get_conf(packer);
 	if (FAILURE == access_file(packer, av[1]))
 		return (FAILURE);
 	if (FAILURE == check_elf_header(packer))
