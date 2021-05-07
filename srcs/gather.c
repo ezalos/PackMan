@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/25 23:23:07 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/06 17:52:43 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/07 13:17:42 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void		zones_add_rights_to_crypt(t_list *zone, Elf64_Word rights)
 	{
 		((t_zone*)zone->data)->phdr->p_flags |= rights;
 		zone = zone->next;
-		logging("Just added rights to zone to crypt\n");
+		logging("*** %s: rights added to zone to crypt\n", __func__);
 	}
 }
 
@@ -59,6 +59,7 @@ void		respect_sacred_memory_size(t_packer *packer, t_list **to_crypt)
 
 int8_t		gather_all_infos(t_packer *packer)
 {
+	logging("\n* GATHER\n");
 	if (TRUE == cave_gathering(packer))
 		return (FAILURE);
 
@@ -76,14 +77,15 @@ int8_t		gather_all_infos(t_packer *packer)
 	// TODO: sinon free a partir de packer->to_crypt->next + next = NULL
 	packer->to_crypt->next = NULL;
 
-	if (debug_level == 2)
+	if (debug_level >= 1)
 	{
-		// print_zones(packer->to_crypt);
+		logging("** %s: Potential insertion zones\n", __func__);
 		print_zones(packer->caves);
 	}
 
 
 	// packer->to_crypt->next = NULL;
+	logging("** %s: Respecting sacred memory\n", __func__);
 	respect_sacred_memory_size(packer, &(packer->to_crypt));
 
 	// Explanation to keep:
@@ -94,6 +96,13 @@ int8_t		gather_all_infos(t_packer *packer)
 	// So we need to not have to use to_crypt after new mmap, making
 	// rights update the right thing to do now.
 	zones_add_rights_to_crypt(packer->to_crypt, PF_W);
+
+	if (debug_level >= 1)
+	{
+		logging("** %s: Adjusted zones to crypt\n", __func__);
+		print_zones(packer->to_crypt);
+	}
+
 	//just for test purpose:
 	// t_list *curs;
 

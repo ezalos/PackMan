@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/25 23:16:07 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/06 17:58:02 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/07 13:21:50 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,9 @@ void		get_conf(t_packer *packer)
 	env = getenv("WOODY_PHDR");
 	if (env)
 		packer->print_phdr_gather = TRUE;
+	env = getenv("WOODY_SAFE");
+	if (env)
+		packer->no_strat_loadable = TRUE;
 	// exit(0);
 }
 
@@ -95,13 +98,14 @@ int8_t		init(t_packer *packer, char **av)
 	packer->self_path = av[0];
 	packer->out = NAME_OUT_PACKER;
 	get_conf(packer);
+	logging("* INIT\n");
 	if (FAILURE == access_file(packer, av[1]))
 		return (FAILURE);
 	if (FAILURE == check_elf_header(packer))
 		return (FAILURE);
 	if (FAILURE == check_sacred_memory_size(packer))
 		return (FAILURE);
-	logging("**SACRED MEMORY SIZE = %lu\n", packer->sacred_memory_size);	
+	logging("** %s: sacred memory size = %lu\n", __func__, packer->sacred_memory_size);	
 	if (FAILURE == parse_elf(packer))
 		return (FAILURE);
 	return (SUCCESS);

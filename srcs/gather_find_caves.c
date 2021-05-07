@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 22:34:42 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/02 10:39:26 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/07 13:16:21 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ uint8_t		cave_gathering(t_packer *packer)
 	t_state		state;
 	t_state		*st = &state;
 
+	logging("** %s: Deducing codecaves\n", __func__);
 	ft_memset(st, 0, sizeof(t_state));
 	if (TRUE == packer->print_phdr_gather)
 		print_cave_gathering_title();

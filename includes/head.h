@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/05/02 10:37:05 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/07 13:21:42 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 # include <sys/mman.h>
 # include <stdarg.h>
 
-# define DEBUG		2
+# define DEBUG		0
 
 extern int debug_level;
 
@@ -151,6 +151,7 @@ typedef struct	s_packer
 	size_t			new_e_entry;
 	size_t			sacred_memory_size;
 	uint8_t			strategy;
+	uint8_t			no_strat_loadable;
 	uint8_t			print_phdr_gather;
 	uint8_t			example_env; //TODO: remove it
 	// t_stat		stat;

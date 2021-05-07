@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/16 17:04:49 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/04/15 17:42:36 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/07 12:00:02 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ void	init_key(uint8_t *key)
 	while (++i < KEY_SIZE)
 	{
 		key[i] = rand();
-		logging("Key[%d] = %02hhx\n", i, key[i]);
 	}
 }
 

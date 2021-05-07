@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 23:56:07 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/06 18:01:50 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/07 13:18:35 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,12 @@ void		construct_rbt_shdr(t_packer *packer)
 		}
 		else
 		{
-			logging("Shdr %2d is orphan:\t%s\n", i, get_sec_name(packer, shdr));
+			logging("Shdr %2d is orphan:\n\t", i);
+			if (debug_level >= 1)
+			{
+				print_section_header(packer, shdr);
+
+			}
 		}
 		shdr = get_section_header(packer, ++i);
 	}

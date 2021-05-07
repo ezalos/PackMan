@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/03 19:42:38 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/07 13:15:52 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ int depth = -1;
 void		update_zone(t_zone *zone, t_btc *inst)
 {
 	// printed boundary is included
-	debug_recursive("%s: zone: %p, inst %p\n", __func__, zone, inst);
 	debug_recursive("%s: Updating zone:\t%s %zu->%zu\n", __func__, btc_to_str(inst), zone->offset, zone->offset + inst->size);
 	zone->offset += inst->size;
 	zone->vaddr += inst->size;
@@ -42,9 +41,7 @@ uint8_t		can_i_write(t_packer *packer, t_zone *zone, t_btc *inst)
 
 	// zone = zone_list->data;
 	valid_zone = FALSE;
-	logging_recursive("%s:\t %zu <= %zu ?\n", __func__, inst->size, zone->size);
-	// print_zone(zone);
-	logging_recursive("%s:\tLoad %hhd Exec %hhd Last %hhd\n", __func__, (zone->phdr->p_type == PT_LOAD), (zone->phdr->p_flags & PF_X), (TRUE == zone->last));
+	logging_recursive("%s:\t%zu <= %zu ? Load:%hhd Exec:%hhd Last:%hhd\n", __func__, inst->size, zone->size, (zone->phdr->p_type == PT_LOAD), (zone->phdr->p_flags & PF_X), (TRUE == zone->last));
 	if (packer->strategy == STRAT_LOADABLE_EXECUTE)
 	{
 		logging_recursive("%s:\tSTRAT_LOADABLE_EXECUTE\n", __func__);
@@ -79,21 +76,14 @@ uint8_t		can_i_write(t_packer *packer, t_zone *zone, t_btc *inst)
 
 void		write_btc(t_btc *inst, t_zone *zone, t_packer *packer)
 {
-	//TODO : todo
 	uint8_t		*dest;
 	
-	logging_recursive("Enter write btc\n");
 	dest = zone->offset + packer->content;
-	logging_recursive("%s:\t\t %s\n", __func__, btc_to_str(inst));
-	logging_recursive("VADDR:\t\t\t 0x%lx\n", zone->vaddr);
-	logging_recursive("Writing at offset:\t 0x%lx (%ld)\n", zone->offset, zone->offset);
-	logging_recursive("Btc localisation:\t [%lx - %lx]\n", zone->offset, zone->offset + inst->size);
-	logging_recursive("Size is:\t\t %zu\n", inst->size);
-	logging_recursive("It's in phdr nb\t\t %d\n", get_program_header_index(packer, zone->phdr));
+	logging_recursive("%s: %s in phdr nb*%d\n", __func__, btc_to_str(inst), get_program_header_index(packer, zone->phdr));
+	logging_recursive("%s: localisation: [%lx - %lx] size: %lx\n", __func__, zone->offset, zone->offset + inst->size, inst->size);
 	inst->func_ptr(dest, inst->args);
 	zone->phdr->p_filesz += inst->size;
 	zone->phdr->p_memsz += inst->size;
-	logging_recursive("%s: END OF WRITE\n", __func__);
 	return;
 }
 
@@ -117,7 +107,6 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 	uint8_t	headless;
 	ssize_t ret;
 
-	logging_recursive("%s\n", __func__);
 	update_arg_def_crypt_calls(inst, zone);
 	update_zone(zone, inst->data);
 	headless = is_btc_headless((t_btc *)inst->data);
@@ -135,23 +124,9 @@ ssize_t		bytecode_inject(t_packer *packer, t_list *zones, t_zone *zone, t_dlist 
 			logging_recursive("%s: New e_entry will be\t 0x%lx\n", __func__, packer->new_e_entry);
 		}
 	}
-	logging_recursive("%s: end bytecode_inject\n\n", __func__);
 	depth -= 1;
+	logging_recursive("\n");
 	return (ret);
-}
-
-void		print_dlist(t_dlist *dl)
-{
-	t_dlist *prev_n = NULL;
-	t_dlist *next_p = NULL;
-
-	printf("%p\n", dl);
-	if (dl->prev)
-		prev_n = dl->prev->next;
-	if (dl->next)
-		next_p = dl->next->prev;
-	printf("\t %p  -> %p -> [%p]\n", prev_n, dl, dl->next);
-	printf("\t[%p] <- %p <-  %p \n", dl->prev, dl, next_p);
 }
 
 // depth is used for pretty printing
@@ -162,28 +137,26 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 	ssize_t ret;
 	t_dlist	*jmp;
 
-	// depth for aestethics 
 	depth += 1;
 	logging_recursive("\n");
-	logging_recursive("%s\n", __func__);
 	if (inst == NULL)
 	{
-		logging_recursive("Inst is NULL -> WE FOUND THE SOLUTION!!\n\n");
+		logging_recursive("%s: NULL INST -> all bytecodes can be placed. Binary is solved\n\n", __func__);
 		depth -= 1;
 		return (((Elf64_Ehdr *)packer->content)->e_entry);
 	}
-	logging_recursive("Trying to place\t %s\n", btc_to_str(((t_btc *)inst->data)));
+	logging_recursive("%s: INST: \t%s\n", __func__, btc_to_str(((t_btc *)inst->data)));
 	if (headless == TRUE)
 	{
-		logging_recursive("Headless\t TRUE\n");
+		logging_recursive("%s: HEADLESS:\tTRUE\n", __func__);
 		while (zone_list != NULL)
 		{
 			ret = FAILURE;
 			zone = zone_list->data;
-			logging_recursive("Try at offset\t %zu\n", zone->offset);
+			logging_recursive("%s: try offset\t%zu\n", __func__, zone->offset);
 			if (can_i_write(packer, zone, inst->data))
 			{
-				logging_recursive("We can write\n");
+				logging_recursive("%s: valid write!\n", __func__);
 				ret = bytecode_inject(packer, zone_list, zone, inst);
 			}
 			if (ret != FAILURE)
@@ -196,49 +169,37 @@ ssize_t		solve_bytecodes(t_packer *packer, t_list *zones, t_dlist *inst, int hea
 	}
 	else
 	{
-		logging_recursive("Headless\t FALSE\n");
-		// ICI EST LE BUG Zone lorsque headless, ne devrait pas estre le premier element mais l'element choisi a l'etape precedente
+		logging_recursive("%s: HEADLESS:\tFALSE\n", __func__);
 		zone = zones->data;
-		logging_recursive("Current offset:\t %zu\n", zone->offset);
+		logging_recursive("%s: Current offset:\t%zu\n", __func__, zone->offset);
 		if (can_i_write(packer, zone, inst->data))
 		{
-			logging_recursive("We can write.\n");
+			logging_recursive("%s: valid write!\n", __func__);
 			return (bytecode_inject(packer, zones, zone, inst));
 		}
 		else
 		{
-			logging_recursive("Cannot write instruction, trying jump\n");
+			logging_recursive("%s: NOT valid write!\n", __func__);
+			logging_recursive("%s: Trying jump\n", __func__);
 			ret = FAILURE;
-			// logging_recursive("Bef\n");
-			// print_dlist(inst);
-			// print_dlist(inst->prev);
-			// TODO: malloc error
-			jmp = ft_dlist_new(create_btc(BTC_CALL_JMP));
+			if (NULL == (jmp = ft_dlist_new(create_btc(BTC_CALL_JMP))))
+			{
+				print_error(packer->self_path, MALLOC_ERROR);
+				exit(EXIT_FAILURE);
+			}
 			ft_dlist_insert_next_wesh(inst->prev, jmp);
-			// logging_recursive("Jump\n");
-			// print_dlist(jmp->prev);
-			// print_dlist(jmp);
-			// print_dlist(jmp->next);
 			if (can_i_write(packer, zone, jmp->data))
 			{
-				logging_recursive("Jump ok\n");
+				logging_recursive("%s: Jump ok\n", __func__);
 				ret = bytecode_inject(packer, zones, zone, jmp);
-				// print_dlist(jmp->prev);
-				// print_dlist(jmp);
-				// print_dlist(jmp->next);
 			}
 			if (ret == FAILURE)
 			{
-				logging_recursive("Removing jump\n");
-				// print_dlist(jmp);
+				logging_recursive("%s: Removing jump\n", __func__);
 				jmp = ft_dlist_cut_unsafe(jmp);
-				free_btc(jmp->data);		// TODO: keep jump rights phdr ?
-				// print_dlist(jmp);
+				free_btc(jmp->data);
 				free(jmp);
 			}
-			// logging_recursive("Aft\n");
-			// print_dlist(inst);
-			// print_dlist(inst->prev);
 			return (ret);
 		}
 	}

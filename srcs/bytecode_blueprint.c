@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/28 20:12:38 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/03 19:35:35 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/07 12:18:26 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ t_dlist		*blueprint_add(t_dlist **blueprint, int btc_type)
 		(*blueprint) = inst;
 	else
 		ft_dlist_append_end(blueprint, inst);
+	logging_recursive("*** %s: Adding to blueprint %s\n", __func__, btc_to_str(btc));
 	return (inst);
 }
 

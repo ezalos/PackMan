@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/17 19:29:02 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/28 21:02:38 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/07 13:10:45 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,15 +81,15 @@ void	inject_def_cypher_prepare(uint8_t *dest, void *args)
 	uint8_t	*jmp_init_perm;
 	uint8_t	*jmp_key_sched;
 
-	logging_recursive("struct SCHEDULE: %x \n", ((t_btc_args *)args)->jmp_key_sched);
-	logging_recursive("struct INIT PERM: %x \n", ((t_btc_args *)args)->jmp_init_perm);
+	// logging_recursive("struct SCHEDULE: %x \n", ((t_btc_args *)args)->jmp_key_sched);
+	// logging_recursive("struct INIT PERM: %x \n", ((t_btc_args *)args)->jmp_init_perm);
 	jmp_init_perm = (uint8_t *)(&((t_btc_args *)args)->jmp_init_perm);
-	logging_recursive("jmp_init_perm: %x\n", *(uint32_t*)jmp_init_perm);
+	// logging_recursive("jmp_init_perm: %x\n", *(uint32_t*)jmp_init_perm);
 	jmp_key_sched = (uint8_t *)&((t_btc_args *)args)->jmp_key_sched;
-	logging_recursive("jmp_key_sched: %x\n", *(uint32_t*)jmp_key_sched);
+	// logging_recursive("jmp_key_sched: %x\n", *(uint32_t*)jmp_key_sched);
 
-	logging_recursive("%s: Begin memcopy\n", __func__);
-	logging("KEY IS: %llx\n", *(uint64_t*)((t_btc_args *)args)->crypt_key);
+	// logging_recursive("%s: Begin memcopy\n", __func__);
+	// logging("KEY IS: %llx\n", *(uint64_t*)((t_btc_args *)args)->crypt_key);
 
 	ft_memcpy(payload + 0xe, ((t_btc_args *)args)->crypt_key, 0x4);
 	ft_memcpy(payload + 0x19, ((t_btc_args *)args)->crypt_key + 0x4, 0x4);

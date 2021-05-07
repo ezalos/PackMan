@@ -44,7 +44,7 @@ void	logging_recursive(const char* fmt, ...)
 {
     va_list args;
 
-    if (debug_level >= 1)
+    if (debug_level >= 2)
     {
         print_spaces(depth);
         va_start(args, fmt);
