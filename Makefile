@@ -6,7 +6,7 @@
 #    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/20 16:46:57 by ezalos            #+#    #+#              #
-#    Updated: 2021/04/04 11:37:16 by ezalos           ###   ########.fr        #
+#    Updated: 2021/05/07 13:33:11 by ezalos           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -101,7 +101,7 @@ run: $(NAME)
 	./$(PACKED)
 
 recur: $(NAME)
-	sh recursive_testor.sh $(COMMAND_ARGS)
+	sh tests/recursive_testor.sh $(COMMAND_ARGS)
 
 prototypes:
 	python3 .tmp/prototype_catcher.py srcs includes/prototypes_$(NAME).h $(NAME)
