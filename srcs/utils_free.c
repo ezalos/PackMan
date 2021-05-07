@@ -17,6 +17,12 @@ void		free_data(void *data)
 	free(data);
 }
 
+void	free_btc(void *btc)
+{
+	free(((t_btc*)btc)->args);
+	free(btc);
+}
+
 static void	free_shdr_array(t_sheader **shdr_array)
 {
 	int	i;
