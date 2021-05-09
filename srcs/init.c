@@ -58,7 +58,8 @@ int8_t		check_elf_header(t_packer *packer)
 int8_t		check_sacred_memory_size(t_packer *packer)
 {
 	packer->sacred_memory_size
-		= ((Elf64_Ehdr *)packer->content)->e_phentsize * ((Elf64_Ehdr *)packer->content)->e_phnum
+		= ((size_t)((Elf64_Ehdr *)packer->content)->e_phentsize)
+		* ((size_t)((Elf64_Ehdr *)packer->content)->e_phnum)
 			+ ((Elf64_Ehdr *)packer->content)->e_phoff;
 	if (packer->sacred_memory_size > packer->size)
 		return (print_error(packer->self_path, FILE_FORMAT_ERROR));
