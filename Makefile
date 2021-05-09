@@ -6,7 +6,7 @@
 #    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/20 16:46:57 by ezalos            #+#    #+#              #
-#    Updated: 2021/05/09 10:25:46 by ezalos           ###   ########.fr        #
+#    Updated: 2021/05/09 10:32:02 by ezalos           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -115,12 +115,12 @@ recur: $(NAME)
 	sh tests/recursive_testor.sh $(COMMAND_ARGS)
 
 $(TESTS_CORRUPTED_DIR)%.out: Makefile $(LIB_RBT) $(LIB_FT) $(HEAD_FILES) $(OBJS) $(OBJS_ASM)
-	@echo "$(BLUE)Starting test $@:$(END)"
+	@echo "$(BLUE)Starting test $(YELLOW)$@$(END):"
 	@rm -f $(PACKED)
 	@(./$(NAME) $@ && ./$(PACKED) && echo "$(GREEN)Test $@ done!$(END)") || echo "$(RED)Test $@ done!$(END)"
 
 $(TESTS_DIR)%.out: Makefile $(LIB_RBT) $(LIB_FT) $(HEAD_FILES) $(OBJS) $(OBJS_ASM)
-	@echo "$(BLUE)Starting test $@:$(END)"
+	@echo "$(BLUE)Starting test $(YELLOW)$@$(END):"
 	@rm -f $(PACKED)
 	@(sh tests/recursive_testor.sh $@ 100 && echo "$(GREEN)Test $@ done!$(END)") || echo "$(RED)Test $@ done!$(END)"
 
