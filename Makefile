@@ -6,7 +6,7 @@
 #    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/20 16:46:57 by ezalos            #+#    #+#              #
-#    Updated: 2021/05/07 13:33:11 by ezalos           ###   ########.fr        #
+#    Updated: 2021/05/09 10:23:44 by ezalos           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,6 +40,10 @@ SRCS_DIR	= srcs/
 HEAD_DIR	= includes/
 HEAD_FILES	= $(wildcard $(HEAD_DIR)*.h)
 OBJS_DIR	= objs/
+TESTS_DIR	= binaries/
+TESTS_CORRUPTED_DIR	= $(TESTS_DIR)corrupted/
+TESTS_CORRUPTED_FILES	= $(wildcard $(TESTS_CORRUPTED_DIR)*.out)
+TESTS_FILES	= $(wildcard $(TESTS_DIR)*.out)
 
 $(shell mkdir -p $(OBJS_DIR))
 SRCS		= $(wildcard $(SRCS_DIR)*.c)
@@ -47,6 +51,13 @@ SRCS_ASM	= $(wildcard $(SRCS_DIR)*$(ASM_EXT))
 OBJS		= $(SRCS:$(SRCS_DIR)%.c=$(OBJS_DIR)%.o)
 OBJS_ASM	= $(SRCS_ASM:$(SRCS_DIR)%$(ASM_EXT)=$(OBJS_DIR)%.o)
 
+RED     	= \e[31m
+GREEN   	= \e[32m
+YELLOW  	= \e[33m
+BLUE		= \e[34m
+MAGENTA		= \e[35m
+CYAN		= \e[36m
+END     	= \e[0m
 
 ##########################
 ##						##
@@ -88,7 +99,7 @@ re : fclean
 ##						##
 ##########################
 
-SUPPORTED_COMMANDS := run tests recur
+SUPPORTED_COMMANDS := run tests recur rtest
 SUPPORTS_MAKE_ARGS := $(findstring $(firstword $(MAKECMDGOALS)), $(SUPPORTED_COMMANDS))
 ifneq "$(SUPPORTS_MAKE_ARGS)" ""
   COMMAND_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -102,6 +113,19 @@ run: $(NAME)
 
 recur: $(NAME)
 	sh tests/recursive_testor.sh $(COMMAND_ARGS)
+
+$(TESTS_CORRUPTED_DIR)%.out: Makefile $(LIB_RBT) $(LIB_FT) $(HEAD_FILES) $(OBJS) $(OBJS_ASM)
+	@rm -f $(PACKED)
+	@(./$(NAME) $@ && ./$(PACKED) && echo "$(GREEN)Test $@ done!$(END)") || echo "$(RED)Test $@ done!$(END)"
+
+$(TESTS_DIR)%.out: Makefile $(LIB_RBT) $(LIB_FT) $(HEAD_FILES) $(OBJS) $(OBJS_ASM)
+	@rm -f $(PACKED)
+	@(sh tests/recursive_testor.sh $@ 100 && echo "$(GREEN)Test $@ done!$(END)") || echo "$(RED)Test $@ done!$(END)"
+
+
+tests: $(TESTS_CORRUPTED_FILES) Makefile $(LIB_RBT) $(LIB_FT) $(HEAD_FILES) $(OBJS) $(OBJS_ASM)
+
+rtests: $(TESTS_FILES) Makefile $(LIB_RBT) $(LIB_FT) $(HEAD_FILES) $(OBJS) $(OBJS_ASM)
 
 prototypes:
 	python3 .tmp/prototype_catcher.py srcs includes/prototypes_$(NAME).h $(NAME)
