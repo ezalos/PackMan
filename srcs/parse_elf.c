@@ -46,7 +46,7 @@ void 	parse_print(t_packer *packer)
 int8_t	parse_elf(t_packer *packer)
 {
 	if (!is_secure_access(packer->size, ((Elf64_Ehdr *)packer->content)->e_shoff,
-			sizeof(Elf64_Shdr) * ((Elf64_Ehdr *)packer->content)->e_shnum))
+			((Elf64_Ehdr *)packer->content)->e_shentsize * ((Elf64_Ehdr *)packer->content)->e_shnum))
 		return (print_error(packer->self_path, FILE_FORMAT_ERROR));
 
 	logging("*** %s Constructing phdr tree\n", __func__);
