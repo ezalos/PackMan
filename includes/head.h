@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/05/07 13:21:42 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 09:41:51 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,6 @@ extern int debug_level;
 
 typedef enum	e_state
 {
-	// Working = 1,
 	NORMAL,
 	OVERLAPPED,
 	SUPERPOSED,
@@ -120,7 +119,7 @@ typedef struct	s_pheader
 	Elf64_Phdr 	*phdr;
 	t_rbt 		*shdr_tree;
 	t_sheader	**shdr_array;
-	int			available_size; //int64_t ?
+	int64_t		available_size;
 }				t_pheader;
 
 
@@ -129,7 +128,7 @@ typedef struct	s_sheader
 	uint8_t		type;
 	Elf64_Shdr	*shdr;
 	t_pheader	*parent_phdr;
-	int			available_size; // int64_t
+	int64_t		available_size;
 }				t_sheader;
 
 
@@ -138,24 +137,20 @@ typedef struct stat t_stat;
 
 typedef struct	s_packer
 {
-	// int			fd;
 	char 			*self_path;
 	char 			*out;
 	uint8_t			*content;
-	t_zone			z_text; // TODO: what is it ? should we remove it ?
 	t_rbt			*phdr_tree;
 	t_pheader		**phdr_array;
-	t_list			*to_crypt;  //list of t_zones we want to crypt
-	t_list			*caves; //list of zones we can inject code in, ordered by dec size
+	t_list			*to_crypt;
+	t_list			*caves;
 	uint8_t			key[KEY_SIZE];
 	size_t			new_e_entry;
 	size_t			sacred_memory_size;
 	uint8_t			strategy;
-	uint8_t			no_strat_loadable;
+	uint8_t			strat_loadable;
+	uint8_t			extend_crypt_choice;
 	uint8_t			print_phdr_gather;
-	uint8_t			example_env; //TODO: remove it
-	// t_stat		stat;
-
 	uint64_t		size;
 }					t_packer;
 
@@ -185,13 +180,8 @@ typedef struct	s_btc
 {
 	int				type;
 	size_t			size;
-	// size_t	offset; -> pour arg du jump...
-	t_write_func	func_ptr;// -> Si arguments necessaires, complexe
+	t_write_func	func_ptr;
 	t_btc_args		*args;
-	// struct s_btc	*next;
-	// t_zone 
-	// offset_in_zone 
-	// size_in_zone
 }				t_btc;
 
 # define ENDIAN(x) (((Elf64_Ehdr *)x->content)->e_ident[EI_DATA] != ELFDATA2LSB)
@@ -218,9 +208,9 @@ typedef struct	s_btc
 # define SIZE_DEF_BEGIN				25
 # define SIZE_CALL_MPROTECT			64
 # define SIZE_DEF_CYPHER_PREPARE	55
-# define SIZE_CALL_CYPHER			(58 + 8)
-# define SIZE_DEF_WRITE				(55 + 4)		
-# define SIZE_DEF_END				(32 - 7) + 7
+# define SIZE_CALL_CYPHER			66
+# define SIZE_DEF_WRITE				59		
+# define SIZE_DEF_END				32
 # define SIZE_CALL_JMP				5
 # define SIZE_DEF_INIT_PERM			18
 # define SIZE_DEF_KEY_SCHED			53
@@ -228,7 +218,7 @@ typedef struct	s_btc
 # define SIZE_DEF_FIND_ABS_VADDR	46
 
 # define MINIMAL_WOODY					FALSE
-# define NB_STRAT						3 // a mettre dans .h
+# define NB_STRAT						3
 # define STRAT_LOADABLE_EXECUTE			0
 # define STRAT_LOADABLE					1
 # define STRAT_LOADABLE_LAST_SEGMENT	2
@@ -265,33 +255,5 @@ extern t_btc bytecode_lib[BYTECODE_LIB_LEN];
 extern void	init_permutations_asm(uint8_t *permutations);
 extern void	schedule_key_asm(uint8_t *permutations, uint8_t *key);
 extern void crypt_zone_asm(uint8_t *zone, size_t len, uint8_t *permutations);
-
-void		ft_cypher(char *data, int len, char key);
-void 		print_section_header(t_packer *packer, Elf64_Shdr *shdr);
-void 		print_program_header(Elf64_Phdr *phdr);
-void 		print_elf_header(Elf64_Ehdr *elf);
-char 		*get_sec_name(t_packer *packer, Elf64_Shdr *shdr);
-Elf64_Shdr 	*get_section_header(t_packer *packer, uint32_t index);
-Elf64_Phdr 	*get_program_header(t_packer *packer, uint32_t index);
-void 		browse_file(t_packer *packer);
-int8_t		print_usage(char *self_path);
-// t_list		*get_zones(t_packer *packer, uint8_t type, uint8_t flags,
-// 			void (*data_filler)(t_pheader*, t_zone*));
-void		data_filler_cave(t_pheader *hdr, t_zone *zone);
-void		data_filler_zone_to_crypt(t_pheader *hdr, t_zone *zone);
-void		crypt_zones(t_packer *packer);
-void 		change_endian(void *data, int size);
-void		test_cypher_alter(void);
-void		unit_test_alter(uint8_t *content, size_t len);
-void		crypt_zone(uint8_t *zone, size_t len, uint8_t *permutations);
-void		schedule_key(uint8_t *permutations, uint8_t *key);
-void		init_key(uint8_t *key);
-void		init_permutations(uint8_t *permutations);
-
-
-// 			LOGGING DEBUG FUNCTIONS
-
-
-
 
 #endif

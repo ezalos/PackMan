@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/16 10:57:23 by ezalos            #+#    #+#             */
-/*   Updated: 2021/03/25 00:55:15 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 09:06:32 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,13 +58,13 @@ t_btc bytecode_lib[BYTECODE_LIB_LEN] = {
 	{
 		BTC_DEF_INIT_PERM,
 		SIZE_DEF_INIT_PERM,
-		inject_def_init_perm,			//replace by the function
+		inject_def_init_perm,
 		NULL,
 	},
 	{
 		BTC_DEF_KEY_SCHED,
 		SIZE_DEF_KEY_SCHED,
-		inject_def_key_sched,			//replace by the function
+		inject_def_key_sched,
 		NULL,
 	},
 	{

@@ -6,23 +6,22 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/16 17:13:08 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/07 11:58:32 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 09:44:01 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
 
-void print_section_header(t_packer *packer, Elf64_Shdr *shdr)
+void	print_section_header(t_packer *packer, Elf64_Shdr *shdr)
 {
     printf("%s%-10s%s ", _YELLOW, get_sec_name(packer, shdr), _RESET);
 	printf("offset: %s%-8lu%s ", _BLUE, shdr->sh_offset, _RESET);
 	printf("size: %s%-8lu%s ", _BLUE, shdr->sh_size, _RESET);
 	printf("info %3u|%-3lu flags \t", shdr->sh_info, shdr->sh_flags);
     printf("addr: %p\n", (void *)shdr->sh_addr);
-    // printf("\n");
 }
 
-void    print_program_header(Elf64_Phdr *phdr)
+void	print_program_header(Elf64_Phdr *phdr)
 {
     printf("SEGMENT: ");// 9
 	if (phdr->p_type & PT_LOAD)
@@ -42,7 +41,7 @@ void    print_program_header(Elf64_Phdr *phdr)
     printf("\n");
 }
 
-void    print_elf_header(Elf64_Ehdr *elf)
+void	print_elf_header(Elf64_Ehdr *elf)
 {
     printf("---- Elf Header ----\n");
     printf("e_ident: %s\n", elf->e_ident);

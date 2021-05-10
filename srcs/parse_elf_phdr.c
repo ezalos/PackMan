@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 23:50:57 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/01 21:30:30 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 09:31:44 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,6 @@ t_rbt	*construct_rbt_phdr(t_packer *packer)
 			print_error(packer->self_path, MALLOC_ERROR);
 			// When malloc error, we do not free as internal malloc error might be in cause.
 			// We let the kernel take care of restuting the memory
-			// As good faith, you will see in the free all in main that we already implemented all that's needed
 			root = NULL;
 			exit(EXIT_FAILURE);
 		}
@@ -69,24 +68,4 @@ t_rbt	*construct_rbt_phdr(t_packer *packer)
 		phdr = get_program_header(packer, i);
 	}
 	return (root);
-}
-
-void	phdr_print_tree(t_packer *packer, t_rbt *root)
-{
-	t_rbt *node;
-	t_rbt *next_node = NULL;
-	int i = 0;
-	int tmp = i;
-
-	node = tree_get_node_th(root, &tmp);
-	while (node) // && i < ((Elf64_Ehdr *)packer->content)->e_phnum)
-	{
-		printf("Phdr nb %d [%d] %p\n", i, get_program_header_index(packer, ((t_pheader *)node->content)->phdr), node->content);
-		tmp = ++i;
-		// if (i == 3)
-		// 	break;
-		next_node = tree_get_node_th(root, &tmp);
-		print_program_header(node->content);
-		node = next_node;
-	}
 }

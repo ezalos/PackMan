@@ -6,12 +6,13 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/17 19:29:02 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/07 13:10:45 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 09:06:22 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
 
+// ALL THESE FUNCTIONS ARE UNSAFE AS THEY DO NOT CHECK FOR WRITEABILITY OR SIZE
 void	inject_def_begin(uint8_t *dest, void *args)
 {
 	uint8_t payload[SIZE_DEF_BEGIN] = {
@@ -81,15 +82,8 @@ void	inject_def_cypher_prepare(uint8_t *dest, void *args)
 	uint8_t	*jmp_init_perm;
 	uint8_t	*jmp_key_sched;
 
-	// logging_recursive("struct SCHEDULE: %x \n", ((t_btc_args *)args)->jmp_key_sched);
-	// logging_recursive("struct INIT PERM: %x \n", ((t_btc_args *)args)->jmp_init_perm);
 	jmp_init_perm = (uint8_t *)(&((t_btc_args *)args)->jmp_init_perm);
-	// logging_recursive("jmp_init_perm: %x\n", *(uint32_t*)jmp_init_perm);
 	jmp_key_sched = (uint8_t *)&((t_btc_args *)args)->jmp_key_sched;
-	// logging_recursive("jmp_key_sched: %x\n", *(uint32_t*)jmp_key_sched);
-
-	// logging_recursive("%s: Begin memcopy\n", __func__);
-	// logging("KEY IS: %llx\n", *(uint64_t*)((t_btc_args *)args)->crypt_key);
 
 	ft_memcpy(payload + 0xe, ((t_btc_args *)args)->crypt_key, 0x4);
 	ft_memcpy(payload + 0x19, ((t_btc_args *)args)->crypt_key + 0x4, 0x4);
@@ -123,8 +117,6 @@ void	inject_call_cypher(uint8_t *dest, void *args)
 	uint8_t	*jmp_def_cypher;
 	uint8_t	*jmp_find_abs_addr;
 
-	// a priori les informations d'adresse et len seront dans args
-	// pour l'adresse (il faut qu'elle soit absolue, moyen de le savoir avant l'execution du woody ?)
 	addr = (uint8_t*)(&(((t_btc_args*)args)->crypt_plaintext_vaddr));
 	len = (uint8_t *)(&(((t_btc_args *)args)->crypt_plaintext_size));
 	jmp_def_cypher = (uint8_t *)(&(((t_btc_args *)args)->jmp_def_cypher));
@@ -160,7 +152,6 @@ void	inject_def_write(uint8_t* dest, void *args)
 	};
 
 	(void)args;
-	// revoir en faisant des xor rdi, rdi   xor rdx, rdx    xor rax, rax
 	ft_memcpy(dest, payload, SIZE_DEF_WRITE);
 }
 
@@ -191,7 +182,6 @@ void	inject_def_end(uint8_t *dest, void *args)
 	ft_memcpy(dest, payload, SIZE_DEF_END);
 }
 
-// UNSAFE DOES NOT CHECK FOR WRITEABILITY OR SIZE
 void	inject_call_jmp(uint8_t* dest, void *args)
 {
 	uint8_t payload[SIZE_CALL_JMP] = {

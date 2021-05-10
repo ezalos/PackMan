@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/04 19:41:39 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/05/07 11:52:16 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 09:37:50 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ static void free_phdr_array(t_pheader **phdr_array)
 	i = -1;
 	while (phdr_array[++i])
 	{
-		// TODO: debug double free problem
 		free_shdr_array(phdr_array[i]->shdr_array);
 		free(phdr_array[i]);
 	}

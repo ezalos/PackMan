@@ -6,13 +6,11 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/14 16:36:22 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/05/01 21:30:39 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 09:26:57 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
-
-// il faut redefinir le calcul des sizes et offset par rapport à memsz et pas filesz
 
 t_zone		*get_last_zone(t_list *caves)
 {
@@ -27,8 +25,8 @@ t_zone		*get_last_zone(t_list *caves)
 
 void		update_phdr_addr(t_packer *packer, int64_t offset)
 {
-	// attention faire tres attention aux duplications !
-	// si on ne s'occupe que des caves, il faut update les droits des zones to_crypt auparavant
+	// Assumption: zones do NOT reference same phdr, otherwise UNDEFINED BEHAVIOR
+	// to_crypt rights MUST have been updated before this action
 
 	t_list	*curs;
 	t_zone	*zone;

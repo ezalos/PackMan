@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:11:34 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/07 13:15:52 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 09:07:51 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,10 @@ int depth = -1;
 
 void		update_zone(t_zone *zone, t_btc *inst)
 {
-	// printed boundary is included
 	debug_recursive("%s: Updating zone:\t%s %zu->%zu\n", __func__, btc_to_str(inst), zone->offset, zone->offset + inst->size);
 	zone->offset += inst->size;
 	zone->vaddr += inst->size;
 	zone->size -= inst->size;
-	// debug("to %zu->%zu\n", zone->offset, zone->offset + inst->size);
 }
 
 void		undo_update_zone(t_zone *zone, t_btc *inst)
@@ -30,16 +28,13 @@ void		undo_update_zone(t_zone *zone, t_btc *inst)
 	zone->offset -= inst->size;
 	zone->vaddr -= inst->size;
 	zone->size += inst->size;
-	// debug("to %zu->%zu\n", zone->offset, zone->offset + inst->size);
 
 }
 
 uint8_t		can_i_write(t_packer *packer, t_zone *zone, t_btc *inst)
 {
-	// t_zone		*zone;
 	uint8_t		valid_zone;
 
-	// zone = zone_list->data;
 	valid_zone = FALSE;
 	logging_recursive("%s:\t%zu <= %zu ? Load:%hhd Exec:%hhd Last:%hhd\n", __func__, inst->size, zone->size, (zone->phdr->p_type == PT_LOAD), (zone->phdr->p_flags & PF_X), (TRUE == zone->last));
 	if (packer->strategy == STRAT_LOADABLE_EXECUTE)

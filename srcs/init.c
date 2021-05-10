@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/25 23:16:07 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/07 13:21:50 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 09:36:56 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ int8_t		check_elf_header(t_packer *packer)
 		return (print_error(packer->self_path, FILE_NOT_64_ERROR));
 	if (ehdr->e_ident[EI_DATA] != ELFDATA2LSB)
 		return (print_error(packer->self_path, FILE_BIG_ENDIAN_ERROR));
+	if (debug_level >= 2)
+		print_elf_header((Elf64_Ehdr *)packer->content);
 	return (SUCCESS);
 }
 
@@ -70,10 +72,7 @@ void		get_conf(t_packer *packer)
 {
 	char	*env;
 	
-	//getenv renvoie NULL si rien dans l'env, sinon renvoie char *str (qu'il ne faut pas free)
-	// printf("%s\n", __func__);
 	env = getenv("WOODY_LOG");
-	// printf("env: %s\n", env);
 	if (env)
 	{
 		if (!ft_strcmp(env, "1"))
@@ -86,10 +85,12 @@ void		get_conf(t_packer *packer)
 	env = getenv("WOODY_PHDR");
 	if (env)
 		packer->print_phdr_gather = TRUE;
-	env = getenv("WOODY_SAFE");
+	env = getenv("WOODY_UNSAFE_CAVE");
 	if (env)
-		packer->no_strat_loadable = TRUE;
-	// exit(0);
+		packer->strat_loadable = TRUE;
+	env = getenv("WOODY_UNSAFE_CRYPT");
+	if (env)
+		packer->extend_crypt_choice = TRUE;
 }
 
 
@@ -106,7 +107,7 @@ int8_t		init(t_packer *packer, char **av)
 		return (FAILURE);
 	if (FAILURE == check_sacred_memory_size(packer))
 		return (FAILURE);
-	logging("** %s: sacred memory size = %lu\n", __func__, packer->sacred_memory_size);	
+	logging("** %s: sacred memory size = %lu\n", __func__, packer->sacred_memory_size);
 	if (FAILURE == parse_elf(packer))
 		return (FAILURE);
 	return (SUCCESS);

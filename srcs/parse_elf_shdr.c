@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 23:56:07 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/07 13:18:35 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 09:30:14 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ int8_t		create_rbt_shdr(t_rbt **node, t_sheader **hdr, Elf64_Shdr *shdr, t_phead
 	return (ret);
 }
 
-//TODO: Should be better protected ? With a return value and by cleaning all trees
 void		construct_rbt_shdr(t_packer *packer)
 {
 	Elf64_Shdr *shdr;
@@ -53,7 +52,6 @@ void		construct_rbt_shdr(t_packer *packer)
 		parent = get_rbt_phdr_from_shdr(packer->phdr_tree, shdr);
 		if (parent)
 		{
-			// printf("Shdr %2d parent is n*%d:\t%s\n", i, get_program_header_index(packer, parent->phdr), get_sec_name(packer, shdr));
 			if (SUCCESS == create_rbt_shdr(&node, &hdr, shdr, parent))
 			{
 				parent->shdr_tree = tree_insert_func_ll(parent->shdr_tree, node, hdr, t_rbt_compare_shdr);
@@ -63,7 +61,6 @@ void		construct_rbt_shdr(t_packer *packer)
 				print_error(packer->self_path, MALLOC_ERROR);
 				// When malloc error, we do not free as internal malloc error might be in cause.
 				// We let the kernel take care of restuting the memory
-				// As good faith, you will see in the free all in main that we already implemented all that's needed 
 				exit(EXIT_FAILURE);
 			}
 		}

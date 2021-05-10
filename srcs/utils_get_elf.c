@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/16 17:12:56 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/02 00:07:14 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 09:43:20 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ char		*get_sec_name(t_packer *packer, Elf64_Shdr *shdr)
     return NULL;
 }
 
-Elf64_Shdr	*get_section_header(t_packer *packer, uint32_t index)
+Elf64_Shdr		*get_section_header(t_packer *packer, uint32_t index)
 {
     Elf64_Ehdr *elf;
     Elf64_Shdr *shdr;
@@ -48,7 +48,7 @@ int			get_section_header_index(t_packer *packer, Elf64_Shdr *shdr)
 	return (((size_t)shdr) - ((size_t)packer->content + (size_t)elf->e_shoff)) / (size_t)elf->e_shentsize;
 }
 
-int 		get_program_header_index(t_packer *packer, Elf64_Phdr *phdr)
+int			get_program_header_index(t_packer *packer, Elf64_Phdr *phdr)
 {
 	Elf64_Ehdr *elf = (Elf64_Ehdr *)packer->content;
 	if (!phdr)
@@ -56,7 +56,7 @@ int 		get_program_header_index(t_packer *packer, Elf64_Phdr *phdr)
 	return (((size_t)phdr) - ((size_t)packer->content + (size_t)elf->e_phoff)) / (size_t)elf->e_phentsize;
 }
 
-Elf64_Phdr *get_program_header(t_packer *packer, uint32_t index)
+Elf64_Phdr	*get_program_header(t_packer *packer, uint32_t index)
 {
     Elf64_Ehdr *elf;
     Elf64_Phdr *phdr;
@@ -64,8 +64,6 @@ Elf64_Phdr *get_program_header(t_packer *packer, uint32_t index)
     elf = (Elf64_Ehdr *)packer->content;
 	phdr = (Elf64_Phdr *)((size_t)packer->content + (size_t)elf->e_phoff + ((size_t)index * (size_t)elf->e_phentsize));
 
-	// printf("Phdr start: %p\t end: %p\n", phdr, (void*)(sizeof(Elf64_Phdr) + (size_t)phdr));
-	// printf("File start: %p\t end: %p\n", packer->content, (void*)((size_t)packer->content + packer->size));
 	if (index >= elf->e_phnum)
         phdr = NULL;
 

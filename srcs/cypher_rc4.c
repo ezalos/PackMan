@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/16 17:04:49 by rkirszba          #+#    #+#             */
-/*   Updated: 2021/05/07 12:00:02 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 09:15:44 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,16 +91,15 @@ void	crypt_zones(t_packer *packer)
 	t_list		*to_crypt;
 	t_zone		*zone;
 
-	init_permutations_asm(permutations);//asm
-	// init_key(packer->key);
-	schedule_key_asm(permutations, packer->key);//asm
+	init_permutations_asm(permutations);
+	schedule_key_asm(permutations, packer->key);
 	content = (uint8_t*)(packer->content);
 	to_crypt = packer->to_crypt;
 	while (to_crypt)
 	{
 		zone = (t_zone*)(to_crypt->data);
 		logging("%s:\nzone offset = %lu\nzone size = %lu\n", __func__, zone->offset, zone->size);
-		crypt_zone_asm(content + zone->offset, zone->size, permutations);//asm
+		crypt_zone_asm(content + zone->offset, zone->size, permutations);
 		to_crypt = to_crypt->next;
 	}
 }

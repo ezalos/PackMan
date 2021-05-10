@@ -6,13 +6,11 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/18 15:14:47 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/07 13:25:54 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 09:10:32 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
-
-// TODO: clean logging + clean algo ?
 
 ssize_t		chirurgy(t_packer *packer)
 {
@@ -32,7 +30,7 @@ ssize_t		chirurgy(t_packer *packer)
 	while (packer->strategy < NB_STRAT)
 	{
 		logging("** %s: SOLVE BYTECODE: trying start %d\n", __func__, packer->strategy);
-		if (packer->strategy == STRAT_LOADABLE && TRUE == packer->no_strat_loadable)
+		if (packer->strategy == STRAT_LOADABLE && FALSE == packer->strat_loadable)
 		{
 			logging("** %s: Skipping STRAT_LOADABLE\n", __func__);
 			packer->strategy += 1;
@@ -53,8 +51,6 @@ ssize_t		chirurgy(t_packer *packer)
 			break ;
 		}
 		packer->strategy += 1;
-		if (packer->strategy == 1)
-			packer->strategy += 1;
 	}
 
 	ft_dlist_free(blueprint, &free_btc);
@@ -62,15 +58,11 @@ ssize_t		chirurgy(t_packer *packer)
 	if (ret == FAILURE)
 		return (FAILURE);
 
-	// TODO: add rights when up recursive and remove line behind ?      
 	zones_add_rights_to_used_caves(packer->caves, PF_X);
 
 	logging("\n** %s: Entry Point: 0x%lx [%ld]\n", __func__, packer->new_e_entry, packer->new_e_entry);
 	((Elf64_Ehdr *)packer->content)->e_entry = packer->new_e_entry;
 
-	// Error before loading when used
-	// ./woody.out: 14: Syntax error: word unexpected (expecting ")")
-	//              I think it's just because we dont uncrypt (Highly probable)
 	logging("\n** %s: Cypher crypt zones\n", __func__);
 	crypt_zones(packer);
 	return (SUCCESS);

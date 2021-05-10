@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:13:17 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/07 12:31:17 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 09:04:49 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,11 +57,8 @@ void	update_args(t_packer *packer, t_btc *inst, t_zone *zone, ssize_t ret)
 	}
 	else if (inst->type == BTC_CALL_MPROTECT)
 	{
-		// Actually wrong, should be done before
-		
-		// Should not be zone of mprotect, but zone to be affected
 		inst->args->mp_addr = (uint64_t)((size_t)zone->phdr->p_vaddr + (size_t)zone->phdr->p_offset);
-		inst->args->mp_len = getpagesize();
+		inst->args->mp_len = 4096;//getpagesize();
 		inst->args->mp_prot = PROT_READ | PROT_EXEC | PROT_WRITE;
 	}
 	else if (inst->type == BTC_DEF_CYPHER_PREPARE)
@@ -79,11 +76,6 @@ void	update_args(t_packer *packer, t_btc *inst, t_zone *zone, ssize_t ret)
 		inst->args->jmp_def_cypher = (uint32_t)((size_t)inst->args->crypt_func_def_vaddr /*to*/) - (zone->vaddr /*from*/ + OFFSET_CALL_CYPHER + 4/*instuction size*/);
 		
 		inst->args->jmp_find_abs_addr = (uint32_t)((size_t)inst->args->crypt_func_find_abs_vaddr_vaddr /*to*/) - (zone->vaddr /*from*/ + OFFSET_CALL_FIND_ABS_ADDR + 4/*instuction size*/);
-		// Should be done before ...
-
-		// inst->args->crypt_addr = NULL;
-		// inst->args->crypt_key = NULL;
-		// inst->args->crypt_size = 0;
 	}
 	else if (inst->type == BTC_DEF_WRITE)
 	{
