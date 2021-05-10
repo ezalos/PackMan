@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
+#    By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/20 16:46:57 by ezalos            #+#    #+#              #
-#    Updated: 2021/05/10 09:12:13 by ezalos           ###   ########.fr        #
+#    Updated: 2021/05/10 22:12:33 by rkirszba         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -78,16 +78,20 @@ $(OBJS_DIR)%.o: $(SRCS_DIR)%$(ASM_EXT) Makefile $(LIB_RBT) $(LIB_FT)
 #-L$(LIB_DIR)
 
 $(LIB_RBT): FORCE
-	make -C $(LIB_RBT_DIR)
+	$(MAKE) -C $(LIB_RBT_DIR)
 
 $(LIB_FT): FORCE
-	make -C $(LIB_FT_DIR)
+	$(MAKE) -C $(LIB_FT_DIR)
 
 clean:
+	$(MAKE) clean -C $(LIB_RBT_DIR)
+	$(MAKE) clean -C $(LIB_FT_DIR)
 	rm -rf $(OBJS)
 	rm -rf $(OBJS_DIR)
 
 fclean: clean
+	$(MAKE) fclean -C $(LIB_RBT_DIR)
+	$(MAKE) fclean -C $(LIB_FT_DIR)
 	rm -rf $(NAME) $(TESTOR)
 
 re : fclean

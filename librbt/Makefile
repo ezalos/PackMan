@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
+#    By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/02/19 13:06:33 by rkirszba          #+#    #+#              #
-#    Updated: 2021/02/20 19:32:01 by ezalos           ###   ########.fr        #
+#    Updated: 2021/05/10 22:12:45 by rkirszba         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -62,8 +62,7 @@ OBJS	= $(SRCS:$(SRCS_DIR)%.c=$(OBJS_DIR)%.o)
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	ar rc $@ $^
-	ranlib $@
+	ar src $@ $^
 	@echo "made librbt"
 
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.c $(INCS) Makefile

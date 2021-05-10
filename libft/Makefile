@@ -6,7 +6,7 @@
 #    By: rkirszba <rkirszba@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/12 14:42:41 by rkirszba          #+#    #+#              #
-#    Updated: 2021/03/24 23:26:19 by rkirszba         ###   ########.fr        #
+#    Updated: 2021/05/10 22:12:56 by rkirszba         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -78,8 +78,7 @@ OBJS	= $(SRCS:$(SRCS_DIR)%.c=$(OBJS_DIR)%.o)
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	ar rc $@ $^
-	ranlib $@
+	ar src $@ $^
 	@echo "made libft"
 
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.c $(INCS) Makefile
