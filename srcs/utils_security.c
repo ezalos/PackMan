@@ -18,3 +18,14 @@ int8_t	is_secure_access(uint64_t file_size, uint64_t offset, uint64_t access_siz
 		return (FALSE);
 	return (TRUE);
 }
+
+int8_t	is_secure_read(uint8_t *content, uint64_t file_size, uint64_t offset)
+{
+	while (offset < file_size)
+	{
+		if (content[offset] == '\0')
+			return (TRUE);
+		offset++;
+	}
+	return (FALSE);
+}

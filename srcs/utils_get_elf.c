@@ -18,12 +18,20 @@ char		*get_sec_name(t_packer *packer, Elf64_Shdr *shdr)
     Elf64_Shdr *shdr_tab;
     char *sec_names;
 
+	if (!shdr)
+		return (NULL);
     elf = (Elf64_Ehdr *)packer->content;
+	if (FALSE == is_secure_access(packer->size, (uint64_t)elf->e_shoff
+			+ (uint64_t)(elf->e_shstrndx) * (uint64_t)(elf->e_shentsize),
+		sizeof(Elf64_Shdr)))
+		return (NULL);
     shdr_tab = (Elf64_Shdr *)(packer->content + elf->e_shoff);
+	if (FALSE == is_secure_read(packer->content, packer->size,
+		(uint64_t)(shdr_tab[elf->e_shstrndx].sh_offset)
+			+ (uint64_t)(shdr->sh_name)))
+		return (NULL);
     sec_names = (char*)(packer->content + shdr_tab[elf->e_shstrndx].sh_offset);
-    if (shdr)
-        return (&sec_names[shdr->sh_name]);
-    return NULL;
+  	return (&sec_names[shdr->sh_name]);
 }
 
 Elf64_Shdr		*get_section_header(t_packer *packer, uint32_t index)

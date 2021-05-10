@@ -74,6 +74,9 @@ uint8_t		is_phdr_superposed(Elf64_Phdr *a, Elf64_Phdr *b);
 int8_t		is_secure_access(uint64_t file_size,
 			uint64_t offset,
 			uint64_t access_size);
+int8_t		is_secure_read(uint8_t *content,
+			uint64_t file_size,
+			uint64_t offset);
 void		log_btc_name(t_btc *inst);
 void		logging(const char* fmt, ...);
 void		logging_recursive(const char* fmt, ...);
