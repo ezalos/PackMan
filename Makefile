@@ -6,7 +6,7 @@
 #    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/20 16:46:57 by ezalos            #+#    #+#              #
-#    Updated: 2021/05/09 10:32:02 by ezalos           ###   ########.fr        #
+#    Updated: 2021/05/10 08:44:46 by ezalos           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -125,9 +125,9 @@ $(TESTS_DIR)%.out: Makefile $(LIB_RBT) $(LIB_FT) $(HEAD_FILES) $(OBJS) $(OBJS_AS
 	@(sh tests/recursive_testor.sh $@ 100 && echo "$(GREEN)Test $@ done!$(END)") || echo "$(RED)Test $@ done!$(END)"
 
 
-tests: $(TESTS_CORRUPTED_FILES) Makefile $(LIB_RBT) $(LIB_FT) $(HEAD_FILES) $(OBJS) $(OBJS_ASM)
+tests: all $(TESTS_CORRUPTED_FILES) Makefile $(LIB_RBT) $(LIB_FT) $(HEAD_FILES) $(OBJS) $(OBJS_ASM)
 
-rtests: $(TESTS_FILES) Makefile $(LIB_RBT) $(LIB_FT) $(HEAD_FILES) $(OBJS) $(OBJS_ASM)
+rtests: all $(TESTS_FILES) Makefile $(LIB_RBT) $(LIB_FT) $(HEAD_FILES) $(OBJS) $(OBJS_ASM)
 
 prototypes:
 	python3 .tmp/prototype_catcher.py srcs includes/prototypes_$(NAME).h $(NAME)

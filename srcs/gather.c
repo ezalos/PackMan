@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/25 23:23:07 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/07 13:17:42 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 08:55:32 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,14 +67,14 @@ int8_t		gather_all_infos(t_packer *packer)
 	// error1: no executable segments
 	// error2: no loadable segments
 	packer->to_crypt = get_zones(packer, PT_LOAD, PF_X | PF_R, &data_filler_zone_to_crypt);
+	if (!(packer->to_crypt))
+		return (print_error(packer->self_path, NO_EXECUTABLE_SEGMENT));
 	// packer->to_crypt = get_zones(packer, PT_LOAD, 0, &data_filler_zone_to_crypt);
 	packer->caves = get_zones(packer, PT_LOAD, 0, &data_filler_cave);
+	if (!(packer->caves))
+		return (print_error(packer->self_path, NO_LOADABLE_SEGMENT));
 
-	if (FALSE == (packer->to_crypt && packer->caves))
-		return (FAILURE); // a revoir
-	// TODO: undefine behavior ou on laisse tel quel
-	// TODO: louis check system ABI V if 1st load + exec is necessarly .text
-	// TODO: sinon free a partir de packer->to_crypt->next + next = NULL
+	ft_list_free(packer->to_crypt->next, &free_data);
 	packer->to_crypt->next = NULL;
 
 	if (debug_level >= 1)
