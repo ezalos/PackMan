@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 22:34:42 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/07 13:16:21 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 12:06:22 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,10 @@
 uint8_t		next_state(t_packer *packer, t_state *st)
 {
 	st->curr = get_phdr_from_array(packer, st->index++);
-	st->next = get_phdr_from_array(packer, st->index);
+	if (st->curr)
+		st->next = get_phdr_from_array(packer, st->index);
+	else
+		st->next = NULL;
 	if (st->curr)
 		return (TRUE);
 	return (FALSE);
