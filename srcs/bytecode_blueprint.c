@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/28 20:12:38 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/07 12:18:26 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 21:19:23 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,6 @@ t_dlist		*blueprint_creation(t_packer *packer)
 			exit(FAILURE == print_error(packer->self_path, MALLOC_ERROR) ? EXIT_FAILURE : 0);
 		set_call_cypher_args(((t_btc *)inst->data), (t_zone *)to_crypt->data);
 		to_crypt = to_crypt->next;
-		// to_crypt = NULL;
 	}
 	if (NULL == blueprint_add(&blueprint, BTC_DEF_WRITE))
 		exit(FAILURE == print_error(packer->self_path, MALLOC_ERROR) ? EXIT_FAILURE : 0);

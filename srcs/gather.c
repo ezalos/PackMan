@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/25 23:23:07 by ezalos            #+#    #+#             */
-/*   Updated: 2021/05/10 09:24:58 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 21:32:27 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,11 @@ int8_t		gather_all_infos(t_packer *packer)
 
 	logging("** %s: Respecting sacred memory\n", __func__);
 	respect_sacred_memory_size(packer, &(packer->to_crypt));
+	if (!(packer->to_crypt))
+		// Packer can work in this case,
+		// but in the objective to respect the subject, we decide to exit with error
+		// if we cant met the the asked requirements of subject specifications 
+		return (print_error(packer->self_path, ZONES_CANT_RESPECT_SACRED_MEMORY));
 
 	// We add rights now, because it imply the 3rd startegy
 	// when we neeed to reallocate a bigger memory size.

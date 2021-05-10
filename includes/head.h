@@ -6,7 +6,7 @@
 /*   By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 11:15:02 by ldevelle          #+#    #+#             */
-/*   Updated: 2021/05/10 09:41:51 by ezalos           ###   ########.fr       */
+/*   Updated: 2021/05/10 21:32:13 by ezalos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ extern int debug_level;
 # define NO_LOADABLE_SEGMENT				"The file does not contain any loadable segment"
 # define SECTION_CONTENT_OUTSIDE_FILE		"Shdr %d references memory out of file"
 # define LIMIT_PHDR_RECURSIVE_CONTAIN		"File contains too many recursively contained phdr, stopping at : %d"
-
+# define ZONES_CANT_RESPECT_SACRED_MEMORY	"File potential zones to crypt are before the end of program header table"
 # define MALLOC_ERROR				"Malloc returned NULL"
 
 # define NAME_OUT_PACKER			"woody.out"
