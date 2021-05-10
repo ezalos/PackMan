@@ -46,6 +46,7 @@ void		respect_sacred_memory_size(t_packer *packer, t_list **to_crypt)
 			{
 				tmp = *to_crypt;
 				*to_crypt = (*to_crypt)->next;
+				free(tmp->data);
 				free(tmp);
 				continue ;
 			}
@@ -88,7 +89,7 @@ int8_t		gather_all_infos(t_packer *packer)
 	logging("** %s: Respecting sacred memory\n", __func__);
 	respect_sacred_memory_size(packer, &(packer->to_crypt));
 
-	// We had rights now, because it imply the 3rd startegy
+	// We add rights now, because it imply the 3rd startegy
 	// when we neeed to reallocate a bigger memory size.
 	// Because we can reference same zone twice between caves and to_crypt
 	// And our method of memory reference update cant work if it is the

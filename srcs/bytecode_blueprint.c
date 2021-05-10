@@ -77,7 +77,7 @@ t_dlist		*blueprint_creation(t_packer *packer)
 			exit(FAILURE == print_error(packer->self_path, MALLOC_ERROR) ? EXIT_FAILURE : 0);
 		set_call_cypher_args(((t_btc *)inst->data), (t_zone *)to_crypt->data);
 		to_crypt = to_crypt->next;
-		to_crypt = NULL;
+		// to_crypt = NULL;
 	}
 	if (NULL == blueprint_add(&blueprint, BTC_DEF_WRITE))
 		exit(FAILURE == print_error(packer->self_path, MALLOC_ERROR) ? EXIT_FAILURE : 0);
